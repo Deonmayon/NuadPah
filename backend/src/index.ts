@@ -1,12 +1,17 @@
-import express, { Request, Response } from 'express';
+import { FastifyServerOptions } from "fastify";
+import BuildApp from "./app";
+import config from "./config";
 
-const app = express();
-const PORT = 3000;
+const options: FastifyServerOptions = {
+  logger: true,
+};
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, TypeScript with Express!');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+const app = BuildApp(options);
+app.listen({ port: Number(config.port) }, (err) => {
+  if (err) {
+    app.log.error(err);
+    process.exit(1);
+  } else {
+    console.log(`[ ready ] http://${config.host}:${config.port}`);
+  }
 });
