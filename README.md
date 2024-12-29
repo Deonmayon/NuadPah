@@ -9,3 +9,32 @@ The project consists of two main components:
 - Frontend: Built using Flutter for a smooth and responsive cross-platform experience.
 
 - Backend: Developed with TypeScript (using ES6 syntax) and Express for a robust and scalable API.
+
+## Set up Project
+
+frontend
+
+```bash
+flutter pub get
+```
+
+backend
+
+```bash
+npm install
+```
+
+## Run Project
+
+frontend
+
+```bash
+flutter run
+```
+
+backend
+
+```bash
+tsc
+npm start
+```
