@@ -33,9 +33,18 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(120.0), // Set your desired height here
+        preferredSize: const Size.fromHeight(120.0),
         child: AppBar(
           title: Text('Welcome Back!'),
+          toolbarHeight: 120.0,
+          automaticallyImplyLeading: false,
+          flexibleSpace: Container(),
+          centerTitle: true,
+          backgroundColor: Colors.green,
+          elevation: 0,
+          shape: const Border(
+            bottom: BorderSide(width: 1, color: Colors.black12),
+          ),
         ),
       ),
       body: Padding(
