@@ -1,6 +1,6 @@
 import fastify, { FastifyServerOptions } from "fastify";
 import fastifyPostgres, { PostgresPluginOptions } from "@fastify/postgres";
-import config from "./config";
+import config from "./config/config";
 import authRouter from "./router/auth";
 
 const buildApp = (options: FastifyServerOptions) => {

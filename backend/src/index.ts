@@ -1,6 +1,6 @@
 import { FastifyServerOptions } from "fastify";
 import BuildApp from "./app";
-import config from "./config";
+import config from "./config/config";
 
 const options: FastifyServerOptions = {
   logger: true,
