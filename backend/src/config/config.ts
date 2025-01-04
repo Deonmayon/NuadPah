@@ -7,6 +7,7 @@ const config = {
   host: process.env.HOST || "localhost",
   port: process.env.PORT || 3000,
   db: process.env.DATABASE_URL,
+  jwt: process.env.JWT_SECRET || "nuad_pah_comsci",
 };
 
 export default config;

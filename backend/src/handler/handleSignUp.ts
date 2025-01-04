@@ -26,7 +26,7 @@ export const handleSignUp = async (
       `
         INSERT INTO public."User"(
           email, firstname, lastname, password, image_name
-        ) VALUES ('$1', '$2', '$3', '$4', 'user_icon');
+        ) VALUES ($1, $2, $3, $4, 'user_icon');
       `,
       [email, firstname, lastname, hashedPW]
     );
