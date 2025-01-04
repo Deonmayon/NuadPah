@@ -24,12 +24,12 @@ class ProfileFunctionBar extends StatelessWidget {
         color: Colors.white,
         border: Border(
           bottom: BorderSide(
-            color: Colors.grey,
-            width: 0.5,
+            color: Color.fromRGBO(219, 219, 219, 1),
+            width: 1.95,
           ),
           right: BorderSide(
-            color: Colors.grey,
-            width: 0.5,
+            color: Color.fromRGBO(219, 219, 219, 1),
+            width: 1.95,
           )
         ),
       ),

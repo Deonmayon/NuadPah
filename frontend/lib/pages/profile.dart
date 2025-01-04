@@ -2,64 +2,138 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/profileFunctionBar.dart';
 
 class Profile extends StatelessWidget {
+  final String profileImage = 'assets/images/profilePicture.jpg';
+
   const Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Profile',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        leading: IconButton(
-          iconSize: 40,
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        toolbarHeight: 70,
-      ),
-      body: Center(
-          child: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.center, // Center content vertically
-        crossAxisAlignment:
-            CrossAxisAlignment.center, // Center content horizontally
+      body: Column(
         children: [
-          ProfileFunctionBar(
-            icon: Icons.person,
-            title: 'Account details',
+          Container(
+            padding: const EdgeInsets.only(top: 40, bottom: 10),
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  iconSize: 30,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const Text(
+                  'Profile',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.black
+                  ),
+                ),
+                const SizedBox(width: 40), // Center the app bar by adding an additional box
+              ],
+            ),
           ),
-          SizedBox(height: 10),
-          ProfileFunctionBar(
-            icon: Icons.lock,
-            title: 'Privacy',
+          Container(
+            height: 1,
+            color: Color.fromRGBO(219, 219, 219, 1),
+            width: double.infinity, 
           ),
-          SizedBox(height: 10),
-          ProfileFunctionBar(
-            icon: Icons.report_problem,
-            title: 'Report',
+          
+          Padding(
+            padding: const EdgeInsets.only(top: 20, bottom: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromRGBO(219, 219, 219, 1),
+                    blurRadius: 3,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage(profileImage),
+              ),
+            ),
           ),
-          SizedBox(height: 10),
-          ProfileFunctionBar(
-            icon: Icons.help_outline,
-            title: 'Help',
+
+          const Padding(
+            padding: EdgeInsets.only(bottom: 20),
+            child: Text(
+              'Esther Howard',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
           ),
-          SizedBox(height: 10),
-          ProfileFunctionBar(
-            icon: Icons.logout,
-            title: 'Logout',
-            showArrow: false, // Hide the arrow for Logout
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, 
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      'Profile',
+                      style: TextStyle(
+                        fontSize: 12, 
+                        fontWeight: FontWeight.w800,
+                        color: Color.fromRGBO(177, 177, 177, 1),
+                      ),
+                    ),
+                  ),
+                  ProfileFunctionBar(
+                    icon: Icons.person,
+                    title: 'Account details',
+                  ),
+                  const SizedBox(height: 10),
+                  ProfileFunctionBar(
+                    icon: Icons.lock,
+                    title: 'Privacy',
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10, bottom: 10), 
+                    child: Text(
+                      'About',
+                      style: TextStyle(
+                        fontSize: 12, 
+                        fontWeight: FontWeight.w800,
+                        color: Color.fromRGBO(177, 177, 177, 1),
+                      ),
+                    ),
+                  ),
+                  ProfileFunctionBar(
+                    icon: Icons.report_problem,
+                    title: 'Report',
+                  ),
+                  const SizedBox(height: 10),
+                  ProfileFunctionBar(
+                    icon: Icons.help_outline,
+                    title: 'Help',
+                  ),
+                  const SizedBox(height: 10),
+                  ProfileFunctionBar(
+                    icon: Icons.logout,
+                    title: 'Logout',
+                    showArrow: false,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
-      )),
+      ),
     );
   }
 }
