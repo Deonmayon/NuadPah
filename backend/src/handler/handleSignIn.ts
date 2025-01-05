@@ -35,6 +35,6 @@ export const handleSignIn = async (
 
     await setSession(rows[0].email, { status: "active", token }, 3600); // 1 hour
 
-    return reply.send({ token });
+    return reply.status(201).send({ token });
   }
 };

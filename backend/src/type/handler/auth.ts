@@ -15,3 +15,17 @@ export type AuthSignUpBodyRequest = FastifyRequest<{
     password: string;
   };
 }>;
+
+export type AuthForgetPWBodyRequest = FastifyRequest<{
+  Body: {
+    email: string;
+  };
+}>;
+
+export type AuthResetPWBodyRequest = FastifyRequest<{
+  Body: {
+    email: string;
+    newpw: string;
+    confirmpw: string;
+  };
+}>;
