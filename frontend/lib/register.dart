@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'welcome.dart';
-import 'register.dart';
+import 'login.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
 
   void _login() {
-    final username = _usernameController.text;
+    final username = _emailController.text;
     final password = _passwordController.text;
 
     if (username == 'admin' && password == '1234') {
@@ -31,10 +33,10 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _register() {
+  void _gotologin() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 
@@ -54,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Welcome Back!',
+                    'Get Started!',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -85,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Sign In',
+                          'Sign Up',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -93,6 +95,64 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(height: 40),
+
+                        // Row with First Name and Last Name TextFields
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFE8E8E8),
+                                  borderRadius: BorderRadius.circular(30),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 5,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: TextField(
+                                  controller: _firstnameController,
+                                  decoration: InputDecoration(
+                                    hintText: 'First Name',
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 25, vertical: 20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFE8E8E8),
+                                  borderRadius: BorderRadius.circular(30),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 5,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: TextField(
+                                  controller: _lastnameController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Last Name',
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 25, vertical: 20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
 
                         // Email TextField
                         Container(
@@ -108,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                           child: TextField(
-                            controller: _usernameController,
+                            controller: _emailController,
                             decoration: InputDecoration(
                               hintText: 'Email',
                               hintStyle: TextStyle(color: Colors.grey),
@@ -177,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 20),
 
                         // Sign In Button
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
@@ -193,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Sign In',
+                                  'Sign Up',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -212,7 +272,7 @@ class _LoginPageState extends State<LoginPage> {
                         // Or Sign In With Text
                         Center(
                           child: Text(
-                            'Or Sign In With',
+                            'Or Sign Up With',
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
@@ -257,17 +317,17 @@ class _LoginPageState extends State<LoginPage> {
                         Center(
                           child: RichText(
                             text: TextSpan(
-                              text: "Don't have an account? ",
+                              text: "Already have an account? ",
                               style: TextStyle(color: Colors.grey),
                               children: [
                                 TextSpan(
-                                  text: 'Create One',
+                                  text: 'Sign In',
                                   style: TextStyle(
                                     color: Color(0xFFBFAB93),
                                     fontWeight: FontWeight.w500,
                                   ),
                                   recognizer: TapGestureRecognizer()
-                                    ..onTap = _register,
+                                    ..onTap = _gotologin,
                                 ),
                               ],
                             ),
