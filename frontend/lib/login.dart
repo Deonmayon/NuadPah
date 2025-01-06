@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     } else {
       setState(() {
-        _errorMessage = 'Invalid username or password';
+        _errorMessage = 'Invalid email or password';
       });
     }
   }
