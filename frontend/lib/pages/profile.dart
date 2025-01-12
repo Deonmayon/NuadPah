@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/profileFunctionBar.dart';
+import 'package:flutter_svg/flutter_svg.dart'; 
 
 class Profile extends StatelessWidget {
   final String profileImage = 'assets/images/profilePicture.jpg';
@@ -42,7 +43,7 @@ class Profile extends StatelessWidget {
             color: Color.fromRGBO(219, 219, 219, 1),
             width: double.infinity, 
           ),
-          
+
           Padding(
             padding: const EdgeInsets.only(top: 20, bottom: 20),
             child: Container(
