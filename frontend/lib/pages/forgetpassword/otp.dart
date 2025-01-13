@@ -1,110 +1,138 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import '/pages/welcome.dart';
-import '/pages/register.dart';
+import 'package:flutter/services.dart';
 import '/pages/forgetpassword/reset.dart';
 
 class OTPPage extends StatefulWidget {
-  const OTPPage({super.key});
+  final int length;
+  final Function(String)? onCompleted;
+
+  const OTPPage({Key? key, this.length = 4, this.onCompleted}) : super(key: key);
 
   @override
   _OTPPageState createState() => _OTPPageState();
 }
 
 class _OTPPageState extends State<OTPPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  late List<FocusNode> _focusNodes;
+  late List<TextEditingController> _controllers;
+  late List<String> _pin;
   String _errorMessage = '';
 
-  void _login() {
-    final username = _usernameController.text;
-    final password = _passwordController.text;
+  @override
+  void initState() {
+    super.initState();
+    _focusNodes = List.generate(widget.length, (_) => FocusNode());
+    _controllers = List.generate(widget.length, (_) => TextEditingController());
+    _pin = List.filled(widget.length, '');
+  }
 
-    if (username == 'admin' && password == '1234') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => WelcomePage()),
-      );
-    } else {
-      setState(() {
-        _errorMessage = 'Invalid email or password';
-      });
+  @override
+  void dispose() {
+    for (var node in _focusNodes) {
+      node.dispose();
     }
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onPinChanged(int index, String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _pin[index] = '';
+        if (index > 0) {
+          _focusNodes[index - 1].requestFocus();
+        }
+      } else if (value.length == 1) {
+        _pin[index] = value;
+        if (index < widget.length - 1) {
+          _focusNodes[index + 1].requestFocus();
+        }
+      }
+
+      if (!_pin.contains('') && widget.onCompleted != null) {
+        widget.onCompleted!(_pin.join());
+      }
+    });
   }
 
   void _reset() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ResetPage()),
-    );
+    if (_pin.contains('')) {
+      setState(() {
+        _errorMessage = "Please complete the OTP.";
+      });
+    } else {
+      setState(() {
+        _errorMessage = '';
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ResetPage()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFC0A172), // Tan background color
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: Stack(
-            children: [
-              // Welcome Text
-              Positioned(
-                top: 80,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Text(
-                    'OTP ?',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: const Color(0xFFC0A172),
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 60,
+              left: 0,
+              right: 0,
+              child: Center(
+              child: Image.asset(
+                'assets/images/mail.png',
+                width: 150,
+                height: 150,
+              ),
+              ),
+            ),
+            Positioned(
+              top: 240,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height - 160,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
                   ),
                 ),
-              ),
-
-              // White Container with Curved Top
-              Positioned(
-                top: 160,
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height - 160,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        top: 20, left: 30, right: 30, bottom: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 20),
-                        Text(
-                          'Enter Verification Code',
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: Color(0xFFBFAB93),
-                            fontWeight: FontWeight.bold,
-                          ),
+                child: Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Enter Verification Code',
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: Color(0xFFBFAB93),
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 20),
+                      ),
+                      SizedBox(height: 20),
                         Text(
-                          'We’ll have send a verification code to',
+                          'We have sent a verification code to',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xFF676767),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 40),
+                        SizedBox(height: 10),
                         Text(
-                          'We’ll have send a verification code to',
+                          'Name@gmail.com',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xFF676767),
@@ -113,73 +141,100 @@ class _OTPPageState extends State<OTPPage> {
                         ),
                         SizedBox(height: 40),
 
-                        // Email TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(widget.length, (index) {
+                          return Container(
+                            width: 50,
+                            height: 50,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: _pin[index].isNotEmpty
+                                  ? const Color(0xFFC0A172)
+                                  : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: _pin[index].isNotEmpty
+                                    ? const Color(0xFFC0A172)
+                                    : Colors.grey,
+                                width: 2,
                               ),
+                            ),
+                            child: TextField(
+                              controller: _controllers[index],
+                              focusNode: _focusNodes[index],
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              maxLength: 1,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              decoration: const InputDecoration(
+                                counterText: '',
+                                border: InputBorder.none,
+                              ),
+                              style: const TextStyle(
+                                fontSize: 24,
+                                color: Colors.black,
+                              ),
+                              onChanged: (value) => _onPinChanged(index, value),
+                              onSubmitted: (value) {
+                                if (value.isEmpty && index > 0) {
+                                  _focusNodes[index - 1].requestFocus();
+                                }
+                              },
+                            ),
+                          );
+                        }),
+                      ),
+                      if (_errorMessage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            _errorMessage,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 40),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton(
+                          onPressed: _reset,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFC0A172),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 5,
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Next',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Icon(Icons.arrow_forward, color: Colors.white),
                             ],
                           ),
-                          child: TextField(
-                            controller: _usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                            ),
-                          ),
                         ),
-                        SizedBox(height: 40),
-
-                        // Sign In Button
-                        SizedBox(height: 20),
-                        Container(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: _reset,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFC0A172),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 5,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Next',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Icon(Icons.arrow_forward, color: Colors.white),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 30),
-
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

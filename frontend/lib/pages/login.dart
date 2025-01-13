@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               // Welcome Text
               Positioned(
-                top: 80,
+                top: 120,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
 
               // White Container with Curved Top
               Positioned(
-                top: 160,
+                top: 240,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height - 160,

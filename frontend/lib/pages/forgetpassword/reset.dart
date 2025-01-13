@@ -49,12 +49,12 @@ class _ResetPageState extends State<ResetPage> {
             children: [
               // Welcome Text
               Positioned(
-                top: 80,
+                top: 120,
                 left: 0,
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Welcome Back!',
+                    'Reset Your Password',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -66,7 +66,7 @@ class _ResetPageState extends State<ResetPage> {
 
               // White Container with Curved Top
               Positioned(
-                top: 160,
+                top: 240,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height - 160,
@@ -85,7 +85,7 @@ class _ResetPageState extends State<ResetPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Sign In',
+                          'Enter New Password',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -94,7 +94,7 @@ class _ResetPageState extends State<ResetPage> {
                         ),
                         SizedBox(height: 40),
 
-                        // Email TextField
+                        // Password TextField
                         Container(
                           decoration: BoxDecoration(
                             color: Color(0xFFE8E8E8),
@@ -110,17 +110,22 @@ class _ResetPageState extends State<ResetPage> {
                           child: TextField(
                             controller: _usernameController,
                             decoration: InputDecoration(
-                              hintText: 'Email',
+                              hintText: 'Password',
                               hintStyle: TextStyle(color: Colors.grey),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 25, vertical: 20),
+                              suffixIcon: Padding(
+                                padding: EdgeInsets.only(right: 15),
+                                child: Icon(Icons.visibility_off,
+                                    color: Colors.grey),
+                              ),
                             ),
                           ),
                         ),
                         SizedBox(height: 20),
 
-                        // Password TextField
+                        // Confirm Password TextField
                         Container(
                           decoration: BoxDecoration(
                             color: Color(0xFFE8E8E8),
@@ -137,7 +142,7 @@ class _ResetPageState extends State<ResetPage> {
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
-                              hintText: 'Password',
+                              hintText: 'Confirm Password',
                               hintStyle: TextStyle(color: Colors.grey),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
@@ -150,6 +155,7 @@ class _ResetPageState extends State<ResetPage> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 40),
 
                         if (_errorMessage.isNotEmpty)
                           Padding(
@@ -160,23 +166,7 @@ class _ResetPageState extends State<ResetPage> {
                             ),
                           ),
 
-                        // Forget Password Link
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              'forget your password ?',
-                              style: TextStyle(
-                                color: Color(0xFFBFAB93),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-
-                        // Sign In Button
+                        // Reset Password Button
                         Container(
                           width: double.infinity,
                           height: 55,
@@ -193,7 +183,7 @@ class _ResetPageState extends State<ResetPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Sign In',
+                                  'Reset Password',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -208,71 +198,7 @@ class _ResetPageState extends State<ResetPage> {
                         ),
 
                         SizedBox(height: 30),
-
-                        // Or Sign In With Text
-                        Center(
-                          child: Text(
-                            'Or Sign In With',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // Google Sign In Button
-                        Center(
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'G',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: Color(0xFFBFAB93),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 30),
-
-                        // Create Account Link
-                        Center(
-                          child: RichText(
-                            text: TextSpan(
-                              text: "Don't have an account? ",
-                              style: TextStyle(color: Colors.grey),
-                              children: [
-                                TextSpan(
-                                  text: 'Create One',
-                                  style: TextStyle(
-                                    color: Color(0xFFBFAB93),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = _register,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                     
                       ],
                     ),
                   ),

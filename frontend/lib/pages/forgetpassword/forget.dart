@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '/pages/welcome.dart';
-import '/pages/register.dart';
+import '/pages/forgetpassword/otp.dart';
 
 class ForgetPage extends StatefulWidget {
   const ForgetPage({super.key});
@@ -31,10 +31,14 @@ class _ForgetPageState extends State<ForgetPage> {
     }
   }
 
-  void _register() {
+  void _otp() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
+      MaterialPageRoute(
+        builder: (context) => OTPPage(
+        onCompleted: (_) {},  // Pass empty callback since we're using _reset() for navigation
+        ),
+  ),
     );
   }
 
@@ -49,7 +53,7 @@ class _ForgetPageState extends State<ForgetPage> {
             children: [
               // Welcome Text
               Positioned(
-                top: 80,
+                top: 120,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -66,7 +70,7 @@ class _ForgetPageState extends State<ForgetPage> {
 
               // White Container with Curved Top
               Positioned(
-                top: 160,
+                top: 240,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height - 160,
@@ -77,6 +81,8 @@ class _ForgetPageState extends State<ForgetPage> {
                       topRight: Radius.circular(30),
                     ),
                   ),
+
+                  // Before Input Fields
                   child: Padding(
                     padding: EdgeInsets.only(
                         top: 20, left: 30, right: 30, bottom: 30),
@@ -135,7 +141,7 @@ class _ForgetPageState extends State<ForgetPage> {
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
-                            onPressed: _login,
+                            onPressed: _otp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFFC0A172),
                               shape: RoundedRectangleBorder(
