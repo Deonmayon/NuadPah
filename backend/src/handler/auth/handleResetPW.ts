@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { hashPassword } from "../util/bcrypt";
-import { AuthResetPWBodyRequest } from "../type/handler/auth";
+import { hashPassword } from "../../util/bcrypt";
+import { AuthResetPWBodyRequest } from "../../type/handler/auth";
 
 export const handleResetPW = async (
   request: AuthResetPWBodyRequest,

@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { AuthForgetPWBodyRequest } from "../type/handler/auth";
+import { AuthForgetPWBodyRequest } from "../../type/handler/auth";
 import crypto from "crypto";
-import { sendEmail } from "../util/nodemalier";
+import { sendEmail } from "../../util/nodemalier";
 
 export const handleForgetPW = async (
   request: AuthForgetPWBodyRequest,

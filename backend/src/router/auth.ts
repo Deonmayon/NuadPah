@@ -6,10 +6,10 @@ import {
   AuthResetPWBodyRequest,
 } from "../type/handler/auth";
 import { sessionBodyRequest } from "../type/session/sessionBodyRequest";
-import { handleSignIn } from "../handler/handleSignIn";
-import { handleSignUp } from "../handler/handleSignUp";
-import { handleForgetPW } from "../handler/handleForgetPW";
-import { handleResetPW } from "../handler/handleResetPW";
+import { handleSignIn } from "../handler/auth/handleSignIn";
+import { handleSignUp } from "../handler/auth/handleSignUp";
+import { handleForgetPW } from "../handler/auth/handleForgetPW";
+import { handleResetPW } from "../handler/auth/handleResetPW";
 import { deleteSession } from "../util/session/deleteSession";
 import { authenticate } from "../util/session/authenticate";
 
@@ -55,17 +55,17 @@ const authRouter = async (app: FastifyInstance) => {
     }
   );
 
-  // Test pull data through authenticate
-  // app.post(
-  //   "/userdata",
-  //   { preHandler: [authenticate] },
-  //   async (request: sessionBodyRequest, reply) => {
-  //     reply.send({
-  //       message: "This is your user data",
-  //       user: request.body.userEmail,
-  //     });
-  //   }
-  // );
+  // Get User's data
+  app.post(
+    "/userdata",
+    { preHandler: [authenticate] },
+    async (request: sessionBodyRequest, reply) => {
+      reply.send({
+        message: "This is your user data",
+        user: request.body.userEmail,
+      });
+    }
+  );
 };
 
 export default authRouter;
