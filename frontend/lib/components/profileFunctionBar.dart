@@ -22,13 +22,13 @@ class ProfileFunctionBar extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
-        border: Border(
+        border: const Border(
           bottom: BorderSide(
-            color: Color.fromRGBO(219, 219, 219, 1),
+            color: Color(0x26000000),
             width: 1.95,
           ),
           right: BorderSide(
-            color: Color.fromRGBO(219, 219, 219, 1),
+            color: Color(0x26000000),
             width: 1.95,
           )
         ),
@@ -40,14 +40,15 @@ class ProfileFunctionBar extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: Colors.grey.shade700,
+                color: const Color.fromRGBO(103, 103, 103, 1),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 10),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: 'Roboto',
                 ),
               ),
             ],
@@ -55,8 +56,8 @@ class ProfileFunctionBar extends StatelessWidget {
           if (showArrow)
             const Icon(
               Icons.arrow_forward_ios,
-              size: 16,
-              color: Colors.grey,
+              size: 15,
+              color:  Color.fromRGBO(103, 103, 103, 1),
             ),
         ],
       ),

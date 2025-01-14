@@ -65,14 +65,15 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                       bottom: 0,
                       right: 20,
                       child: Container(
+
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(192, 161, 114, 1),
+                          color: const Color.fromRGBO(192, 161, 114, 1),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             CircleAvatar(
                               radius: 12.5,
                               backgroundImage: NetworkImage(
@@ -132,7 +133,7 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Name Massage',
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
@@ -140,7 +141,7 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                           color: Colors.black),
                     ),
                     const SizedBox(height: 10),
-                    Text(
+                    const Text(
                       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
@@ -158,7 +159,7 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                           height: 40,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromRGBO(192, 161, 114, 1),
+                              backgroundColor: const Color.fromRGBO(192, 161, 114, 1),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -166,9 +167,9 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                             onPressed: () {
                               debugPrint('Learn with AI pressed');
                             },
-                            child: Row(
+                            child: const Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
+                              children: [
                                 Text(
                                   'Learn with AI',
                                   style: TextStyle(
@@ -199,7 +200,7 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Rate and Reviews',
+                    const Text('Rate and Reviews',
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w700,
@@ -241,14 +242,14 @@ class ReviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 15,
                 backgroundImage:
                     NetworkImage('https://picsum.photos/seed/624/600'),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Cameron Williamson',
                 style: TextStyle(
@@ -271,7 +272,7 @@ class ReviewCard extends StatelessWidget {
                       ? FontAwesomeIcons.solidStar
                       : FontAwesomeIcons.star,
                   color: index < 4
-                      ? Color.fromRGBO(192, 161, 114, 1)
+                      ? const Color.fromRGBO(192, 161, 114, 1)
                       : Colors.grey,
                   size: 15,
                 ),
@@ -279,7 +280,7 @@ class ReviewCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Text(
+          const Text(
             'Lorem ipsum dolor sit amet,  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
             style: TextStyle(
               fontWeight: FontWeight.w400,

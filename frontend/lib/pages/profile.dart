@@ -40,21 +40,21 @@ class Profile extends StatelessWidget {
           ),
           Container(
             height: 1,
-            color: Color.fromRGBO(219, 219, 219, 1),
+            color: const Color.fromRGBO(219, 219, 219, 1),
             width: double.infinity, 
           ),
 
           Padding(
             padding: const EdgeInsets.only(top: 20, bottom: 20),
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
                     color: Color.fromRGBO(219, 219, 219, 1),
                     blurRadius: 3,
                     spreadRadius: 1,
-                    offset: const Offset(0, 5),
+                    offset: Offset(0, 5),
                   ),
                 ],
               ),
@@ -77,13 +77,13 @@ class Profile extends StatelessWidget {
             ),
           ),
 
-          Expanded(
+          const Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start, 
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(bottom: 10),
                     child: Text(
                       'Profile',
@@ -98,12 +98,12 @@ class Profile extends StatelessWidget {
                     icon: Icons.person,
                     title: 'Account details',
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   ProfileFunctionBar(
                     icon: Icons.lock,
                     title: 'Privacy',
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 10, bottom: 10), 
                     child: Text(
                       'About',
@@ -118,12 +118,12 @@ class Profile extends StatelessWidget {
                     icon: Icons.report_problem,
                     title: 'Report',
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   ProfileFunctionBar(
                     icon: Icons.help_outline,
                     title: 'Help',
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   ProfileFunctionBar(
                     icon: Icons.logout,
                     title: 'Logout',
