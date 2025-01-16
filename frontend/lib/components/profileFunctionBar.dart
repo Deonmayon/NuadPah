@@ -16,8 +16,9 @@ class ProfileFunctionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      width: MediaQuery.of(context).size.width * 0.9, 
+      width: MediaQuery.of(context).size.width, 
       height: 50,
+      margin: const EdgeInsets.only(left: 20.0, right: 20.0),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
