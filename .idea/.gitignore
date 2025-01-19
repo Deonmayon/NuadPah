@@ -1,3 +1,44 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+
+# Flutter-specific files
+**/build/
+**/.dart_tool/
+**/.idea/
+**/.vscode/
+*.iml
+
+# Android files
+android/local.properties
+android/app/debug.keystore
+
+# iOS files
+ios/Flutter/.last_build_id
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/*.xcfilelist
+
+# macOS files
+macos/Flutter/ephemeral/
+
+# Web files
+web/.dart_tool/
+
+# Linux files
+linux/flutter/ephemeral/
+
+# Windows files
+windows/flutter/ephemeral/
+
+# Firebase
+*.firebaserc
+
+# Miscellaneous
+*.log
+*.lock
+*.DS_Store
+*.swp
+*.swo
+*.~undo-tree~

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'welcome.dart';
 import 'login.dart';
+import '/components/emailtextfield.dart';
+import '/components/passwordfield.dart';
+import '/components/submitbox.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -100,54 +103,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFE8E8E8),
-                                  borderRadius: BorderRadius.circular(30),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: TextField(
-                                  controller: _firstnameController,
-                                  decoration: InputDecoration(
-                                    hintText: 'First Name',
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 25, vertical: 20),
-                                  ),
-                                ),
+                              child: EmailTextField(
+                                      controller: _firstnameController,
+                                      hintText: 'First Name',
                               ),
                             ),
                             SizedBox(width: 20),
                             Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFE8E8E8),
-                                  borderRadius: BorderRadius.circular(30),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: TextField(
-                                  controller: _lastnameController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Last Name',
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 25, vertical: 20),
-                                  ),
-                                ),
+                              child: EmailTextField(
+                                      controller: _lastnameController,
+                                      hintText: 'Last Name',
                               ),
                             ),
                           ],
@@ -155,61 +120,17 @@ class _RegisterPageState extends State<RegisterPage> {
                         SizedBox(height: 20),
 
                         // Email TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _emailController,
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                            ),
-                          ),
+                        EmailTextField(
+                          controller: _emailController,
+                          hintText: 'Email',
                         ),
                         SizedBox(height: 20),
 
                         // Password TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                              suffixIcon: Padding(
-                                padding: EdgeInsets.only(right: 15),
-                                child: Icon(Icons.visibility_off,
-                                    color: Colors.grey),
-                              ),
-                            ),
-                          ),
+                        PasswordField(
+                          controller: _passwordController,
                         ),
+                        SizedBox(height: 20),
 
                         if (_errorMessage.isNotEmpty)
                           Padding(
@@ -220,51 +141,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
 
-                        // Forget Password Link
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              'forget your password ?',
-                              style: TextStyle(
-                                color: Color(0xFFBFAB93),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-
                         // Sign In Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: _login,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFC0A172),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 5,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Sign Up',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Icon(Icons.arrow_forward, color: Colors.white),
-                              ],
-                            ),
-                          ),
+                        SubmitBox(
+                          buttonText: 'Sign Up',
+                          onPress: _login,
                         ),
 
                         SizedBox(height: 30),

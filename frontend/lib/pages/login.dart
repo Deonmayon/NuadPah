@@ -3,6 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'welcome.dart';
 import 'register.dart';
 import '/pages/forgetpassword/forget.dart';
+import '/components/emailtextfield.dart';
+import '/components/passwordfield.dart';
+import '/components/submitbox.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -103,61 +106,68 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 40),
 
                         // Email TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                            ),
-                          ),
+                        EmailTextField(
+                          controller: _usernameController,
+                          hintText: 'Email',
                         ),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //   color: Color(0xFFE8E8E8),
+                        //   borderRadius: BorderRadius.circular(15), // Less curve for rectangle-like shape
+                        //   boxShadow: [
+                        //     BoxShadow(
+                        //     color: Colors.black.withOpacity(0.05),
+                        //     blurRadius: 5,
+                        //     offset: Offset(0, 3),
+                        //     ),
+                        //   ],
+                        //   ),
+                        //   child: TextField(
+                        //   controller: _usernameController,
+                        //   decoration: InputDecoration(
+                        //     hintText: 'Email',
+                        //     hintStyle: TextStyle(color: Colors.grey),
+                        //     border: InputBorder.none,
+                        //     contentPadding: EdgeInsets.symmetric(
+                        //       horizontal: 25, vertical: 20),
+                        //   ),
+                        //   ),
+                        // ),
                         SizedBox(height: 20),
 
                         // Password TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                              suffixIcon: Padding(
-                                padding: EdgeInsets.only(right: 15),
-                                child: Icon(Icons.visibility_off,
-                                    color: Colors.grey),
-                              ),
-                            ),
-                          ),
+                        PasswordField(
+                          controller: _passwordController,
                         ),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     color: Color(0xFFE8E8E8),
+                        //     borderRadius: BorderRadius.circular(30),
+                        //     boxShadow: [
+                        //       BoxShadow(
+                        //         color: Colors.black.withOpacity(0.05),
+                        //         blurRadius: 5,
+                        //         offset: Offset(0, 3),
+                        //       ),
+                        //     ],
+                        //   ),
+                        //   child: TextField(
+                        //     controller: _passwordController,
+                        //     obscureText: true,
+                        //     decoration: InputDecoration(
+                        //       hintText: 'Password',
+                        //       hintStyle: TextStyle(color: Colors.grey),
+                        //       border: InputBorder.none,
+                        //       contentPadding: EdgeInsets.symmetric(
+                        //           horizontal: 25, vertical: 20),
+                        //       suffixIcon: Padding(
+                        //         padding: EdgeInsets.only(right: 15),
+                        //         child: Icon(Icons.visibility_off,
+                        //             color: Colors.grey),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
 
                         if (_errorMessage.isNotEmpty)
                           Padding(
@@ -185,35 +195,39 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 20),
 
                         // Sign In Button
-                        Container(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: _login,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFC0A172),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 5,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Sign In',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Icon(Icons.arrow_forward, color: Colors.white),
-                              ],
-                            ),
-                          ),
+                        SubmitBox(
+                          onPress: _login,
+                          buttonText: 'Sign In',
                         ),
+                        // Container(
+                        //   width: double.infinity,
+                        //   height: 55,
+                        //   child: ElevatedButton(
+                        //     onPressed: _login,
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: Color(0xFFC0A172),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(30),
+                        //       ),
+                        //       elevation: 5,
+                        //     ),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       children: [
+                        //         Text(
+                        //           'Sign In',
+                        //           style: TextStyle(
+                        //             color: Colors.white,
+                        //             fontSize: 18,
+                        //             fontWeight: FontWeight.w500,
+                        //           ),
+                        //         ),
+                        //         SizedBox(width: 10),
+                        //         Icon(Icons.arrow_forward, color: Colors.white),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
 
                         SizedBox(height: 30),
 

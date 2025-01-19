@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '/pages/welcome.dart';
 import '/pages/forgetpassword/otp.dart';
+import '/components/emailtextfield.dart';
+import '/components/submitbox.dart';
 
 class ForgetPage extends StatefulWidget {
   const ForgetPage({super.key});
@@ -110,61 +112,17 @@ class _ForgetPageState extends State<ForgetPage> {
                         SizedBox(height: 40),
 
                         // Email TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                            ),
-                          ),
+                        EmailTextField(
+                          controller: _usernameController,
+                          hintText: 'Email',
                         ),
                         SizedBox(height: 40),
 
                         // Sign In Button
                         SizedBox(height: 20),
-                        Container(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: _otp,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFC0A172),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 5,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Submit',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Icon(Icons.arrow_forward, color: Colors.white),
-                              ],
-                            ),
-                          ),
+                        SubmitBox(
+                          buttonText: 'Submit',
+                          onPress: _otp,
                         ),
 
                         SizedBox(height: 30),

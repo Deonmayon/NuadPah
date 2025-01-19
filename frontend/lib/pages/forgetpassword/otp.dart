@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '/pages/forgetpassword/reset.dart';
+import '/components/submitbox.dart';
 
 class OTPPage extends StatefulWidget {
   final int length;
@@ -141,53 +142,57 @@ class _OTPPageState extends State<OTPPage> {
                         ),
                         SizedBox(height: 40),
 
-                      Row(
+                        Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(widget.length, (index) {
                           return Container(
-                            width: 50,
-                            height: 50,
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: _pin[index].isNotEmpty
-                                  ? const Color(0xFFC0A172)
-                                  : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: _pin[index].isNotEmpty
-                                    ? const Color(0xFFC0A172)
-                                    : Colors.grey,
-                                width: 2,
-                              ),
+                          width: 50,
+                          height: 50,
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: _pin[index].isNotEmpty
+                              ? const Color(0xFFC0A172)
+                              : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                            color: _pin[index].isNotEmpty
+                              ? const Color(0xFFC0A172)
+                              : Colors.grey,
+                            width: 2,
                             ),
+                          ),
+                          child: Center(
                             child: TextField(
-                              controller: _controllers[index],
-                              focusNode: _focusNodes[index],
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
-                              maxLength: 1,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              decoration: const InputDecoration(
-                                counterText: '',
-                                border: InputBorder.none,
-                              ),
-                              style: const TextStyle(
-                                fontSize: 24,
-                                color: Colors.black,
-                              ),
-                              onChanged: (value) => _onPinChanged(index, value),
-                              onSubmitted: (value) {
-                                if (value.isEmpty && index > 0) {
-                                  _focusNodes[index - 1].requestFocus();
-                                }
-                              },
+                            controller: _controllers[index],
+                            focusNode: _focusNodes[index],
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            maxLength: 1,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              counterText: '',
+                              border: InputBorder.none,
                             ),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                            ),
+                            onChanged: (value) => _onPinChanged(index, value),
+                            onSubmitted: (value) {
+                              if (value.isEmpty && index > 0) {
+                              _focusNodes[index - 1].requestFocus();
+                              }
+                            },
+                            ),
+                          ),
                           );
                         }),
-                      ),
+                        ),
+
+
                       if (_errorMessage.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
@@ -200,35 +205,12 @@ class _OTPPageState extends State<OTPPage> {
                           ),
                         ),
                       const SizedBox(height: 40),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: _reset,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFC0A172),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            elevation: 5,
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Next',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Icon(Icons.arrow_forward, color: Colors.white),
-                            ],
-                          ),
+
+                      // Next Button
+                      SubmitBox(
+                          buttonText: 'Next',
+                          onPress: _reset,
                         ),
-                      ),
                     ],
                   ),
                 ),

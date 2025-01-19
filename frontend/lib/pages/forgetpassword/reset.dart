@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '/pages/welcome.dart';
 import '/pages/register.dart';
+import '/components/submitbox.dart';
+import '/components/passwordfield.dart';
 
 class ResetPage extends StatefulWidget {
   const ResetPage({super.key});
@@ -95,65 +97,14 @@ class _ResetPageState extends State<ResetPage> {
                         SizedBox(height: 40),
 
                         // Password TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                              suffixIcon: Padding(
-                                padding: EdgeInsets.only(right: 15),
-                                child: Icon(Icons.visibility_off,
-                                    color: Colors.grey),
-                              ),
-                            ),
-                          ),
+                        PasswordField(
+                          controller: _passwordController,
                         ),
                         SizedBox(height: 20),
 
                         // Confirm Password TextField
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE8E8E8),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: 'Confirm Password',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 20),
-                              suffixIcon: Padding(
-                                padding: EdgeInsets.only(right: 15),
-                                child: Icon(Icons.visibility_off,
-                                    color: Colors.grey),
-                              ),
-                            ),
-                          ),
+                        PasswordField(
+                          controller: _passwordController,
                         ),
                         SizedBox(height: 40),
 
@@ -167,35 +118,38 @@ class _ResetPageState extends State<ResetPage> {
                           ),
 
                         // Reset Password Button
-                        Container(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: _login,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFC0A172),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 5,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Reset Password',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Icon(Icons.arrow_forward, color: Colors.white),
-                              ],
-                            ),
-                          ),
+                        SubmitBox(
+                        onPress: _login,
+                        buttonText: 'Reset Password',
                         ),
+                        // Container(
+                        //   width: double.infinity,
+                        //   height: 55,
+                        //   child: ElevatedButton(
+                        //     onPressed: _login,
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: Color(0xFFC0A172),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(15),
+                        //       ),
+                        //       elevation: 5,
+                        //     ),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       children: [
+                        //      Text(
+                        //           'Reset Password',
+                        //           style: TextStyle(
+                        //             color: Colors.white,
+                        //             fontSize: 18,
+                        //             fontWeight: FontWeight.w500,
+                        //           ),
+                        //         ),
+                        //         SizedBox(width: 10),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),   
 
                         SizedBox(height: 30),
                      
