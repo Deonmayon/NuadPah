@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/profileFunctionBar.dart';
-import 'package:flutter_svg/flutter_svg.dart'; 
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Profile extends StatelessWidget {
   final String profileImage = 'assets/images/profilePicture.jpg';
