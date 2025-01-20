@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/homepage.dart';
-import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
-import 'package:frontend/pages/profile2.dart';
+import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/singleMassageManage.dart';
 
 void main() {
@@ -23,10 +22,9 @@ class MyApp extends StatelessWidget {
       initialRoute: '/singlemanage',
       routes: {
         '/home' : (context) => const Homepage(),
-        '/profile' : (context) => const Profile(),
-        '/profile2' : (context) => const ProfileWidget(),
-        '/singledetail': (context) => const SingleDetailWidget(),
-        '/singlemanage' : (context) => const SingleManageWidget(),
+        '/profile' : (context) => const ProfilePage(),
+        '/singledetail': (context) => const SingleMassageDetailPage(),
+        '/singlemanage' : (context) => const SingleMassageManagePage(),
       },
     );
   }

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/adminManageNav.dart';
 
-class SingleManageWidget extends StatefulWidget {
-  const SingleManageWidget({Key? key}) : super(key: key);
+class SingleMassageManagePage extends StatefulWidget {
+  const SingleMassageManagePage({Key? key}) : super(key: key);
 
   @override
-  State<SingleManageWidget> createState() => _SingleManageWidgetState();
+  State<SingleMassageManagePage> createState() => _SingleMassageManagePageState();
 }
 
-class _SingleManageWidgetState extends State<SingleManageWidget> {
+class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController textController = TextEditingController();
   final FocusNode textFieldFocusNode = FocusNode();
@@ -89,7 +89,7 @@ class _SingleManageWidgetState extends State<SingleManageWidget> {
         top: false,
         child: Column(
           children: [
-            const NavManageWidget(),
+            const AdminManageNav(),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Container(
@@ -275,7 +275,7 @@ class _SingleManageWidgetState extends State<SingleManageWidget> {
                                       ),
                                       const SizedBox(width: 8),
                                       // ข้อมูลข้อความ
-                                      Container(
+                                      SizedBox(
                                         width: 233,
                                         height: 60,
                                         child: Column(
