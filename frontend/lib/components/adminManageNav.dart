@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class NavManageWidget extends StatefulWidget {
-  const NavManageWidget({Key? key}) : super(key: key);
+class AdminManageNav extends StatefulWidget {
+  const AdminManageNav({Key? key}) : super(key: key);
 
   @override
-  State<NavManageWidget> createState() => _NavManageWidgetState();
+  State<AdminManageNav> createState() => _AdminManageNavState();
 }
 
-class _NavManageWidgetState extends State<NavManageWidget> {
+class _AdminManageNavState extends State<AdminManageNav> {
   bool isNavAdminManageVisible = false; // สถานะสำหรับแสดง/ซ่อนส่วน Admin
 
   @override
@@ -24,7 +24,7 @@ class _NavManageWidgetState extends State<NavManageWidget> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width,
               height: 50,
               child: Row(
@@ -58,7 +58,7 @@ class _NavManageWidgetState extends State<NavManageWidget> {
             ),
           ),
           if (isNavAdminManageVisible)
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width,
               height: 100,
               child: Padding(

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/homepage.dart';
-import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
-import 'package:frontend/pages/profile2.dart';
+import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/singleMassageManage.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/pages/forgetpassword/reset.dart';
@@ -35,10 +34,9 @@ class MyApp extends StatelessWidget {
         '/otp' : (context) => const OTPPage(),
         '/reset' : (context) => const ResetPage(),
         '/home' : (context) => const Homepage(),
-        '/profile' : (context) => const Profile(),
-        '/profile2' : (context) => const ProfileWidget(),
-        '/singledetail': (context) => const SingleDetailWidget(),
-        '/singlemanage' : (context) => const SingleManageWidget(),
+        '/profile' : (context) => const ProfilePage(),
+        '/singledetail': (context) => const SingleMassageDetailPage(),
+        '/singlemanage' : (context) => const SingleMassageManagePage(),
       },
     );
   }

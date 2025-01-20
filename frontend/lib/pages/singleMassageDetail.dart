@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class SingleDetailWidget extends StatefulWidget {
-  const SingleDetailWidget({super.key});
+class SingleMassageDetailPage extends StatefulWidget {
+  const SingleMassageDetailPage({super.key});
 
   @override
-  State<SingleDetailWidget> createState() => _SingleDetailWidgetState();
+  State<SingleMassageDetailPage> createState() => _SingleMassageDetailPageState();
 }
 
-class _SingleDetailWidgetState extends State<SingleDetailWidget> {
+class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -24,7 +24,7 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
           child: Column(
             children: [
               // Header with image and buttons
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: 225,
                 child: Stack(
@@ -154,7 +154,7 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                       mainAxisAlignment:
                           MainAxisAlignment.center, // จัดให้อยู่กลางในแนวนอน
                       children: [
-                        Container(
+                        SizedBox(
                           width: 372,
                           height: 40,
                           child: ElevatedButton(
@@ -195,12 +195,12 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
               ),
 
               // Review Section
-              Padding(
-                padding: const EdgeInsets.all(20.0),
+              const Padding(
+                padding: EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Rate and Reviews',
+                    Text('Rate and Reviews',
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w700,
@@ -208,10 +208,10 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
                           color: Colors.black,
                           letterSpacing: 0.0,
                         )),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     // Review Card
                     ReviewCard(),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -224,6 +224,8 @@ class _SingleDetailWidgetState extends State<SingleDetailWidget> {
 }
 
 class ReviewCard extends StatelessWidget {
+  const ReviewCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
