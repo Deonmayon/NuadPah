@@ -6,7 +6,8 @@ class SingleMassageManagePage extends StatefulWidget {
   const SingleMassageManagePage({Key? key}) : super(key: key);
 
   @override
-  State<SingleMassageManagePage> createState() => _SingleMassageManagePageState();
+  State<SingleMassageManagePage> createState() =>
+      _SingleMassageManagePageState();
 }
 
 class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
@@ -45,6 +46,133 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
     textFieldFocusNode.dispose();
     super.dispose();
   }
+
+  void showCreateMassagePopup() {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true, // Allow height adjustment based on content
+    backgroundColor: const Color(0xFFDBDBDB), // Transparent background to maintain rounded corners
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20), // Add rounded corners at the top
+      ),
+    ),
+    builder: (context) => ClipRRect(
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+      child: Container(
+        width: double.infinity, // Full width
+        color: const Color(0xFFDBDBDB),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Adjust height based on content
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with full-width line
+            Container(
+              height: 72,
+              decoration: const BoxDecoration(
+                color: Color(0xFFDBDBDB),
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xFF676767),
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Create Single Massage',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  const TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Name Massage',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          decoration: const InputDecoration(
+                            labelText: 'Type',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: ['Back', 'Neck', 'Foot']
+                              .map((type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {},
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          decoration: const InputDecoration(
+                            labelText: 'Time',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: ['5 minutes', '10 minutes', '15 minutes']
+                              .map((time) => DropdownMenuItem(
+                                    value: time,
+                                    child: Text(time),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {},
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const TextField(
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: 'Detail Massage',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown,
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: const Text('CREATE'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -476,9 +604,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
         width: 70, // กำหนดความกว้างของปุ่ม
         height: 70, // กำหนดความสูงของปุ่ม
         child: FloatingActionButton(
-          onPressed: () {
-            // ทำงานเมื่อกดปุ่ม "+"
-          },
+          onPressed: showCreateMassagePopup,
           backgroundColor: const Color(0xFFC0A172), // สีปุ่ม
           shape: const CircleBorder(),
           child: const Icon(
