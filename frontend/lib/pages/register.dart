@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:frontend/pages/homepage.dart';
 import 'welcome.dart';
 import 'login.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
+import '../api/api.dart'; // Import the ApiService class
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -20,18 +22,38 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
 
-  void _login() {
-    final username = _emailController.text;
-    final password = _passwordController.text;
+  Future<void> _signup() async {
+    print('Signup method called');
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
 
-    if (username == 'admin' && password == '1234') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => WelcomePage()),
+    try {
+      final response = await apiService.signUp(
+        _emailController.text,
+        _passwordController.text,
+        _firstnameController.text,
+        _lastnameController.text,
       );
-    } else {
+      // print('Signup method called 2');
+      // print('Response status code: ${response.statusCode}');
+      // print('Response data: ${response.data}');
+      // print('Response headers: ${response.headers}');
+      // print('Response status message: ${response.statusMessage}');
+
+      // if (response.statusCode == 201) {
+      //   if (mounted) {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => Homepage()),
+      //     );
+      //   }
+      // } else {
+      //   setState(() {
+      //     _errorMessage = 'Registration failed';
+      //   });
+      // }
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Invalid username or password';
+        _errorMessage = e.toString();
       });
     }
   }
@@ -104,15 +126,15 @@ class _RegisterPageState extends State<RegisterPage> {
                           children: [
                             Expanded(
                               child: EmailTextField(
-                                      controller: _firstnameController,
-                                      hintText: 'First Name',
+                                controller: _firstnameController,
+                                hintText: 'First Name',
                               ),
                             ),
                             SizedBox(width: 20),
                             Expanded(
                               child: EmailTextField(
-                                      controller: _lastnameController,
-                                      hintText: 'Last Name',
+                                controller: _lastnameController,
+                                hintText: 'Last Name',
                               ),
                             ),
                           ],
@@ -144,7 +166,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         // Sign In Button
                         SubmitBox(
                           buttonText: 'Sign Up',
-                          onPress: _login,
+                          onPress: _signup,
                         ),
 
                         SizedBox(height: 30),

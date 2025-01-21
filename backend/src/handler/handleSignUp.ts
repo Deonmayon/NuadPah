@@ -25,8 +25,8 @@ export const handleSignUp = async (
     const { rows } = await client.query(
       `
         INSERT INTO public."User"(
-          email, firstname, lastname, password, image_name
-        ) VALUES ($1, $2, $3, $4, 'user_icon');
+          email, firstname, lastname, password, image_name, role
+        ) VALUES ($1, $2, $3, $4, 'user_icon', 'user');
       `,
       [email, firstname, lastname, hashedPW]
     );

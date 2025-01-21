@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'welcome.dart';
+import 'package:frontend/pages/homepage.dart';
 import 'register.dart';
 import '/pages/forgetpassword/forget.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,10 +24,12 @@ class _LoginPageState extends State<LoginPage> {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
+
+
     if (username == 'admin' && password == '1234') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => WelcomePage()),
+        MaterialPageRoute(builder: (context) => Homepage()),
       );
     } else {
       setState(() {

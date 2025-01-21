@@ -13,6 +13,7 @@ export type AuthSignUpBodyRequest = FastifyRequest<{
     firstname: string;
     lastname: string;
     password: string;
+    role: string;
   };
 }>;
 
