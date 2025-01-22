@@ -48,131 +48,471 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
   }
 
   void showCreateMassagePopup() {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true, // Allow height adjustment based on content
-    backgroundColor: const Color(0xFFDBDBDB), // Transparent background to maintain rounded corners
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20), // Add rounded corners at the top
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allow height adjustment based on content
+      backgroundColor: const Color(
+          0xFFDBDBDB), // Transparent background to maintain rounded corners
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20), // Add rounded corners at the top
+        ),
       ),
-    ),
-    builder: (context) => ClipRRect(
-      borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
-      child: Container(
-        width: double.infinity, // Full width
-        color: const Color(0xFFDBDBDB),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Adjust height based on content
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with full-width line
-            Container(
-              height: 72,
-              decoration: const BoxDecoration(
-                color: Color(0xFFDBDBDB),
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFF676767),
-                    width: 1,
+      builder: (context) => ClipRRect(
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+        child: Container(
+          width: double.infinity, // Full width
+          color: const Color(0xFFDBDBDB),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Adjust height based on content
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with full-width line
+              Container(
+                height: 72,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFDBDBDB),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color(0xFF676767),
+                      width: 1,
+                    ),
                   ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Create Single Massage',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  const TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Name Massage',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          decoration: const InputDecoration(
-                            labelText: 'Type',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: ['Back', 'Neck', 'Foot']
-                              .map((type) => DropdownMenuItem(
-                                    value: type,
-                                    child: Text(type),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {},
+                      const Text(
+                        'Create Single Massage',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Roboto',
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          decoration: const InputDecoration(
-                            labelText: 'Time',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: ['5 minutes', '10 minutes', '15 minutes']
-                              .map((time) => DropdownMenuItem(
-                                    value: time,
-                                    child: Text(time),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {},
-                        ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  const TextField(
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: 'Detail Massage',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.brown,
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: const Text('CREATE'),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Name Massage',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              TextFormField(
+                                decoration: InputDecoration(
+                                  hintText: 'Name Massage',
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Roboto',
+                                    color: Color(0xFF676767),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF676767),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF676767),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Flexible(
+                                    flex: 1,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Type',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          constraints: BoxConstraints(
+                                            minHeight:
+                                                35, // กำหนดความสูงขั้นต่ำ
+                                          ),
+                                          child: DropdownButtonFormField(
+                                            isExpanded: true,
+                                            decoration: InputDecoration(
+                                              hintText: 'Select',
+                                              hintStyle: TextStyle(
+                                                fontFamily: 'Roboto',
+                                                color: Color(0xFF676767),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Color(0xFF676767),
+                                                  width: 2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Color(0xFF676767),
+                                                  width: 2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            items: ['Back', 'Neck', 'Foot']
+                                                .map((type) => DropdownMenuItem(
+                                                      value: type,
+                                                      child: Text(type,
+                                                          overflow: TextOverflow
+                                                              .visible),
+                                                    ))
+                                                .toList(),
+                                            onChanged: (value) {},
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Time',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          constraints: BoxConstraints(
+                                            minHeight:
+                                                35, // กำหนดความสูงขั้นต่ำ
+                                          ),
+                                          child: DropdownButtonFormField(
+                                            isExpanded: true,
+                                            decoration: InputDecoration(
+                                              hintText: 'Select',
+                                              hintStyle: TextStyle(
+                                                fontFamily: 'Roboto',
+                                                color: Color(0xFF676767),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Color(0xFF676767),
+                                                  width: 2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Color(0xFF676767),
+                                                  width: 2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            items: [
+                                              '5 minutes',
+                                              '10 minutes',
+                                              '15 minutes'
+                                            ]
+                                                .map((time) => DropdownMenuItem(
+                                                      value: time,
+                                                      child: Text(time,
+                                                          overflow: TextOverflow
+                                                              .visible),
+                                                    ))
+                                                .toList(),
+                                            onChanged: (value) {},
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Container(
+                          width: 150,
+                          height: 159,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Color(0xFF676767),
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              '250x250',
+                              style: TextStyle(
+                                color: Color(0xFF676767),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Detail Massage',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText: 'Explain about massage',
+                            hintStyle: TextStyle(
+                              fontFamily: 'Roboto',
+                              color: Color(0xFF676767),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xFF676767),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xFF676767),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC0A172),
+                        minimumSize: const Size(double.infinity, 50),
+                      ).copyWith(
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10), // Set border radius here
+                          ),
+                        ),
+                      ),
+                      child: const Text(
+                        'CREATE',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  void showSelectMassagePopup() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allow height adjustment based on content
+      backgroundColor: const Color(
+          0xFFDBDBDB), // Transparent background to maintain rounded corners
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20), // Add rounded corners at the top
+        ),
+      ),
+      builder: (context) => ClipRRect(
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+        child: Container(
+          width: double.infinity, // Full width
+          color: const Color(0xFFDBDBDB),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Adjust height based on content
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with full-width line
+              Container(
+                height: 50,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFDBDBDB),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color(0xFF676767),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Select',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Roboto',
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: showCreateMassagePopup,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC0A172),
+                        minimumSize: const Size(double.infinity, 50),
+                      ).copyWith(
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10), // Set border radius here
+                          ),
+                        ),
+                      ),
+                      child: const Text(
+                        'EDIT SINGLE MASSAGE',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFFF5757),
+                        minimumSize: const Size(double.infinity, 50),
+                      ).copyWith(
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10), // Set border radius here
+                          ),
+                        ),
+                      ),
+                      child: const Text(
+                        'DELETE',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -514,9 +854,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                                             size: 15,
                                             color: Color(0xFFC0A172),
                                           ),
-                                          onPressed: () {
-                                            // การกระทำเมื่อกดปุ่ม
-                                          },
+                                          onPressed: showSelectMassagePopup,
                                         ),
                                       ),
                                     ],
