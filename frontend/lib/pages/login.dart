@@ -6,6 +6,7 @@ import '/pages/forgetpassword/forget.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
+import '../api/api.dart'; // Import the ApiService class
 
 
 class LoginPage extends StatefulWidget {
@@ -16,27 +17,53 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
 
-  void _login() {
-    final username = _usernameController.text;
-    final password = _passwordController.text;
+  Future<void> _login() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
 
-
-
-    if (username == 'admin' && password == '1234') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Homepage()),
+    try {
+      final response = await apiService.signIn(
+        _emailController.text,
+        _passwordController.text,
       );
-    } else {
+
+      if (response.statusCode == 201) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Homepage()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Registration failed';
+        });
+      }
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Invalid email or password';
+        _errorMessage = e.toString();
       });
     }
   }
+
+  // void _login() {
+  //   final username = _emailController.text;
+  //   final password = _passwordController.text;
+
+
+
+  //   if (username == 'admin' && password == '1234') {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => Homepage()),
+  //     );
+  //   } else {
+  //     setState(() {
+  //       _errorMessage = 'Invalid email or password';
+  //     });
+  //   }
+  // }
 
   void _register() {
     Navigator.push(
@@ -110,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Email TextField
                         EmailTextField(
-                          controller: _usernameController,
+                          controller: _emailController,
                           hintText: 'Email',
                         ),
                         // Container(
@@ -126,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                         //   ],
                         //   ),
                         //   child: TextField(
-                        //   controller: _usernameController,
+                        //   controller: _emailController,
                         //   decoration: InputDecoration(
                         //     hintText: 'Email',
                         //     hintStyle: TextStyle(color: Colors.grey),

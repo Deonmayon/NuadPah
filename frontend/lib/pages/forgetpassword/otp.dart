@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '/pages/forgetpassword/reset.dart';
 import '/components/submitbox.dart';
+import '/api/api.dart';
 
 class OTPPage extends StatefulWidget {
   final int length;
@@ -56,6 +57,31 @@ class _OTPPageState extends State<OTPPage> {
         widget.onCompleted!(_pin.join());
       }
     });
+  }
+
+  Future<void> _resetotp() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+
+    try {
+      final response = await apiService.sendOTP(
+        _emailController.text,
+      );
+
+      if (response.statusCode == 201) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OTPPage()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Registration failed';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
   }
 
   void _reset() {

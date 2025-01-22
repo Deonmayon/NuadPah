@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:frontend/pages/homepage.dart';
-import 'welcome.dart';
 import 'login.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
@@ -23,7 +22,6 @@ class _RegisterPageState extends State<RegisterPage> {
   String _errorMessage = '';
 
   Future<void> _signup() async {
-    print('Signup method called');
     final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
 
     try {

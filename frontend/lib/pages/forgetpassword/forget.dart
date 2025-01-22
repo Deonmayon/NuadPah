@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import '/pages/welcome.dart';
 import '/pages/forgetpassword/otp.dart';
 import '/components/emailtextfield.dart';
 import '/components/submitbox.dart';
+import '/api/api.dart';
 
 class ForgetPage extends StatefulWidget {
   const ForgetPage({super.key});
@@ -13,35 +13,32 @@ class ForgetPage extends StatefulWidget {
 }
 
 class _ForgetPageState extends State<ForgetPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   String _errorMessage = '';
 
-  void _login() {
-    final username = _usernameController.text;
-    final password = _passwordController.text;
+  Future<void> _sendotp() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
 
-    if (username == 'admin' && password == '1234') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => WelcomePage()),
+    try {
+      final response = await apiService.sendOTP(
+        _emailController.text,
       );
-    } else {
+
+      if (response.statusCode == 201) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OTPPage()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Registration failed';
+        });
+      }
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Invalid email or password';
+        _errorMessage = e.toString();
       });
     }
-  }
-
-  void _otp() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OTPPage(
-        onCompleted: (_) {},  // Pass empty callback since we're using _reset() for navigation
-        ),
-  ),
-    );
   }
 
   @override
@@ -113,7 +110,7 @@ class _ForgetPageState extends State<ForgetPage> {
 
                         // Email TextField
                         EmailTextField(
-                          controller: _usernameController,
+                          controller: _emailController,
                           hintText: 'Email',
                         ),
                         SizedBox(height: 40),
@@ -122,7 +119,7 @@ class _ForgetPageState extends State<ForgetPage> {
                         SizedBox(height: 20),
                         SubmitBox(
                           buttonText: 'Submit',
-                          onPress: _otp,
+                          onPress: _sendotp,
                         ),
 
                         SizedBox(height: 30),
