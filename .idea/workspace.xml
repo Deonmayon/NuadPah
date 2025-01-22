@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="af90fbb7-c29f-4f46-bccd-1713f482d14d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-    </list>
+    <list default="true" id="af90fbb7-c29f-4f46-bccd-1713f482d14d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,7 +32,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "frontend",
+    "git-widget-placeholder": "develop",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "E:/work/NuadPah",
     "settings.editor.selected.configurable": "preferences.keymap"
