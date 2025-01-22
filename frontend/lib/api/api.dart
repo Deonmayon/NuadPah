@@ -23,7 +23,7 @@ class ApiService {
           },
         ),
       );
-      print('response is here !!!!!!!!!!!!!!!!!!!!!!!! ${response.statusCode}');
+
       return response;
     } on DioError catch (e) {
       throw Exception('Failed to sign up: ${e.response?.data ?? e.message}');

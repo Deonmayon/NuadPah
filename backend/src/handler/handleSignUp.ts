@@ -26,11 +26,14 @@ export const handleSignUp = async (
       `
         INSERT INTO public."User"(
           email, firstname, lastname, password, image_name, role
-        ) VALUES ($1, $2, $3, $4, 'user_icon', 'user');
+        ) VALUES ($1, $2, $3, $4, 'user_icon', 'user') RETURNING *;
       `,
       [email, firstname, lastname, hashedPW]
     );
 
-    return reply.status(201);
+    return reply.status(201).send({
+      message: "Fetch Set Massage Technique Successfully",
+      data: rows[0],
+    });;
   }
 };

@@ -33,24 +33,17 @@ class _RegisterPageState extends State<RegisterPage> {
         _firstnameController.text,
         _lastnameController.text,
       );
-      // print('Signup method called 2');
-      // print('Response status code: ${response.statusCode}');
-      // print('Response data: ${response.data}');
-      // print('Response headers: ${response.headers}');
-      // print('Response status message: ${response.statusMessage}');
 
-      // if (response.statusCode == 201) {
-      //   if (mounted) {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => Homepage()),
-      //     );
-      //   }
-      // } else {
-      //   setState(() {
-      //     _errorMessage = 'Registration failed';
-      //   });
-      // }
+      if (response.statusCode == 201) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Homepage()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Registration failed';
+        });
+      }
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
