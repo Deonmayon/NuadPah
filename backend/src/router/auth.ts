@@ -55,17 +55,17 @@ const authRouter = async (app: FastifyInstance) => {
     }
   );
 
-  // Test pull data through authenticate
-  // app.post(
-  //   "/userdata",
-  //   { preHandler: [authenticate] },
-  //   async (request: sessionBodyRequest, reply) => {
-  //     reply.send({
-  //       message: "This is your user data",
-  //       user: request.body.userEmail,
-  //     });
-  //   }
-  // );
+  // Get User's data
+  app.post(
+    "/userdata",
+    { preHandler: [authenticate] },
+    async (request: sessionBodyRequest, reply) => {
+      reply.send({
+        message: "This is your user data",
+        user: request.body.userEmail,
+      });
+    }
+  );
 };
 
 export default authRouter;

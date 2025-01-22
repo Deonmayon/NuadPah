@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '/pages/welcome.dart';
-import '/pages/register.dart';
+import '../signup.dart';
 import '/components/submitbox.dart';
 import '/components/passwordfield.dart';
 

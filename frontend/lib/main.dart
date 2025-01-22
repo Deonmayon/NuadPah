@@ -7,8 +7,8 @@ import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/pages/forgetpassword/reset.dart';
 import 'package:frontend/pages/forgetpassword/forget.dart';
 import 'package:frontend/pages/forgetpassword/otp.dart';
-import 'package:frontend/pages/register.dart';
-import 'package:frontend/pages/login.dart';
+import 'package:frontend/pages/signup.dart';
+import 'package:frontend/pages/signin.dart';
 
 void main() {
   runApp(const MyApp());

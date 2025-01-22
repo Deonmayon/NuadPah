@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:frontend/pages/homepage.dart';
-import 'register.dart';
+import 'signup.dart';
 import '/pages/forgetpassword/forget.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/api.dart'; // Import the ApiService class
+import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
 
 
 class LoginPage extends StatefulWidget {
@@ -31,6 +32,11 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.statusCode == 201) {
+        // pull token from response and set token (like localStorage)
+        final token = response.data['token'];
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Homepage()),

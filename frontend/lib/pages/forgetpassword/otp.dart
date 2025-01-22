@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import '/pages/forgetpassword/reset.dart';
 import '/components/submitbox.dart';
 import '/api/api.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
+
 
 class OTPPage extends StatefulWidget {
   final int length;
@@ -59,30 +61,36 @@ class _OTPPageState extends State<OTPPage> {
     });
   }
 
-  Future<void> _resetotp() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+  // Future<void> _resetotp() async {
+  //   // get token (like localStorage)
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token') ?? '';
 
-    try {
-      final response = await apiService.sendOTP(
-        _emailController.text,
-      );
+  //   // we need to pass token when call api route that have { preHandler: [authenticate] }
 
-      if (response.statusCode == 201) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => OTPPage()),
-        );
-      } else {
-        setState(() {
-          _errorMessage = 'Registration failed';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
-    }
-  }
+  //   final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+
+  //   try {
+  //     final response = await apiService.sendOTP(
+  //       _emailController.text,
+  //     );
+
+  //     if (response.statusCode == 201) {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => OTPPage()),
+  //       );
+  //     } else {
+  //       setState(() {
+  //         _errorMessage = 'Registration failed';
+  //       });
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       _errorMessage = e.toString();
+  //     });
+  //   }
+  // }
 
   void _reset() {
     if (_pin.contains('')) {
