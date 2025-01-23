@@ -9,6 +9,7 @@ import 'package:frontend/pages/forgetpassword/forget.dart';
 import 'package:frontend/pages/forgetpassword/otp.dart';
 import 'package:frontend/pages/register.dart';
 import 'package:frontend/pages/login.dart';
+import 'package:frontend/pages/setofMassageManage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: '/singlemanage',
+      initialRoute: '/setofmanage',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login' : (context) => const LoginPage(),
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/profile' : (context) => const ProfilePage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
         '/singlemanage' : (context) => const SingleMassageManagePage(),
+        '/setofmanage' : (context) => const SetOfMassageManagePage(),
       },
     );
   }
