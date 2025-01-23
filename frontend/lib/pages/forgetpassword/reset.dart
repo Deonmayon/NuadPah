@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import '/pages/welcome.dart';
-import '../signup.dart';
+import '/pages/signin.dart';
 import '/components/submitbox.dart';
 import '/components/passwordfield.dart';
+import '/api/api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ResetPage extends StatefulWidget {
   const ResetPage({super.key});
@@ -13,31 +13,74 @@ class ResetPage extends StatefulWidget {
 }
 
 class _ResetPageState extends State<ResetPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   String _errorMessage = '';
+  String userEmail = '';
 
-  void _login() {
-    final username = _usernameController.text;
-    final password = _passwordController.text;
+  void initState() {
+    super.initState();
 
-    if (username == 'admin' && password == '1234') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => WelcomePage()),
+    _fetchEmail();
+  }
+
+  Future<void> _fetchEmail() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+
+    try {
+      final response = await apiService.getToken(
+        token
       );
-    } else {
+
       setState(() {
-        _errorMessage = 'Invalid email or password';
+        userEmail = response.data['email'];
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
       });
     }
   }
 
-  void _register() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
-    );
+  Future<void> _newPassword() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+
+    try {
+      // Check password and confirm password match
+      if (_newPasswordController.text != _confirmPasswordController.text) {
+        setState(() {
+          _errorMessage = 'Passwords do not match';
+        });
+      } else {
+        final response = await apiService.resetPassword(
+        userEmail,
+        _newPasswordController.text,
+        _confirmPasswordController.text,
+      );
+
+        if (response.statusCode == 201) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Reset failed';
+        });
+      }
+
+        return;
+      }
+
+      
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+    
   }
 
   @override
@@ -98,16 +141,19 @@ class _ResetPageState extends State<ResetPage> {
 
                         // Password TextField
                         PasswordField(
-                          controller: _passwordController,
+                          controller: _newPasswordController,
+                          hintText: 'New Password',
                         ),
                         SizedBox(height: 20),
 
                         // Confirm Password TextField
                         PasswordField(
-                          controller: _passwordController,
+                          controller: _confirmPasswordController,
+                          hintText: 'Confirm Password',
                         ),
                         SizedBox(height: 40),
 
+                        // Error Message
                         if (_errorMessage.isNotEmpty)
                           Padding(
                             padding: EdgeInsets.only(top: 8),
@@ -119,38 +165,9 @@ class _ResetPageState extends State<ResetPage> {
 
                         // Reset Password Button
                         SubmitBox(
-                        onPress: _login,
+                        onPress: _newPassword,
                         buttonText: 'Reset Password',
                         ),
-                        // Container(
-                        //   width: double.infinity,
-                        //   height: 55,
-                        //   child: ElevatedButton(
-                        //     onPressed: _login,
-                        //     style: ElevatedButton.styleFrom(
-                        //       backgroundColor: Color(0xFFC0A172),
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(15),
-                        //       ),
-                        //       elevation: 5,
-                        //     ),
-                        //     child: Row(
-                        //       mainAxisAlignment: MainAxisAlignment.center,
-                        //       children: [
-                        //      Text(
-                        //           'Reset Password',
-                        //           style: TextStyle(
-                        //             color: Colors.white,
-                        //             fontSize: 18,
-                        //             fontWeight: FontWeight.w500,
-                        //           ),
-                        //         ),
-                        //         SizedBox(width: 10),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),   
-
                         SizedBox(height: 30),
                      
                       ],

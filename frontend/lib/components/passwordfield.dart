@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class PasswordField extends StatelessWidget {
   final TextEditingController controller;
+  final String hintText;
 
-  PasswordField({required this.controller});
+  PasswordField({required this.controller, this.hintText = 'Password'});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class PasswordField extends StatelessWidget {
         controller: controller,
         obscureText: true,
         decoration: InputDecoration(
-          hintText: 'Password',
+          hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 20),

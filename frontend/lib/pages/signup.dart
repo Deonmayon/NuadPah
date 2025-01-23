@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:frontend/pages/homepage.dart';
+import 'package:frontend/pages/welcome.dart';
 import 'signin.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Homepage()),
+          MaterialPageRoute(builder: (context) => WelcomePage()),
         );
       } else {
         setState(() {
@@ -148,6 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         // Password TextField
                         PasswordField(
                           controller: _passwordController,
+                          hintText: 'Password',
                         ),
                         SizedBox(height: 20),
 

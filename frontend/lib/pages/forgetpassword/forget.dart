@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import '/pages/forgetpassword/otp.dart';
 import '/components/emailtextfield.dart';
 import '/components/submitbox.dart';

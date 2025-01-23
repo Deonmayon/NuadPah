@@ -73,4 +73,65 @@ class ApiService {
       throw Exception('Failed to send OTP: ${e.response?.data ?? e.message}');
     }
   }
+
+  // Get email from token
+  Future<Response> getToken(String token) async {
+    try {
+      final response = await _dio.get(
+        '/auth/userdata',
+        data: {
+          'token': token,
+        },
+      );
+
+      return response;
+    } on DioError catch (e) {
+      throw Exception('Failed to get email from token: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Verify OTP
+  Future<Response> verifyOTP(String email, String otp) async {
+    try {
+      final response = await _dio.post(
+        '/auth/verifyotp',
+        data: {
+          'email': email,
+          'otp': otp,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      return response;
+    } on DioError catch (e) {
+      throw Exception('Failed to verify OTP: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Reset password
+  Future<Response> resetPassword(String email, String newpw, String confirmpw) async {
+    try {
+      final response = await _dio.post(
+        '/auth/resetpw',
+        data: {
+          'email': email,
+          'newpw': newpw,
+          'confirmpw': confirmpw,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      return response;
+    } on DioError catch (e) {
+      throw Exception('Failed to reset password: ${e.response?.data ?? e.message}');
+    }
+  }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/singleMassageManage.dart';
@@ -25,7 +24,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: '/profile',
+      initialRoute: '/reset',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
         '/forget': (context) => const ForgetPage(),
         '/otp': (context) => const OTPPage(),
         '/reset': (context) => const ResetPage(),
-        '/home': (context) => const Homepage(),
+        '/home': (context) => const WelcomePage(),
         '/profile': (context) => const ProfilePage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
         '/singlemanage': (context) => const SingleMassageManagePage(),
