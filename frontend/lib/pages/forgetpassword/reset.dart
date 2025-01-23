@@ -6,7 +6,8 @@ import '/api/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ResetPage extends StatefulWidget {
-  const ResetPage({super.key});
+  final String email;
+  const ResetPage({super.key, required this.email});
 
   @override
   _ResetPageState createState() => _ResetPageState();
@@ -14,34 +15,12 @@ class ResetPage extends StatefulWidget {
 
 class _ResetPageState extends State<ResetPage> {
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   String _errorMessage = '';
-  String userEmail = '';
 
   void initState() {
     super.initState();
-
-    _fetchEmail();
-  }
-
-  Future<void> _fetchEmail() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token') ?? '';
-
-    try {
-      final response = await apiService.getToken(
-        token
-      );
-
-      setState(() {
-        userEmail = response.data['email'];
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
-    }
   }
 
   Future<void> _newPassword() async {
@@ -55,31 +34,28 @@ class _ResetPageState extends State<ResetPage> {
         });
       } else {
         final response = await apiService.resetPassword(
-        userEmail,
-        _newPasswordController.text,
-      );
-
-        if (response.statusCode == 201) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          widget.email,
+          _newPasswordController.text,
         );
-      } else {
-        setState(() {
-          _errorMessage = 'Reset failed';
-        });
-      }
+
+        if (response.statusCode == 200) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignInPage()),
+          );
+        } else {
+          setState(() {
+            _errorMessage = 'Reset failed';
+          });
+        }
 
         return;
       }
-
-      
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
       });
     }
-    
   }
 
   @override
@@ -164,12 +140,11 @@ class _ResetPageState extends State<ResetPage> {
 
                         // Reset Password Button
                         SubmitBox(
-                        onPress: _newPassword,
-                        buttonText: 'Reset Password',
-                        showArrow: false,
+                          onPress: _newPassword,
+                          buttonText: 'Reset Password',
+                          showArrow: false,
                         ),
                         SizedBox(height: 30),
-                     
                       ],
                     ),
                   ),

@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyReply } from "fastify";
 import { VerifyOTPBodyRequest } from "../../type/handler/auth";
+import { log } from "console";
 
 export const handleVerifyOTP = async (
   request: VerifyOTPBodyRequest,
@@ -11,10 +12,10 @@ export const handleVerifyOTP = async (
     const client = await app.pg.connect();
     const { rows, rowCount } = await client.query(
       `
-      SELECT otp, expired_at FROM public."OTP"
-      ORDER BY expired_at DESC LIMIT 1;
+      SELECT expired_at FROM public."OTP"
+      WHERE email = $1 AND otp = $2 LIMIT 1;
     `,
-      [email]
+      [email, otp]
     );
 
     if (rowCount != 1) {
@@ -23,7 +24,6 @@ export const handleVerifyOTP = async (
         .send({ error: "OTP does not exist", data: { verified: false } });
     }
 
-    const latest_otp = rows[0].otp;
     const expired_at = rows[0].expired_at;
 
     const expiresAt = new Date(expired_at).getTime();
@@ -31,13 +31,13 @@ export const handleVerifyOTP = async (
     const time_diff = expiresAt - now;
     const time_condition = true ? time_diff >= 0 : false;
 
-    if (latest_otp != otp || !time_condition) {
+    if (!time_condition) {
       return reply
         .status(400)
-        .send({ error: "Invalid OTP", data: { verified: false } });
+        .send({ error: "Invalid OTP from backend", data: { verified: false } });
     }
 
-    return reply.status(201).send({
+    return reply.status(200).send({
       message: "Correct OTP",
       data: { verified: true },
     });

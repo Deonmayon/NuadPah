@@ -8,14 +8,14 @@ import '/components/submitbox.dart';
 import '../api/api.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -55,10 +55,10 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  void _gotologin() {
+  void _gotoSignIn() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => SignInPage()),
     );
   }
 
@@ -228,7 +228,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                   recognizer: TapGestureRecognizer()
-                                    ..onTap = _gotologin,
+                                    ..onTap = _gotoSignIn,
                                 ),
                               ],
                             ),

@@ -8,7 +8,8 @@ class ApiService {
       : _dio = Dio(BaseOptions(baseUrl: baseUrl));
 
   // Sign up
-  Future<Response> signUp(String email, String password, String firstname, String lastname) async {
+  Future<Response> signUp(
+      String email, String password, String firstname, String lastname) async {
     try {
       final response = await _dio.post(
         '/auth/signup',
@@ -86,7 +87,8 @@ class ApiService {
 
       return response;
     } on DioError catch (e) {
-      throw Exception('Failed to get email from token: ${e.response?.data ?? e.message}');
+      throw Exception(
+          'Failed to get email from token: ${e.response?.data ?? e.message}');
     }
   }
 
@@ -130,7 +132,8 @@ class ApiService {
 
       return response;
     } on DioError catch (e) {
-      throw Exception('Failed to reset password: ${e.response?.data ?? e.message}');
+      throw Exception(
+          'Failed to reset password: ${e.response?.data ?? e.message}');
     }
   }
 }

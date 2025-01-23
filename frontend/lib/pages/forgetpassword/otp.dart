@@ -11,7 +11,8 @@ class OTPPage extends StatefulWidget {
   final Function(String)? onCompleted;
   final String email;
 
-  const OTPPage({Key? key, this.length = 4, this.onCompleted, required this.email})
+  const OTPPage(
+      {Key? key, this.length = 4, this.onCompleted, required this.email})
       : super(key: key);
 
   @override
@@ -33,7 +34,6 @@ class _OTPPageState extends State<OTPPage> {
     _focusNodes = List.generate(widget.length, (_) => FocusNode());
     _controllers = List.generate(widget.length, (_) => TextEditingController());
     _pin = List.filled(widget.length, '');
-
   }
 
   @override
@@ -92,31 +92,30 @@ class _OTPPageState extends State<OTPPage> {
       );
 
       if (_pin.contains('')) {
-            setState(() {
-              _errorMessage = "Please complete the OTP.";
-            });
+        setState(() {
+          _errorMessage = "Please complete the OTP.";
+        });
+      } else {
+        setState(() {
+          _errorMessage = '';
+          if (response.statusCode == 200) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ResetPage(email: widget.email)),
+            );
           } else {
             setState(() {
-              _errorMessage = '';
-              if (response.statusCode == 200) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ResetPage()),
-                );
-              } else {
-                setState(() {
-                  _errorMessage = 'Invalid OTP';
-                });
-              }
+              _errorMessage = 'Invalid OTP from frontend';
             });
           }
-      
+        });
+      }
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
       });
     }
-    
   }
 
 

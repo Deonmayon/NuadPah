@@ -39,6 +39,5 @@ export type AuthResetPWBodyRequest = FastifyRequest<{
   Body: {
     email: string; // email that pass between pages and send via the VerifyOTP api
     newpw: string;
-    confirmpw: string;
   };
 }>;

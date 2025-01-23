@@ -7,11 +7,7 @@ export const handleResetPW = async (
   reply: FastifyReply,
   app: FastifyInstance
 ) => {
-  const { email, newpw, confirmpw } = request.body;
-
-  if (newpw != confirmpw) {
-    return reply.status(403);
-  }
+  const { email, newpw } = request.body;
 
   const hashedPW = await hashPassword(newpw);
 

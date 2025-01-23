@@ -32,7 +32,7 @@ export const handleResendOTP = async (
 
     await sendEmail(emailForget, `Your OTP is ${otp}.`);
 
-    return reply.status(201).send({
+    return reply.status(200).send({
       message: "OTP is already sent, Please check your Email",
     });
   }

@@ -9,20 +9,19 @@ import '/components/submitbox.dart';
 import '../api/api.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
 
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignInPageState createState() => _SignInPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignInPageState extends State<SignInPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
 
-  Future<void> _login() async {
+  Future<void> _signin() async {
     final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
 
     try {
@@ -43,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         setState(() {
-          _errorMessage = 'Registration failed';
+          _errorMessage = 'Sign Up failed';
         });
       }
     } catch (e) {
@@ -53,10 +52,10 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _register() {
+  void _gotoSignUp() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
+      MaterialPageRoute(builder: (context) => SignUpPage()),
     );
   }
 
@@ -149,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                           onPressed: _forget,
+                            onPressed: _forget,
                             child: Text(
                               'forget your password ?',
                               style: TextStyle(
@@ -163,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Sign In Button
                         SubmitBox(
-                          onPress: _login,
+                          onPress: _signin,
                           buttonText: 'Sign In',
                           showArrow: true,
                         ),
@@ -227,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                   recognizer: TapGestureRecognizer()
-                                    ..onTap = _register,
+                                    ..onTap = _gotoSignUp,
                                 ),
                               ],
                             ),
