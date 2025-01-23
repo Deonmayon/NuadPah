@@ -23,7 +23,7 @@ class _OTPPageState extends State<OTPPage> {
   late List<String> _pin;
   String _errorMessage = '';
   bool _showResendButton = true;
-  int _countdownSeconds = 59;
+  int _countdownSeconds = 60;
   Timer? _countdownTimer;
 
   @override
@@ -67,7 +67,7 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   void _startCountdown() {
-    _countdownSeconds = 60;
+    _countdownSeconds = 59;
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdownSeconds > 0) {
