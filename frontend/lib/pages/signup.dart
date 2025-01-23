@@ -165,6 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         SubmitBox(
                           buttonText: 'Sign Up',
                           onPress: _signup,
+                          showArrow: true,
                         ),
 
                         SizedBox(height: 30),

@@ -167,6 +167,7 @@ class _ResetPageState extends State<ResetPage> {
                         SubmitBox(
                         onPress: _newPassword,
                         buttonText: 'Reset Password',
+                        showArrow: false,
                         ),
                         SizedBox(height: 30),
                      

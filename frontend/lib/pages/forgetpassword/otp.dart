@@ -306,6 +306,7 @@ class _OTPPageState extends State<OTPPage> {
                       SubmitBox(
                         buttonText: 'Next',
                         onPress: _verifyotp,
+                        showArrow: true,
                       ),
                     ],
                   ),

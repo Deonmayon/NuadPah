@@ -165,6 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                         SubmitBox(
                           onPress: _login,
                           buttonText: 'Sign In',
+                          showArrow: true,
                         ),
                         SizedBox(height: 30),
 

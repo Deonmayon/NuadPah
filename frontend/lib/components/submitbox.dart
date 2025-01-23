@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 class SubmitBox extends StatelessWidget {
   final VoidCallback onPress;
   final String buttonText;
+  final bool showArrow;
 
-  const SubmitBox({required this.onPress, required this.buttonText});
+  const SubmitBox({
+    required this.onPress,
+    required this.buttonText,
+    this.showArrow = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +36,10 @@ class SubmitBox extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(width: 10),
-            Icon(Icons.arrow_forward, color: Colors.white),
+            if (showArrow) ...[
+              SizedBox(width: 10),
+              Icon(Icons.arrow_forward, color: Colors.white),
+            ],
           ],
         ),
       ),
@@ -40,9 +47,9 @@ class SubmitBox extends StatelessWidget {
   }
 }
 
-
 // Use case
 // SubmitBox(
 //   onPress: _login,
 //   buttonText: 'Reset Password',
+//   showArrow: false,
 // ),

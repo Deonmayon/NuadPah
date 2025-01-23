@@ -119,6 +119,7 @@ class _ForgetPageState extends State<ForgetPage> {
                         SubmitBox(
                           buttonText: 'Submit',
                           onPress: _sendotp,
+                          showArrow: true,
                         ),
 
                         SizedBox(height: 30),
