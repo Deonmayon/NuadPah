@@ -3,17 +3,20 @@ import {
   AuthSignInBodyRequest,
   AuthSignUpBodyRequest,
   AuthForgetPWBodyRequest,
+  VerifyOTPBodyRequest,
   AuthResetPWBodyRequest,
 } from "../type/handler/auth";
 import { sessionBodyRequest } from "../type/session/sessionBodyRequest";
 import { handleSignIn } from "../handler/auth/handleSignIn";
 import { handleSignUp } from "../handler/auth/handleSignUp";
 import { handleForgetPW } from "../handler/auth/handleForgetPW";
+import { handleVerifyOTP } from "../handler/auth/handleVerifyOTP";
 import { handleResetPW } from "../handler/auth/handleResetPW";
 import { deleteSession } from "../util/session/deleteSession";
 import { authenticate } from "../util/session/authenticate";
 
 const authRouter = async (app: FastifyInstance) => {
+  // Sign In
   app.post(
     "/signin",
     async (request: AuthSignInBodyRequest, reply: FastifyReply) => {
@@ -22,6 +25,7 @@ const authRouter = async (app: FastifyInstance) => {
     }
   );
 
+  // Sign Up
   app.post(
     "/signup",
     async (request: AuthSignUpBodyRequest, reply: FastifyReply) => {
@@ -30,6 +34,7 @@ const authRouter = async (app: FastifyInstance) => {
     }
   );
 
+  // Sign Out
   app.post(
     "/signout",
     { preHandler: [authenticate] },
@@ -39,6 +44,7 @@ const authRouter = async (app: FastifyInstance) => {
     }
   );
 
+  // Forget Password
   app.post(
     "/forgetpw",
     async (request: AuthForgetPWBodyRequest, reply: FastifyReply) => {
@@ -47,6 +53,16 @@ const authRouter = async (app: FastifyInstance) => {
     }
   );
 
+  // Verify OTP
+  app.post(
+    "/verifyotp",
+    async (request: VerifyOTPBodyRequest, reply: FastifyReply) => {
+      const result = await handleVerifyOTP(request, reply, app);
+      reply.send(result);
+    }
+  );
+
+  // Reset Password
   app.post(
     "/resetpw",
     async (request: AuthResetPWBodyRequest, reply: FastifyReply) => {
@@ -63,6 +79,7 @@ const authRouter = async (app: FastifyInstance) => {
       reply.send({
         message: "This is your user data",
         user: request.body.userEmail,
+        role: request.body.userRole,
       });
     }
   );

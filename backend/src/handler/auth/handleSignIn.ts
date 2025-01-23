@@ -1,8 +1,8 @@
+import jwt from "jsonwebtoken";
 import { FastifyInstance, FastifyReply } from "fastify";
 import { verifyPassword } from "../../util/bcrypt";
 import { setSession } from "../../util/session/setSession";
 import { AuthSignInBodyRequest } from "../../type/handler/auth";
-import jwt from "jsonwebtoken";
 import config from "../../config/config";
 
 export const handleSignIn = async (
@@ -29,9 +29,13 @@ export const handleSignIn = async (
       return reply.status(400).send({ error: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ userEmail: rows[0].email }, config.jwt, {
-      expiresIn: "15m",
-    });
+    const token = jwt.sign(
+      { userEmail: rows[0].email, userRole: rows[0].role },
+      config.jwt,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     await setSession(rows[0].email, { status: "active", token }, 3600); // 1 hour
 

@@ -24,6 +24,7 @@ export const authenticate = async (
     }
 
     request.body.userEmail = decoded.userEmail;
+    request.body.userRole = decoded.userRole;
     next();
   } catch (err) {
     return reply.status(401).send({ error: "Invalid token" });
