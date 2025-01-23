@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '/pages/forgetpassword/reset.dart';
@@ -5,12 +6,12 @@ import '/components/submitbox.dart';
 import '/api/api.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
 
-
 class OTPPage extends StatefulWidget {
   final int length;
   final Function(String)? onCompleted;
 
-  const OTPPage({Key? key, this.length = 4, this.onCompleted}) : super(key: key);
+  const OTPPage({Key? key, this.length = 4, this.onCompleted})
+      : super(key: key);
 
   @override
   _OTPPageState createState() => _OTPPageState();
@@ -21,6 +22,9 @@ class _OTPPageState extends State<OTPPage> {
   late List<TextEditingController> _controllers;
   late List<String> _pin;
   String _errorMessage = '';
+  bool _showResendButton = true;
+  int _countdownSeconds = 59;
+  Timer? _countdownTimer;
 
   @override
   void initState() {
@@ -38,6 +42,7 @@ class _OTPPageState extends State<OTPPage> {
     for (var controller in _controllers) {
       controller.dispose();
     }
+    _countdownTimer?.cancel();
     super.dispose();
   }
 
@@ -61,36 +66,19 @@ class _OTPPageState extends State<OTPPage> {
     });
   }
 
-  // Future<void> _resetotp() async {
-  //   // get token (like localStorage)
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final token = prefs.getString('token') ?? '';
-
-  //   // we need to pass token when call api route that have { preHandler: [authenticate] }
-
-  //   final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
-
-  //   try {
-  //     final response = await apiService.sendOTP(
-  //       _emailController.text,
-  //     );
-
-  //     if (response.statusCode == 201) {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => OTPPage()),
-  //       );
-  //     } else {
-  //       setState(() {
-  //         _errorMessage = 'Registration failed';
-  //       });
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       _errorMessage = e.toString();
-  //     });
-  //   }
-  // }
+  void _startCountdown() {
+    _countdownSeconds = 60;
+    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_countdownSeconds > 0) {
+          _countdownSeconds--;
+        } else {
+          _showResendButton = true;
+          _countdownTimer?.cancel();
+        }
+      });
+    });
+  }
 
   void _reset() {
     if (_pin.contains('')) {
@@ -123,13 +111,15 @@ class _OTPPageState extends State<OTPPage> {
               left: 0,
               right: 0,
               child: Center(
-              child: Image.asset(
-                'assets/images/mail.png',
-                width: 150,
-                height: 150,
-              ),
+                child: Image.asset(
+                  'assets/images/mail.png',
+                  width: 150,
+                  height: 150,
+                ),
               ),
             ),
+
+            // White Container with Curved Top
             Positioned(
               top: 240,
               child: Container(
@@ -157,76 +147,78 @@ class _OTPPageState extends State<OTPPage> {
                         ),
                       ),
                       SizedBox(height: 20),
-                        Text(
-                          'We have sent a verification code to',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF676767),
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Text(
+                        'We have sent a verification code to',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF676767),
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Name@gmail.com',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF676767),
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Name@gmail.com',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF676767),
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 40),
+                      ),
+                      SizedBox(height: 40),
 
-                        Row(
+                      // Pin Input Field
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(widget.length, (index) {
                           return Container(
-                          width: 50,
-                          height: 50,
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: _pin[index].isNotEmpty
-                              ? const Color(0xFFC0A172)
-                              : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                            color: _pin[index].isNotEmpty
-                              ? const Color(0xFFC0A172)
-                              : Colors.grey,
-                            width: 2,
+                            width: 50,
+                            height: 50,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: _pin[index].isNotEmpty
+                                  ? const Color(0xFFC0A172)
+                                  : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: _pin[index].isNotEmpty
+                                    ? const Color(0xFFC0A172)
+                                    : Colors.grey,
+                                width: 2,
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: TextField(
-                            controller: _controllers[index],
-                            focusNode: _focusNodes[index],
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            maxLength: 1,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            decoration: const InputDecoration(
-                              counterText: '',
-                              border: InputBorder.none,
+                            child: Center(
+                              child: TextField(
+                                controller: _controllers[index],
+                                focusNode: _focusNodes[index],
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                maxLength: 1,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                decoration: const InputDecoration(
+                                  counterText: '',
+                                  border: InputBorder.none,
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.white,
+                                ),
+                                onChanged: (value) =>
+                                    _onPinChanged(index, value),
+                                onSubmitted: (value) {
+                                  if (value.isEmpty && index > 0) {
+                                    _focusNodes[index - 1].requestFocus();
+                                  }
+                                },
+                              ),
                             ),
-                            style: const TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
-                            ),
-                            onChanged: (value) => _onPinChanged(index, value),
-                            onSubmitted: (value) {
-                              if (value.isEmpty && index > 0) {
-                              _focusNodes[index - 1].requestFocus();
-                              }
-                            },
-                            ),
-                          ),
                           );
                         }),
-                        ),
+                      ),
 
-
+                      // Error Message
                       if (_errorMessage.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
@@ -238,13 +230,40 @@ class _OTPPageState extends State<OTPPage> {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
+
+                      // Resend Button or Countdown Text
+                      if (_showResendButton)
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _showResendButton = false;
+                            });
+                            _startCountdown();
+                          },
+                          child: const Text(
+                            'Resend Code',
+                            style: TextStyle(
+                              color: Color(0xFFC0A172),
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+                      else
+                        Text(
+                          'Your otp will expire in $_countdownSeconds seconds',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
+                      SizedBox(height: 20),
 
                       // Next Button
                       SubmitBox(
-                          buttonText: 'Next',
-                          onPress: _reset,
-                        ),
+                        buttonText: 'Next',
+                        onPress: _reset,
+                      ),
                     ],
                   ),
                 ),
