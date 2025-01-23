@@ -7,11 +7,11 @@ import {
   AuthResetPWBodyRequest,
 } from "../type/handler/auth";
 import { sessionBodyRequest } from "../type/session/sessionBodyRequest";
-import { handleSignIn } from "../handler/handleSignIn";
-import { handleSignUp } from "../handler/handleSignUp";
-import { handleForgetPW } from "../handler/handleForgetPW";
-import { haqndleVerifyOTP } from "../handler/handleVerifyOTP";
-import { handleResetPW } from "../handler/handleResetPW";
+import { handleSignIn } from "../handler/auth/handleSignIn";
+import { handleSignUp } from "../handler/auth/handleSignUp";
+import { handleForgetPW } from "../handler/auth/handleForgetPW";
+import { handleVerifyOTP } from "../handler/auth/handleVerifyOTP";
+import { handleResetPW } from "../handler/auth/handleResetPW";
 import { deleteSession } from "../util/session/deleteSession";
 import { authenticate } from "../util/session/authenticate";
 
@@ -57,7 +57,7 @@ const authRouter = async (app: FastifyInstance) => {
   app.post(
     "/verifyotp",
     async (request: VerifyOTPBodyRequest, reply: FastifyReply) => {
-      const result = await haqndleVerifyOTP(request, reply, app);
+      const result = await handleVerifyOTP(request, reply, app);
       reply.send(result);
     }
   );

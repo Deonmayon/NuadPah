@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { AuthForgetPWBodyRequest } from "../type/handler/auth";
+import { AuthForgetPWBodyRequest } from "../../type/handler/auth";
 import crypto from "crypto";
-import { sendEmail } from "../util/nodemalier";
+import { sendEmail } from "../../util/nodemalier";
 
 export const handleForgetPW = async (
   request: AuthForgetPWBodyRequest,
@@ -21,7 +21,6 @@ export const handleForgetPW = async (
   if (rows.length == 1) {
     const otp = crypto.randomInt(100000, 999999).toString();
     const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // (Date.now() + minute(s) * toMinute * toSec)
-    console.log(expiresAt);
     const { rows } = await client.query(
       `
             INSERT INTO public."OTP" (email, otp, expired_at)

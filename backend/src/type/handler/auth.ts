@@ -1,6 +1,5 @@
 import { FastifyRequest } from "fastify";
 
-
 // for Sign In when press the button
 export type AuthSignInBodyRequest = FastifyRequest<{
   Body: {
@@ -8,7 +7,6 @@ export type AuthSignInBodyRequest = FastifyRequest<{
     password: string;
   };
 }>;
-
 
 // for Sign Up when press the button
 export type AuthSignUpBodyRequest = FastifyRequest<{
@@ -21,14 +19,12 @@ export type AuthSignUpBodyRequest = FastifyRequest<{
   };
 }>;
 
-
 // for forget.dart when fill an email and submit
 export type AuthForgetPWBodyRequest = FastifyRequest<{
   Body: {
     email: string;
   };
 }>;
-
 
 // for otp.dart when fill an otp and submit
 export type VerifyOTPBodyRequest = FastifyRequest<{
@@ -37,7 +33,6 @@ export type VerifyOTPBodyRequest = FastifyRequest<{
     otp: string; // otp that user fill in the form
   };
 }>;
-
 
 // for forget.dart when fill an email and submit
 export type AuthResetPWBodyRequest = FastifyRequest<{

@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { FastifyInstance, FastifyReply } from "fastify";
-import { hashPassword } from "../util/bcrypt";
-import { setSession } from "../util/session/setSession";
-import { AuthSignUpBodyRequest } from "../type/handler/auth";
-import config from "../config/config";
+import { hashPassword } from "../../util/bcrypt";
+import { setSession } from "../../util/session/setSession";
+import { AuthSignUpBodyRequest } from "../../type/handler/auth";
+import config from "../../config/config";
 
 export const handleSignUp = async (
   request: AuthSignUpBodyRequest,
