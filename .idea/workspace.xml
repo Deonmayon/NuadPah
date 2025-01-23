@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="af90fbb7-c29f-4f46-bccd-1713f482d14d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/api/api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/api/api.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/pages/forgetpassword/forget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/pages/forgetpassword/forget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/pages/forgetpassword/otp.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/pages/forgetpassword/otp.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/pages/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/pages/login.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/pages/profile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/pages/profile.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/pages/register.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/pages/register.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="af90fbb7-c29f-4f46-bccd-1713f482d14d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

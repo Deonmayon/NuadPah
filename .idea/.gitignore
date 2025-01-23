@@ -1,11 +1,11 @@
 # Default ignored files
 /shelf/
+**/.idea/
 /workspace.xml
 
 # Flutter-specific files
 **/build/
 **/.dart_tool/
-**/.idea/
 **/.vscode/
 *.iml
 
