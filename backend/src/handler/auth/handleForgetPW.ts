@@ -19,7 +19,7 @@ export const handleForgetPW = async (
   );
 
   if (rows.length == 1) {
-    const otp = crypto.randomInt(100000, 999999).toString();
+    const otp = crypto.randomInt(1000, 9999).toString();
     const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // (Date.now() + minute(s) * toMinute * toSec)
     const { rows } = await client.query(
       `
