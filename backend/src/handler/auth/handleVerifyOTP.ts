@@ -12,10 +12,10 @@ export const handleVerifyOTP = async (
     const client = await app.pg.connect();
     const { rows, rowCount } = await client.query(
       `
-      SELECT expired_at FROM public."OTP"
-      WHERE email = $1 AND otp = $2 LIMIT 1;
-    `,
-      [email, otp]
+        SELECT otp, expired_at FROM public."OTP"
+        WHERE email = $1 ORDER BY expired_at DESC LIMIT 1;
+      `,
+      [email]
     );
 
     if (rowCount != 1) {
@@ -24,6 +24,7 @@ export const handleVerifyOTP = async (
         .send({ error: "OTP does not exist", data: { verified: false } });
     }
 
+    const latest_otp = rows[0].otp;
     const expired_at = rows[0].expired_at;
 
     const expiresAt = new Date(expired_at).getTime();
@@ -31,7 +32,14 @@ export const handleVerifyOTP = async (
     const time_diff = expiresAt - now;
     const time_condition = true ? time_diff >= 0 : false;
 
-    if (!time_condition) {
+    console.log("latest_otp:", latest_otp);
+    console.log("expiresAt:", expiresAt);
+    console.log("now:", now);
+    console.log("time_diff:", time_diff);
+    console.log("time_condition:", time_condition);
+    console.log("otp_condition:", latest_otp != otp);
+
+    if (latest_otp != otp || !time_condition) {
       return reply
         .status(400)
         .send({ error: "Invalid OTP from backend", data: { verified: false } });
