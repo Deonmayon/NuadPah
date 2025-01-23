@@ -119,6 +119,33 @@ class _OTPPageState extends State<OTPPage> {
     
   }
 
+
+  Future<void> _resendotp() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+
+    try {
+      final response = await apiService.sendOTP(
+        widget.email,
+      );
+      
+      if (response.statusCode == 201) {
+        setState(() {
+          _showResendButton = false;
+          _startCountdown();
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Resend failed';
+        });
+      }
+
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -257,12 +284,7 @@ class _OTPPageState extends State<OTPPage> {
                       // Resend Button or Countdown Text
                       if (_showResendButton)
                         TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _showResendButton = false;
-                            });
-                            _startCountdown();
-                          },
+                          onPressed: _resendotp,
                           child: const Text(
                             'Resend Code',
                             style: TextStyle(

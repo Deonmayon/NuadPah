@@ -8,6 +8,7 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: Icon(Icons.account_circle),
