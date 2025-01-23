@@ -9,8 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart'; // like localStorag
 class OTPPage extends StatefulWidget {
   final int length;
   final Function(String)? onCompleted;
+  final String email;
 
-  const OTPPage({Key? key, this.length = 4, this.onCompleted})
+  const OTPPage({Key? key, this.length = 4, this.onCompleted, required this.email})
       : super(key: key);
 
   @override
@@ -22,7 +23,6 @@ class _OTPPageState extends State<OTPPage> {
   late List<TextEditingController> _controllers;
   late List<String> _pin;
   String _errorMessage = '';
-  String userEmail = '';
   bool _showResendButton = true;
   int _countdownSeconds = 60;
   Timer? _countdownTimer;
@@ -34,7 +34,6 @@ class _OTPPageState extends State<OTPPage> {
     _controllers = List.generate(widget.length, (_) => TextEditingController());
     _pin = List.filled(widget.length, '');
 
-    _fetchEmail();
   }
 
   @override
@@ -83,33 +82,12 @@ class _OTPPageState extends State<OTPPage> {
     });
   }
 
-  Future<void> _fetchEmail() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token') ?? '';
-
-    try {
-      final response = await apiService.getToken(
-        token
-      );
-
-      setState(() {
-        userEmail = response.data['email'];
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
-    }
-  }
-
   Future<void> _verifyotp() async {
     final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
-    final email = userEmail;
 
     try {
       final response = await apiService.verifyOTP(
-        email,
+        widget.email,
         _pin.join(),
       );
 
@@ -201,7 +179,7 @@ class _OTPPageState extends State<OTPPage> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        userEmail,
+                        widget.email,
                         style: TextStyle(
                           fontSize: 16,
                           color: Color(0xFF676767),

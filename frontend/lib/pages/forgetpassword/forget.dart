@@ -26,7 +26,7 @@ class _ForgetPageState extends State<ForgetPage> {
       if (response.statusCode == 201) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => OTPPage()),
+          MaterialPageRoute(builder: (context) => OTPPage(email: _emailController.text)),
         );
       } else {
         setState(() {
