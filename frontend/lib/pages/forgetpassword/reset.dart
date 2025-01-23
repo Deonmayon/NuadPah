@@ -57,7 +57,6 @@ class _ResetPageState extends State<ResetPage> {
         final response = await apiService.resetPassword(
         userEmail,
         _newPasswordController.text,
-        _confirmPasswordController.text,
       );
 
         if (response.statusCode == 201) {

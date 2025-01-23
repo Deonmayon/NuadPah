@@ -112,6 +112,7 @@ class _OTPPageState extends State<OTPPage> {
         email,
         _pin.join(),
       );
+
       if (_pin.contains('')) {
             setState(() {
               _errorMessage = "Please complete the OTP.";

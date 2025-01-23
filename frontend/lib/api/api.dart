@@ -113,14 +113,13 @@ class ApiService {
   }
 
   // Reset password
-  Future<Response> resetPassword(String email, String newpw, String confirmpw) async {
+  Future<Response> resetPassword(String email, String newpw) async {
     try {
       final response = await _dio.post(
         '/auth/resetpw',
         data: {
           'email': email,
           'newpw': newpw,
-          'confirmpw': confirmpw,
         },
         options: Options(
           headers: {
