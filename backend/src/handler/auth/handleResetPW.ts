@@ -1,17 +1,13 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { hashPassword } from "../util/bcrypt";
-import { AuthResetPWBodyRequest } from "../type/handler/auth";
+import { hashPassword } from "../../util/bcrypt";
+import { AuthResetPWBodyRequest } from "../../type/handler/auth";
 
 export const handleResetPW = async (
   request: AuthResetPWBodyRequest,
   reply: FastifyReply,
   app: FastifyInstance
 ) => {
-  const { email, newpw, confirmpw } = request.body;
-
-  if (newpw != confirmpw) {
-    return reply.status(403);
-  }
+  const { email, newpw } = request.body;
 
   const hashedPW = await hashPassword(newpw);
 

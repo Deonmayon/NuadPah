@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { AuthForgetPWBodyRequest } from "../type/handler/auth";
+import { AuthForgetPWBodyRequest } from "../../type/handler/auth";
 import crypto from "crypto";
-import { sendEmail } from "../util/nodemalier";
+import { sendEmail } from "../../util/nodemalier";
 
-export const handleForgetPW = async (
+export const handleResendOTP = async (
   request: AuthForgetPWBodyRequest,
   reply: FastifyReply,
   app: FastifyInstance
@@ -19,7 +19,7 @@ export const handleForgetPW = async (
   );
 
   if (rows.length == 1) {
-    const otp = crypto.randomInt(100000, 999999).toString();
+    const otp = crypto.randomInt(1000, 9999).toString();
     const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // (Date.now() + minute(s) * toMinute * toSec)
     console.log(expiresAt);
     const { rows } = await client.query(
@@ -32,7 +32,7 @@ export const handleForgetPW = async (
 
     await sendEmail(emailForget, `Your OTP is ${otp}.`);
 
-    return reply.status(201).send({
+    return reply.status(200).send({
       message: "OTP is already sent, Please check your Email",
     });
   }
