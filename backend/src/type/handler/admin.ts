@@ -1,5 +1,8 @@
 import { FastifyRequest } from "fastify";
 
+// Massage Technique Management ////////////////////////////////////////////////////////////////
+
+// Add Single Massage Technique
 export type AddSingleMassageBodyRequest = FastifyRequest<{
   Body: {
     mt_name: string;
@@ -11,6 +14,7 @@ export type AddSingleMassageBodyRequest = FastifyRequest<{
   };
 }>;
 
+// Edit Single Massage Technique
 export type EditSingleMassageBodyRequest = FastifyRequest<{
   Body: {
     mt_name: string;
@@ -25,12 +29,14 @@ export type EditSingleMassageBodyRequest = FastifyRequest<{
   };
 }>;
 
+// Delete Single Massage Technique
 export type DeleteSingleMassageParamsRequest = FastifyRequest<{
   Params: {
     mt_id: number;
   };
 }>;
 
+// Add Set Massage Technique
 export type AddSetMassageBodyRequest = FastifyRequest<{
   Body: {
     mt_ids: Array<number>;
@@ -42,6 +48,7 @@ export type AddSetMassageBodyRequest = FastifyRequest<{
   };
 }>;
 
+// Edit Set Massage Technique
 export type EditSetMassageBodyRequest = FastifyRequest<{
   Body: {
     mt_ids: Array<number>;
@@ -56,8 +63,47 @@ export type EditSetMassageBodyRequest = FastifyRequest<{
   };
 }>;
 
+// Delete Set Massage Technique
 export type DeleteSetMassageParamsRequest = FastifyRequest<{
   Params: {
     ms_id: number;
   };
 }>;
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+// User Management /////////////////////////////////////////////////////////////////////////////
+
+// Edit User Information
+export type EditUserBodyRequest = FastifyRequest<{
+  Body: {
+    email: string;
+    firstname: string;
+    lastname: string;
+    password: string;
+    image_name: string;
+  };
+  Params: {
+    id: number;
+  };
+}>;
+
+// Delete User Account
+export type DeleteUserParamsRequest = FastifyRequest<{
+  Params: {
+    id: number;
+  };
+}>;
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Report Management /////////////////////////////////////////////////////////////////////////////
+
+// Update Report Status
+export type UpdateReportStatusBodyRequest = FastifyRequest<{
+  Body: {
+    status_index: number;
+  };
+  Params: {
+    rep_id: number;
+  };
+}>;
+////////////////////////////////////////////////////////////////////////////////////////////////

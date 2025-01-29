@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { DeleteSetMassageParamsRequest } from "../../type/handler/admin";
+import { DeleteSetMassageParamsRequest } from "../../../type/handler/admin";
 
 export const handleDeleteSetMassage = async (
   request: DeleteSetMassageParamsRequest,
@@ -17,7 +17,7 @@ export const handleDeleteSetMassage = async (
       [ms_id]
     );
     return reply
-      .status(201)
+      .status(200)
       .send({ message: "Delete Set Massage Successfully", data: rows[0] });
   } catch (err) {
     return reply.status(500).send({ error: "Can't Delete Set Massage" });

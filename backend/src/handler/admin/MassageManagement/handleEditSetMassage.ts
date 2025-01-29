@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { EditSetMassageBodyRequest } from "../../type/handler/admin";
+import { EditSetMassageBodyRequest } from "../../../type/handler/admin";
 
 export const handleEditSetMassage = async (
   request: EditSetMassageBodyRequest,
