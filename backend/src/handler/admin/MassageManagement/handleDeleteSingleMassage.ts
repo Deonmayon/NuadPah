@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { DeleteSingleMassageParamsRequest } from "../../type/handler/admin";
+import { DeleteSingleMassageParamsRequest } from "../../../type/handler/admin";
 
 export const handleDeleteSingleMassage = async (
   request: DeleteSingleMassageParamsRequest,
@@ -17,7 +17,7 @@ export const handleDeleteSingleMassage = async (
       [mt_id]
     );
     return reply
-      .status(201)
+      .status(200)
       .send({ message: "Delete Single Massage Successfully", data: rows[0] });
   } catch (err) {
     return reply.status(500).send({ error: "Can't Delete Single Massage" });
