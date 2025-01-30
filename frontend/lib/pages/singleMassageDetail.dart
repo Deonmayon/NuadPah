@@ -23,6 +23,8 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
         body: SafeArea(
           child: Column(
             children: [
+
+              
               // Header with image and buttons
               SizedBox(
                 width: double.infinity,
