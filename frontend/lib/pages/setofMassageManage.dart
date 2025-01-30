@@ -1,32 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/adminManageNav.dart';
+import 'package:frontend/components/DashedBorderContainer.dart';
 
-class SingleMassageManagePage extends StatefulWidget {
-  const SingleMassageManagePage({Key? key}) : super(key: key);
+class SetOfMassageManagePage extends StatefulWidget {
+  const SetOfMassageManagePage({Key? key}) : super(key: key);
 
   @override
-  State<SingleMassageManagePage> createState() =>
-      _SingleMassageManagePageState();
+  State<SetOfMassageManagePage> createState() => _SetOfMassageManagePageState();
 }
 
-class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
+class _SetOfMassageManagePageState extends State<SetOfMassageManagePage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController textController = TextEditingController();
   final FocusNode textFieldFocusNode = FocusNode();
 
+  String? selectedValue;
+
   //table custom
   int currentPage = 1;
   final int totalPages = 251;
-  final List<Map<String, String>> massageData = List.generate(5, (index) {
+  final List<Map<String, String>> massageData = List.generate(4, (index) {
     return {
-      "image":
-          "https://picsum.photos/200?random=${index + 1}", // ใช้ภาพตัวอย่างแบบสุ่ม
-      "name": "Name Massage",
-      "type": "Type: Back",
-      "duration": "5 minutes"
+      "image1": "https://picsum.photos/200?random=${index + 1}", // ใช้ภาพตัวอย่างแบบสุ่ม
+      "image2": "https://picsum.photos/200?random=${index + 2}",
+      "image3": "https://picsum.photos/200?random=${index + 3}",
+      "name": "Name Set of Massage",
+      "type": "Type: Back, Shoulder, Neck",
+      "duration": "15 minutes"
     };
   });
+
+  final List<Map<String, String>> items = [
+    {
+      "name": "Name Massage 1",
+      "image": "https://fastly.picsum.photos/id/611/200/200.jpg?hmac=1Tkz2gFbAArMMLUWylD-8s6PzYgu0sPIdO71hlp9Xs0", // ใส่ URL รูปที่ต้องการ
+      "type": "Type: Back",
+      "duration": "4 minutes"
+    },
+    {
+      "name": "Name Massage 2",
+      "image": "https://fastly.picsum.photos/id/721/200/200.jpg?hmac=QLtStUqefglPXev8bwvDQ34SN-dSYO2_a299oUpbP7g", // ใส่ URL รูปที่ต้องการ
+      "type": "Type: Shoulder",
+      "duration": "5 minutes"
+    },
+    {
+      "name": "Name Massage 3",
+      "image": "https://fastly.picsum.photos/id/586/200/200.jpg?hmac=qCQKBciYy8H3AxcVxnTZLYwXw02r33F5_3E4UmlB8H4", // ใส่ URL รูปที่ต้องการ
+      "type": "Type: Neck",
+      "duration": "7 minutes"
+    },
+  ];
 
   void previousPage() {
     setState(() {
@@ -87,7 +111,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        'Create Single Massage',
+                        'Create Set of Massage',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -111,22 +135,23 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
+                        Flexible(
+                          flex: 4, // 60% (3 ส่วน)
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Name Massage',
+                                'Name Set of Massage',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black,
                                   fontSize: 14,
                                 ),
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 8),
                               TextFormField(
                                 decoration: InputDecoration(
-                                  hintText: 'Name Massage',
+                                  hintText: 'Name Set of Massage',
                                   hintStyle: TextStyle(
                                     fontFamily: 'Roboto',
                                     color: Color(0xFF676767),
@@ -152,171 +177,110 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Flexible(
-                                    flex: 1,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Type',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Container(
-                                          constraints: BoxConstraints(
-                                            minHeight:
-                                                35, // กำหนดความสูงขั้นต่ำ
-                                          ),
-                                          child: DropdownButtonFormField(
-                                            isExpanded: true,
-                                            decoration: InputDecoration(
-                                              hintText: 'Select',
-                                              hintStyle: TextStyle(
-                                                fontFamily: 'Roboto',
-                                                color: Color(0xFF676767),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  color: Color(0xFF676767),
-                                                  width: 2,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  color: Color(0xFF676767),
-                                                  width: 2,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            items: ['Back', 'Neck', 'Foot']
-                                                .map((type) => DropdownMenuItem(
-                                                      value: type,
-                                                      child: Text(type,
-                                                          overflow: TextOverflow
-                                                              .visible),
-                                                    ))
-                                                .toList(),
-                                            onChanged: (value) {},
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          flex: 2, // 40% (2 ส่วน)
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Time',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                decoration: InputDecoration(
+                                  hintText: 'Add Massage',
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Roboto',
+                                    color: Color(0xFF676767),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Flexible(
-                                    flex: 1,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Time',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Container(
-                                          constraints: BoxConstraints(
-                                            minHeight:
-                                                35, // กำหนดความสูงขั้นต่ำ
-                                          ),
-                                          child: DropdownButtonFormField(
-                                            isExpanded: true,
-                                            decoration: InputDecoration(
-                                              hintText: 'Select',
-                                              hintStyle: TextStyle(
-                                                fontFamily: 'Roboto',
-                                                color: Color(0xFF676767),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  color: Color(0xFF676767),
-                                                  width: 2,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  color: Color(0xFF676767),
-                                                  width: 2,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            items: [
-                                              '5 minutes',
-                                              '10 minutes',
-                                              '15 minutes'
-                                            ]
-                                                .map((time) => DropdownMenuItem(
-                                                      value: time,
-                                                      child: Text(time,
-                                                          overflow: TextOverflow
-                                                              .visible),
-                                                    ))
-                                                .toList(),
-                                            onChanged: (value) {},
-                                          ),
-                                        ),
-                                      ],
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF676767),
+                                      width: 2,
                                     ),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                ],
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF676767),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Container(
-                          width: 150,
-                          height: 159,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Color(0xFF676767),
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              '250x250',
-                              style: TextStyle(
-                                color: Color(0xFF676767),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          flex: 4, // 60% (3 ส่วน)
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Type',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                decoration: InputDecoration(
+                                  hintText: 'Add Massage',
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Roboto',
+                                    color: Color(0xFF676767),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF676767),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF676767),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          flex: 2, // 40% (2 ส่วน)
+                          child: Column(),
                         ),
                       ],
                     ),
@@ -325,41 +289,60 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Detail Massage',
+                          'Select Single Massage',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
                             fontSize: 14,
                           ),
                         ),
-                        const SizedBox(height: 5),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            hintText: 'Explain about massage',
-                            hintStyle: TextStyle(
-                              fontFamily: 'Roboto',
-                              color: Color(0xFF676767),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF676767),
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF676767),
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
+                        const SizedBox(height: 8),
+                        DashedBorderContainer(
+                          width: MediaQuery.of(context).size.width,
+                          height: 78,
+                          selectedValue: selectedValue,
+                          items: items,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedValue = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        DashedBorderContainer(
+                          width: MediaQuery.of(context).size.width,
+                          height: 78,
+                          selectedValue: selectedValue,
+                          items: items,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedValue = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        DashedBorderContainer(
+                          width: MediaQuery.of(context).size.width,
+                          height: 78,
+                          selectedValue: selectedValue,
+                          items: items,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedValue = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        DashedBorderContainer(
+                          width: MediaQuery.of(context).size.width,
+                          height: 78,
+                          selectedValue: selectedValue,
+                          items: items,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedValue = value;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -472,7 +455,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                         ),
                       ),
                       child: const Text(
-                        'EDIT SINGLE MASSAGE',
+                        'EDIT SET OF MASSAGE',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -629,7 +612,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
               padding: const EdgeInsets.only(top: 20),
               child: Container(
                 width: 372,
-                height: 490,
+                height: 532,
                 decoration: BoxDecoration(
                   color: const Color(0xFFDBDBDB),
                   borderRadius: BorderRadius.circular(20),
@@ -714,7 +697,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                               final item = massageData[index];
                               return Container(
                                 width: 352,
-                                height: 78,
+                                height: 108,
                                 decoration: const BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
@@ -732,20 +715,58 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                                   child: Row(
                                     children: [
                                       // รูปภาพ
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
-                                        child: Image.network(
-                                          item["image"]!,
-                                          width: 60,
-                                          height: 60,
-                                          fit: BoxFit.cover,
+                                      Container(
+                                        width: 90,
+                                        height: 90,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        clipBehavior: Clip
+                                            .hardEdge, // เพิ่ม clipBehavior เพื่อให้ตัดขอบตาม borderRadius
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                ClipRRect(
+                                                  child: Image.network(
+                                                    item["image1"]!,
+                                                    width: 45,
+                                                    height: 45,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                                ClipRRect(
+                                                  child: Image.network(
+                                                    item["image2"]!,
+                                                    width: 45,
+                                                    height: 45,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            ClipRRect(
+                                              child: Image.network(
+                                                item["image3"]!,
+                                                width: 90,
+                                                height: 45,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
+
                                       const SizedBox(width: 8),
                                       // ข้อมูลข้อความ
                                       SizedBox(
-                                        width: 233,
-                                        height: 60,
+                                        width: 193,
+                                        height: 90,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -759,67 +780,70 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                                                 fontSize: 14,
                                               ),
                                             ),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Container(
-                                                  alignment: Alignment.center,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 2,
-                                                      horizontal: 5),
-                                                  constraints:
-                                                      const BoxConstraints(
-                                                    minWidth: 77,
-                                                    minHeight: 20,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        const Color(0xFFDBDBDB),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  ),
-                                                  child: Text(
-                                                    item["type"]!,
-                                                    style: const TextStyle(
-                                                      fontFamily: 'Roboto',
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 12,
+                                                IntrinsicWidth(
+                                                  child: Container(
+                                                    alignment: Alignment.center,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 2,
+                                                        horizontal: 5),
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                      minHeight: 20,
+                                                      minWidth:
+                                                          75, // ค่าขั้นต่ำที่ต้องการ
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xFFDBDBDB),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    child: Text(
+                                                      item["duration"]!,
+                                                      style: const TextStyle(
+                                                        fontFamily: 'Roboto',
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontSize: 12,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
-                                                const SizedBox(
-                                                    width:
-                                                        8), // ระยะห่างระหว่างข้อมูล
-                                                Container(
-                                                  alignment: Alignment.center,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 2,
-                                                      horizontal: 5),
-                                                  constraints:
-                                                      const BoxConstraints(
-                                                    minWidth: 77,
-                                                    minHeight: 20,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        const Color(0xFFDBDBDB),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  ),
-                                                  child: Text(
-                                                    item["duration"]!,
-                                                    style: const TextStyle(
-                                                      fontFamily: 'Roboto',
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 12,
+                                                const SizedBox(height: 8),
+                                                IntrinsicWidth(
+                                                  child: Container(
+                                                    alignment: Alignment.center,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 2,
+                                                        horizontal: 5),
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                      minWidth:
+                                                          164, // ค่าขั้นต่ำที่ต้องการ
+                                                      minHeight: 20,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xFFDBDBDB),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    child: Text(
+                                                      item["type"]!,
+                                                      style: const TextStyle(
+                                                        fontFamily: 'Roboto',
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontSize: 12,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
