@@ -11,6 +11,7 @@ import 'package:frontend/pages/register.dart';
 import 'package:frontend/pages/login.dart';
 import 'package:frontend/pages/setofMassageManage.dart';
 import 'package:frontend/pages/homepage2.dart';
+import 'package:frontend/pages/UserManage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: '/home2',
+      initialRoute: '/usermanage',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login' : (context) => const LoginPage(),
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/singledetail': (context) => const SingleMassageDetailPage(),
         '/singlemanage' : (context) => const SingleMassageManagePage(),
         '/setofmanage' : (context) => const SetOfMassageManagePage(),
+        '/usermanage' : (context) => const UserManagePage(),
       },
     );
   }
