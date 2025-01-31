@@ -82,15 +82,15 @@ class _DashedBorderContainerState extends State<DashedBorderContainer> {
         ],
       ),
       child: Row(
-  crossAxisAlignment: CrossAxisAlignment.center,
-  children: [
-    if (selectedItem['image'] != null)
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Image.network(
-            selectedItem['image']!,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (selectedItem['image'] != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Image.network(
+                  selectedItem['image']!,
                   width: 60,
                   height: 60,
                   fit: BoxFit.cover,
@@ -164,28 +164,27 @@ class _DashedBorderContainerState extends State<DashedBorderContainer> {
               Padding(
                 padding: EdgeInsets.all(8),
                 child: InkWell(
-                onTap: () {
-                  setState(() {
-                    currentValue = null;
-                  });
-                  widget.onChanged(null);
-                },
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF5757),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: const Icon(
-                    Icons.delete,
-                    size: 15,
-                    color: Colors.white,
+                  onTap: () {
+                    setState(() {
+                      currentValue = null;
+                    });
+                    widget.onChanged(null);
+                  },
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF5757),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: const Icon(
+                      Icons.delete,
+                      size: 15,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-              ),
-              
             ],
           ),
         ],
@@ -247,7 +246,6 @@ class DashedBorderPainter extends CustomPainter {
 
     double dashWidth = 10;
     double dashSpace = 10;
-    
 
     // สร้าง Path สำหรับกรอบโค้ง
     Path path = Path()
