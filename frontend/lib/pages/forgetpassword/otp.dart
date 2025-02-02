@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '/pages/forgetpassword/reset.dart';
 import '/components/submitbox.dart';
-import '/api/api.dart';
+import '../../api/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
 
 class OTPPage extends StatefulWidget {

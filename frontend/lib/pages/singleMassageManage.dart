@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/adminManageNav.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../api/massage.dart';
+
 
 class SingleMassageManagePage extends StatefulWidget {
   const SingleMassageManagePage({Key? key}) : super(key: key);
@@ -25,16 +27,39 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
   //table custom
   int currentPage = 1;
   final int totalPages = 251;
-  final List<Map<String, String>> massageData = List.generate(5, (index) {
-    return {
-      "image":
-          "https://picsum.photos/200?random=${index + 1}", // ใช้ภาพตัวอย่างแบบสุ่ม
-      "name": "Name Massage",
-      
-      "type": "Type: Back",
-      "duration": "15 mins"
-    };
-  });
+  List<Map<String, String>> massageData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMassageData();
+  }
+
+  Future<void> _fetchMassageData() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    try {
+      final response = await apiService.getAllMassages(); // Assuming you have a MassageApi class with getMassages method
+      if (response.statusCode == 200) {
+        final data = response.data as List<dynamic>;
+        setState(() {
+          massageData = data.map<Map<String, String>>((item) {
+            return {
+              "image": item["image"],
+              "name": item["name"],
+              "type": item["type"],
+              "duration": item["duration"]
+            };
+          }).toList();
+        });
+      } else {
+        // Handle error response
+        debugPrint('Error fetching massage data: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error fetching massage data: $e');
+    }
+  }
+
 
 
   Future<void> _pickImage() async {
@@ -330,6 +355,8 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                           ),
                         ),
                         const SizedBox(width: 16),
+
+                        // Choose Image
                         GestureDetector(
                           onTap: _pickImage,
                           child: Container(
@@ -560,16 +587,50 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
     );
   }
 
-  void _createMassage () {
-     final nameMassage = _nameMassageController.text;
-     final detailMassage = _detailMassageController.text;
-     final selectedMassageType = _selectedMassageType;
-     final selectedMassageTime = _selectedMassageTime;
-  // Use the nameMassage variable as needed
-     print('Name Massage: $nameMassage');
-     print('Selected Massage Type: $selectedMassageType');
-     print('Selected Massage Time: $selectedMassageTime');
-     print('Detail Massage: $detailMassage');
+  // Create massage
+  Future<void> _createMassage() async {
+    final nameMassage = _nameMassageController.text;
+    final detailMassage = _detailMassageController.text;
+    final selectedMassageType = _selectedMassageType;
+    final selectedMassageTime = _selectedMassageTime;
+
+    if (nameMassage.isEmpty || detailMassage.isEmpty || selectedMassageType == null || selectedMassageTime == null || _selectedImage == null) {
+      // Show error message if any field is empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields and select an image')),
+      );
+      return;
+    }
+
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    try {
+      final response = await apiService.addMassage(
+        nameMassage,
+        selectedMassageType,
+        1, //ไม่รู้จะใส่อะไร ไม่ได้เก็บ round
+        int.parse(selectedMassageTime.replaceAll(' mins', '')),
+        detailMassage,
+        _selectedImage!.path, // Add the missing argument here
+      );
+
+      if (response.statusCode == 201) {
+        // Massage created successfully
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Massage created successfully')),
+        );
+        Navigator.of(context).pop(); // Close the bottom sheet
+        _fetchMassageData(); // Refresh the massage data
+      } else {
+        // Handle error response
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error creating massage: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error creating massage: $e')),
+      );
+    }
   }
 
   @override

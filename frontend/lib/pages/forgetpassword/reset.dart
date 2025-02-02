@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '/pages/signin.dart';
 import '/components/submitbox.dart';
 import '/components/passwordfield.dart';
-import '/api/api.dart';
+import '../../api/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ResetPage extends StatefulWidget {

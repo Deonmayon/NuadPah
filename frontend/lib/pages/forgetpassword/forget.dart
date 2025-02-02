@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '/pages/forgetpassword/otp.dart';
 import '/components/emailtextfield.dart';
 import '/components/submitbox.dart';
-import '/api/api.dart';
+import '../../api/auth.dart';
 
 class ForgetPage extends StatefulWidget {
   const ForgetPage({super.key});

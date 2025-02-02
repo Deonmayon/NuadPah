@@ -6,7 +6,7 @@ import '/pages/forgetpassword/forget.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
-import '../api/api.dart'; // Import the ApiService class
+import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
 
 class SignInPage extends StatefulWidget {
