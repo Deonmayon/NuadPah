@@ -4,6 +4,7 @@ import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardLarge.dart';
 import 'package:frontend/api/massage.dart';
+import 'dart:convert';
 
 class HomepageWidget extends StatefulWidget {
   const HomepageWidget({Key? key}) : super(key: key);
@@ -25,17 +26,29 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     fetchMassages();
   }
 
+  // Future<void> fetchMassages() async {
+  //   try {
+  //     final response = await apiService.getAllMassages();
+  //     setState(() {
+  //       massages = List<Map<String, String>>.from(response.data);
+  //     });
+  //   } catch (e) {
+  //     // Handle error
+  //     print('Failed to fetch massages: $e');
+  //   }
+  // }
   Future<void> fetchMassages() async {
-    try {
-      final response = await apiService.getAllMassages();
-      setState(() {
-        massages = List<Map<String, String>>.from(response.data);
-      });
-    } catch (e) {
-      // Handle error
-      print('Failed to fetch massages: $e');
-    }
+  try {
+    final response = await apiService.getAllMassages();
+    final List<dynamic> data = json.decode(response.data);
+    setState(() {
+      massages = List<Map<String, String>>.from(data.map((item) => Map<String, String>.from(item)));
+    });
+  } catch (e) {
+    // Handle error
+    print('Failed to fetch massages: $e');
   }
+}
 
   @override
   Widget build(BuildContext context) {
