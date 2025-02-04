@@ -17,8 +17,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final ApiService apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
 
-  List<Map<String, String>> massages = [];
   String selectedType = 'All massages';
+  Map<String, dynamic> massages = {};
 
   @override
   void initState() {
@@ -26,35 +26,29 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     fetchMassages();
   }
 
-  // Future<void> fetchMassages() async {
-  //   try {
-  //     final response = await apiService.getAllMassages();
-  //     setState(() {
-  //       massages = List<Map<String, String>>.from(response.data);
-  //     });
-  //   } catch (e) {
-  //     // Handle error
-  //     print('Failed to fetch massages: $e');
-  //   }
-  // }
+  // Fetch massages from the API
   Future<void> fetchMassages() async {
     try {
       final response = await apiService.getAllMassages();
-      final List<dynamic> data = response.data;
+      final data = json.decode(response.data);
       setState(() {
-        massages = List<Map<String, String>>.from(data.map((item) => Map<String, String>.from(item)));
+        massages = Map<String, dynamic>.from(data['data']);
       });
     } catch (e) {
-      // Handle error
-      print('Failed to fetch massages: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to fetch massages: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final filteredMassages = selectedType == 'All massages'
-        ? massages
-        : massages.where((massage) => massage['type'] == selectedType).toList();
+        ? massages.values.toList()
+        : massages.values.where((massage) => massage['type'] == selectedType).toList();
 
     return GestureDetector(
       onTap: () {
