@@ -62,15 +62,14 @@ class _AdminManageNavState extends State<AdminManageNav> {
               width: MediaQuery.of(context).size.width,
               height: 100,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   children: [
-                    _buildManageColumn(
+                    _buildManageColumn1(
                       title1: 'User Manage',
-                      title2: 'Report Manage',  
+                      title2: 'Report Manage',
                     ),
-                    const SizedBox(width: 15),
-                    _buildManageColumn(
+                    _buildManageColumn2(
                       title1: 'Single Massage Manage',
                       title2: 'Set of Massage Manage',
                     ),
@@ -83,44 +82,107 @@ class _AdminManageNavState extends State<AdminManageNav> {
     );
   }
 
-  Widget _buildManageColumn({required String title1, required String title2}) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildManageRow(title1),
-            _buildManageRow(title2),
-          ],
-        ),
-      ),
+  Widget _buildManageColumn1({required String title1, required String title2}) {
+    return Column(
+      children: [
+        Flexible(
+          flex: 2,
+          child: Container(
+            padding: const EdgeInsets.only(left: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildManageRow1(title1),
+                _buildManageRow1(title2),
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 
-  Widget _buildManageRow(String title) {
+  Widget _buildManageColumn2({required String title1, required String title2}) {
+    return Column(
+      children: [
+        Flexible(
+          flex: 4,
+          child: Container(
+            padding: const EdgeInsets.only(left: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildManageRow2(title1),
+                _buildManageRow2(title2),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildManageRow1(String title) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: 'Roboto',
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+        Container(
+          width: 146,
+          padding: EdgeInsets.only(top: 10, bottom: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              FaIcon(
+                FontAwesomeIcons.chevronRight,
+                color: Colors.white,
+                size: 10,
+              ),
+            ],
           ),
         ),
-        IconButton(
-          icon: const FaIcon(
-            FontAwesomeIcons.chevronRight,
-            color: Colors.white,
-            size: 10,
-          ),
-          onPressed: () {
-            debugPrint('$title button pressed');
-          },
-        ),
+      ],
+    );
+  }
+
+  Widget _buildManageRow2(String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          padding: EdgeInsets.only(top: 10, bottom: 10, left: 10),
+          child: Row(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              FaIcon(
+                FontAwesomeIcons.chevronRight,
+                color: Colors.white,
+                size: 10,
+              ),
+            ],
+          ), 
+        )
       ],
     );
   }
