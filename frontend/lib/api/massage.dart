@@ -10,7 +10,7 @@ class ApiService {
   // Get all massages
   Future<Response> getAllMassages() async {
     try {
-      final response = await _dio.get('/single-list');
+      final response = await _dio.get('/massage/single-list');
       return response;
     } on DioError catch (e) {
       throw Exception('Failed to get all massages: ${e.response?.data ?? e.message}');
@@ -21,7 +21,7 @@ class ApiService {
   Future<Response> addMassage(String name, String type, int round, int time, String detail, String image) async {
     try {
       final response = await _dio.post(
-        '/add-single-massage',
+        '/massage/add-single-massage',
         data: {
           'mt_name': name,
           'mt_type': type,

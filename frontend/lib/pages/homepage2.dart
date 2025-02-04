@@ -38,17 +38,17 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   //   }
   // }
   Future<void> fetchMassages() async {
-  try {
-    final response = await apiService.getAllMassages();
-    final List<dynamic> data = json.decode(response.data);
-    setState(() {
-      massages = List<Map<String, String>>.from(data.map((item) => Map<String, String>.from(item)));
-    });
-  } catch (e) {
-    // Handle error
-    print('Failed to fetch massages: $e');
+    try {
+      final response = await apiService.getAllMassages();
+      final List<dynamic> data = response.data;
+      setState(() {
+        massages = List<Map<String, String>>.from(data.map((item) => Map<String, String>.from(item)));
+      });
+    } catch (e) {
+      // Handle error
+      print('Failed to fetch massages: $e');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
