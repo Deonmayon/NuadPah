@@ -134,9 +134,9 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       return MassageCardLarge(
                         image: massage['image'] ?? 'https://picsum.photos/seed/695/600',
                         avatar: massage['avatar'] ?? 'https://picsum.photos/seed/32/600',
-                        name: massage['name'] ?? 'Unnamed Massage',
-                        type: massage['type'] ?? 'Unknown',
-                        duration: massage['duration'] ?? '15 mins',
+                        name: massage['mt_name'] ?? 'Unnamed Massage',
+                        type: massage['mt_type'] ?? 'Unknown',
+                        duration: massage['mt_time'] ?? '15 mins',
                         rating: massage['rating'] ?? '4.8/5.0',
                       );
                     },
