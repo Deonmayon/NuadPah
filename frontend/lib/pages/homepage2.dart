@@ -25,19 +25,11 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   Future<void> fetchMassages() async {
     try {
       final response = await apiService.getAllMassages();
-      final data = json.decode(response.data);
-      print(
-          'yayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
-      print('Response Data: $data');
 
       setState(() {
-        massages = List<Map<String, String>>.from(
-            data['data'].map((massage) => massage.map(
-                  (key, value) => MapEntry(
-                      key, value.toString()), // Convert all values to String
-                )));
-        print('Massages: $massages');
+        massages = List<Map<String, String>>.from(response.data);
       });
+      print('Check Massages: $massages');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
