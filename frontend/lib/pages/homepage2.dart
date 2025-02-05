@@ -19,25 +19,56 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   String selectedType = 'All massages';
 
-  Map<String, Map<String, String>> massages = {};
+  List<Map<String, String>> massages = [];
+
+  // Future<void> fetchMassages() async {
+  //   try {
+  //     final response = await apiService.getAllMassages();
+  //     setState(() {
+  //       massages = (response.data as List)
+  //           .asMap()
+  //           .map((index, item) => MapEntry(index.toString(), Map<String, String>.from(item)));
+  //     });
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Failed to fetch massages: $e'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   }
+  // }
 
   Future<void> fetchMassages() async {
-    try {
-      final response = await apiService.getAllMassages();
-      setState(() {
-        massages = (response.data as List)
-            .asMap()
-            .map((index, item) => MapEntry(index.toString(), Map<String, String>.from(item)));
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to fetch massages: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+  try {
+    final response = await apiService.getAllMassages();
+    
+    print("Response data: ${response.data}"); // Debugging log
+
+    if (response.data == null || response.data['data'] == null) {
+      print("Error: response.data or response.data['data'] is null");
+      return;
     }
+
+    setState(() {
+      massages = (response.data['data'] as List)
+          .map((item) => Map<String, String>.from(item))
+          .toList();
+    });
+
+    print("Massages: $massages"); // Verify that data is updated
+  } catch (e) {
+    print("Error fetching massages: $e"); // Log error if something goes wrong
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to fetch massages: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
+
 
 
   @override
@@ -157,7 +188,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     itemBuilder: (context, index) {
                       final massage = filteredMassages[index];
                       return MassageCardLarge(
-                        image: 'https://picsum.photos/seed/695/600',
+                        image: massage['image'] ?? 'https://picsum.photos/seed/695/600',
                         avatar: 'https://picsum.photos/seed/32/600',
                         name: massage['mt_name'] ?? 'Unnamed Massage',
                         type: massage['mt_type'] ?? 'Unknown',
