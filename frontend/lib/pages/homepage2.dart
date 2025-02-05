@@ -19,6 +19,35 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   String selectedType = 'All massages';
 
+  List<Map<String, String>> massages =
+      []; // Ensure it's a list of Maps with String values
+
+  Future<void> fetchMassages() async {
+    try {
+      final response = await apiService.getAllMassages();
+      final data = json.decode(response.data);
+      print(
+          'yayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
+      print('Response Data: $data');
+
+      setState(() {
+        massages = List<Map<String, String>>.from(
+            data['data'].map((massage) => massage.map(
+                  (key, value) => MapEntry(
+                      key, value.toString()), // Convert all values to String
+                )));
+        print('Massages: $massages');
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to fetch massages: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -43,38 +72,18 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   //   }
   // }
 
-  List<Map<String, String>> massages =
-      []; // Ensure it's a list of Maps with String values
-
-  Future<void> fetchMassages() async {
-    try {
-      final response = await apiService.getAllMassages();
-
-      setState(() {
-        massages = List<Map<String, String>>.from(
-            response.data["data"].map((massage) => massage.map(
-                  (key, value) => MapEntry(
-                      key, value.toString()), // Convert all values to String
-                )));
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to fetch massages: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // final filteredMassages = selectedType == 'All massages'
     //     ? massages.values.toList()
     //     : massages.values.where((massage) => massage['type'] == selectedType).toList();
+    print('Selected Type: $selectedType');
+    print('Massages: $massages');
     final filteredMassages = selectedType == 'All massages'
         ? massages // No need to use `.values.toList()`
-        : massages.where((massage) => massage['mt_type'] == selectedType).toList();
+        : massages
+            .where((massage) => massage['mt_type'] == selectedType)
+            .toList();
 
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!! Filtered Massages: $filteredMassages');
 
