@@ -30,9 +30,9 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   Future<void> fetchMassages() async {
     try {
       final response = await apiService.getAllMassages();
-      final data = json.decode(response.data);
+      // final data = json.decode(response.data);
       setState(() {
-        massages = Map<String, dynamic>.from(data['data']);
+        massages = Map<String, dynamic>.from(response.data);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
