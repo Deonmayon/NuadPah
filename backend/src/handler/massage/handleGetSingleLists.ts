@@ -20,7 +20,7 @@ export const handleGetSingleLists = async (
 
     return reply.status(200).send({
       message: "Fetch Single Massage Techniques Successfully",
-      data: rows[0],
+      data: rows,
     });
   } catch (err) {
     return reply

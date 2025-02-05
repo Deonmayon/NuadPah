@@ -43,25 +43,29 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   //   }
   // }
 
-  List<Map<String, dynamic>> massages = []; // Initialize as a list
+  List<Map<String, String>> massages =
+      []; // Ensure it's a list of Maps with String values
 
-Future<void> fetchMassages() async {
-  try {
-    final response = await apiService.getAllMassages();
+  Future<void> fetchMassages() async {
+    try {
+      final response = await apiService.getAllMassages();
 
-    setState(() {
-      massages = List<Map<String, dynamic>>.from(response.data["data"]);
-    });
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Failed to fetch massages: $e'),
-        backgroundColor: Colors.red,
-      ),
-    );
+      setState(() {
+        massages = List<Map<String, String>>.from(
+            response.data["data"].map((massage) => massage.map(
+                  (key, value) => MapEntry(
+                      key, value.toString()), // Convert all values to String
+                )));
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to fetch massages: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +73,10 @@ Future<void> fetchMassages() async {
     //     ? massages.values.toList()
     //     : massages.values.where((massage) => massage['type'] == selectedType).toList();
     final filteredMassages = selectedType == 'All massages'
-    ? massages // No need to use `.values.toList()`
-    : massages.where((massage) => massage['type'] == selectedType).toList();
+        ? massages // No need to use `.values.toList()`
+        : massages.where((massage) => massage['mt_type'] == selectedType).toList();
 
+    print('!!!!!!!!!!!!!!!!!!!!!!!!!!! Filtered Massages: $filteredMassages');
 
     return GestureDetector(
       onTap: () {
@@ -141,15 +146,25 @@ Future<void> fetchMassages() async {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(width: 20,),
+                      SizedBox(
+                        width: 20,
+                      ),
                       _buildFilterButton('All massages'),
-                      SizedBox(width: 20,),
+                      SizedBox(
+                        width: 20,
+                      ),
                       _buildFilterButton('Back'),
-                      SizedBox(width: 20,),
+                      SizedBox(
+                        width: 20,
+                      ),
                       _buildFilterButton('Arms'),
-                      SizedBox(width: 20,),
+                      SizedBox(
+                        width: 20,
+                      ),
                       _buildFilterButton('Legs'),
-                      SizedBox(width: 20,),
+                      SizedBox(
+                        width: 20,
+                      ),
                       _buildFilterButton('Neck'),
                     ],
                   ),
@@ -162,12 +177,12 @@ Future<void> fetchMassages() async {
                     itemBuilder: (context, index) {
                       final massage = filteredMassages[index];
                       return MassageCardLarge(
-                        image: massage['image'] ?? 'https://picsum.photos/seed/695/600',
-                        avatar: massage['avatar'] ?? 'https://picsum.photos/seed/32/600',
+                        image: 'https://picsum.photos/seed/695/600',
+                        avatar: 'https://picsum.photos/seed/32/600',
                         name: massage['mt_name'] ?? 'Unnamed Massage',
                         type: massage['mt_type'] ?? 'Unknown',
                         duration: massage['mt_time'] ?? '15 mins',
-                        rating: massage['rating'] ?? '4.8/5.0',
+                        rating: '4.8/5.0',
                       );
                     },
                   ),
@@ -229,7 +244,8 @@ Future<void> fetchMassages() async {
                     MassageCard(
                       image: 'https://picsum.photos/seed/459/600',
                       name: 'Relaxing Massage',
-                      detail: 'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf',
+                      detail:
+                          'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf',
                       type: 'Back',
                       time: '10 mins',
                     ),
@@ -255,39 +271,39 @@ Future<void> fetchMassages() async {
   }
 
   Widget _buildFilterButton(String type) {
-  bool isSelected = selectedType == type;
+    bool isSelected = selectedType == type;
 
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        selectedType = type;
-      });
-    },
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          type,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
-            color: isSelected ? Colors.black : Colors.grey,
-          ),
-        ),
-        if (isSelected)
-          Container(
-            margin: const EdgeInsets.only(top: 2),
-            width: 5, // ความกว้างของจุด
-            height: 5, // ความสูงของจุด
-            decoration: BoxDecoration(
-              color: Color(0xFFC0A172),
-              shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedType = type;
+        });
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            type,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+              color: isSelected ? Colors.black : Colors.grey,
             ),
           ),
-      ],
-    ),
-  );
-}
+          if (isSelected)
+            Container(
+              margin: const EdgeInsets.only(top: 2),
+              width: 5, // ความกว้างของจุด
+              height: 5, // ความสูงของจุด
+              decoration: BoxDecoration(
+                color: Color(0xFFC0A172),
+                shape: BoxShape.circle,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildRecentlyViewedCard() {
     return Container(
