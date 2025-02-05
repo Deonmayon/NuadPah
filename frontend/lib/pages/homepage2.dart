@@ -19,17 +19,15 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   String selectedType = 'All massages';
 
-  List<Map<String, String>> massages =
-      []; // Ensure it's a list of Maps with String values
+  Map<String, Map<String, String>> massages = {}; // Change to Map
 
   Future<void> fetchMassages() async {
     try {
       final response = await apiService.getAllMassages();
 
       setState(() {
-        massages = List<Map<String, String>>.from(response.data);
+        massages = Map<String, Map<String, String>>.from(response.data);
       });
-      print('Check Massages: $massages');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -46,37 +44,16 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     fetchMassages();
   }
 
-  // // Fetch massages from the API
-  // Future<void> fetchMassages() async {
-  //   try {
-  //     final response = await apiService.getAllMassages();
-  //     // final data = json.decode(response.data);
-  //     setState(() {
-  //       massages = Map<String, dynamic>.from(response.data);
-  //     });
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Failed to fetch massages: $e'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // final filteredMassages = selectedType == 'All massages'
-    //     ? massages.values.toList()
-    //     : massages.values.where((massage) => massage['type'] == selectedType).toList();
-    print('Selected Type: $selectedType');
-    print('Massages: $massages');
     final filteredMassages = selectedType == 'All massages'
-        ? massages // No need to use `.values.toList()`
-        : massages
+        ? massages.values.toList()
+        : massages.values
             .where((massage) => massage['mt_type'] == selectedType)
             .toList();
 
+    print('Selected Type: $selectedType');
+    print('Massages: $massages');
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!! Filtered Massages: $filteredMassages');
 
     return GestureDetector(
