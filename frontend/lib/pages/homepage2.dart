@@ -19,14 +19,15 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   String selectedType = 'All massages';
 
-  Map<String, Map<String, String>> massages = {}; // Change to Map
+  Map<String, Map<String, String>> massages = {};
 
   Future<void> fetchMassages() async {
     try {
       final response = await apiService.getAllMassages();
-
       setState(() {
-        massages = Map<String, Map<String, String>>.from(response.data);
+        massages = (response.data as List)
+            .asMap()
+            .map((index, item) => MapEntry(index.toString(), Map<String, String>.from(item)));
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,6 +38,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       );
     }
   }
+
 
   @override
   void initState() {
