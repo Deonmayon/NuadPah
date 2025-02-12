@@ -34,10 +34,6 @@ class _HomepageWidgetState extends State<HomepageWidget> {
             .where((massage) => massage['type'] == selectedType)
             .toList();
 
-    print('Selected Type: $selectedType');
-    print('Massages: $massages');
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!! Filtered Massages: $filteredMassages');
-
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -135,7 +131,15 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     scrollDirection: Axis.horizontal,
                     itemCount: filteredMassages.length,
                     itemBuilder: (context, index) {
-                      return _buildRecommendationCard(filteredMassages[index]); 
+                      final massage = filteredMassages[index];
+                      return MassageCardLarge(
+                        image: 'https://picsum.photos/seed/695/600',
+                        avatar: 'https://picsum.photos/seed/32/600',
+                        name: massage['name'] ?? 'Unnamed Massage',
+                        type: massage['type'] ?? 'Unknown',
+                        duration: '15 mins',
+                        rating: '4.8/5.0',
+                      );
                     },
                   ),
                 ),
@@ -255,139 +259,6 @@ class _HomepageWidgetState extends State<HomepageWidget> {
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildRecommendationCard(Map<String, String> massage) {
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      child: Container(
-        width: 290,
-        height: 230,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 15,
-              color: const Color(0x40000000),
-              offset: Offset(0, 5),
-            )
-          ],
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: 135,
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    child: Image.network(
-                      massage['image'] ?? 'https://picsum.photos/seed/695/600',
-                      width: 290,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Color(0x99DBDBDB),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        alignment: Alignment.center,
-                        icon: const FaIcon(
-                          FontAwesomeIcons.solidBookmark,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 15,
-                    child: Container(
-                      height: 30,
-                      padding: EdgeInsets.symmetric(horizontal: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 12.5,
-                            backgroundImage: NetworkImage(
-                              massage['avatar'] ??
-                                  'https://picsum.photos/seed/32/600',
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Type: ${massage['type'] ?? 'Unknown'}',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Text(
-                massage['name'] ?? 'Unnamed Massage',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Row(
-                children: [
-                  Icon(FontAwesomeIcons.solidClock,
-                      size: 15, color: Color(0xFFB1B1B1)),
-                  SizedBox(width: 5),
-                  Text(
-                    '≈ ${massage['duration'] ?? '15 mins'}',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF676767)),
-                  ),
-                  SizedBox(width: 10),
-                  Icon(FontAwesomeIcons.solidStar,
-                      size: 15, color: Color(0xFFB1B1B1)),
-                  SizedBox(width: 5),
-                  Text(
-                    '${massage['rating'] ?? '4.8/5.0'}',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF676767)),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-          ],
-        ),
       ),
     );
   }
