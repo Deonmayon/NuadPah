@@ -15,74 +15,26 @@ class HomepageWidget extends StatefulWidget {
 
 class _HomepageWidgetState extends State<HomepageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final ApiService apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+
+  final List<Map<String, String>> massages = [
+    {'type': 'Back', 'name': 'Relaxing Back Massage'},
+    {'type': 'Arms', 'name': 'Arm Soothing Massage'},
+    {'type': 'Legs', 'name': 'Leg Comfort Massage'},
+    {'type': 'Neck', 'name': 'Neck Pain Relief'},
+    {'type': 'Back', 'name': 'Deep Tissue Back Massage'},
+  ];
 
   String selectedType = 'All massages';
 
-  List<Map<String, String>> massages = [];
-
-  // Future<void> fetchMassages() async {
-  //   try {
-  //     final response = await apiService.getAllMassages();
-  //     setState(() {
-  //       massages = (response.data as List)
-  //           .asMap()
-  //           .map((index, item) => MapEntry(index.toString(), Map<String, String>.from(item)));
-  //     });
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Failed to fetch massages: $e'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   }
-  // }
-
-  Future<void> fetchMassages() async {
-  try {
-    final response = await apiService.getAllMassages();
-    
-    print("Response data: ${response.data}"); // Debugging log
-
-    if (response.data == null || response.data['data'] == null) {
-      print("Error: response.data or response.data['data'] is null");
-      return;
-    }
-
-    setState(() {
-      massages = (response.data['data'] as List)
-          .map((item) => Map<String, String>.from(item))
-          .toList();
-    });
-
-    print("Massages: $massages"); // Verify that data is updated
-  } catch (e) {
-    print("Error fetching massages: $e"); // Log error if something goes wrong
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Failed to fetch massages: $e'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
 
 
-
-  @override
-  void initState() {
-    super.initState();
-    fetchMassages();
-  }
 
   @override
   Widget build(BuildContext context) {
     final filteredMassages = selectedType == 'All massages'
-        ? massages.values.toList()
-        : massages.values
-            .where((massage) => massage['mt_type'] == selectedType)
+        ? massages
+        : massages
+            .where((massage) => massage['type'] == selectedType)
             .toList();
 
     print('Selected Type: $selectedType');
@@ -186,15 +138,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     scrollDirection: Axis.horizontal,
                     itemCount: filteredMassages.length,
                     itemBuilder: (context, index) {
-                      final massage = filteredMassages[index];
-                      return MassageCardLarge(
-                        image: massage['image'] ?? 'https://picsum.photos/seed/695/600',
-                        avatar: 'https://picsum.photos/seed/32/600',
-                        name: massage['mt_name'] ?? 'Unnamed Massage',
-                        type: massage['mt_type'] ?? 'Unknown',
-                        duration: massage['mt_time'] ?? '15 mins',
-                        rating: '4.8/5.0',
-                      );
+                      return _buildRecommendationCard(filteredMassages[index]); 
                     },
                   ),
                 ),
@@ -245,28 +189,393 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ),
                 Column(
                   children: [
-                    MassageCard(
-                      image: 'https://picsum.photos/seed/459/600',
-                      name: 'Relaxing Massage',
-                      detail: 'A relaxing massage to relieve stress.',
-                      type: 'Neck',
-                      time: '5 mins',
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      width: double.infinity,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 8,
+                            color: Color(0x40000000),
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Image.network(
+                                'https://picsum.photos/seed/459/600',
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Name Massage',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFFB1B1B1),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFDBDBDB),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          "Type : Back",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFDBDBDB),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          "≈ 5 minutes",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 10, 10, 0),
+                                width: 30, // ความกว้างของปุ่ม
+                                height: 30, // ความสูงของปุ่ม
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFDBDBDB), // พื้นหลังของปุ่ม
+                                  borderRadius: BorderRadius.circular(
+                                      10), // ทำให้เป็นสี่เหลี่ยม
+                                ),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  icon: const FaIcon(
+                                    FontAwesomeIcons.solidBookmark,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    MassageCard(
-                      image: 'https://picsum.photos/seed/459/600',
-                      name: 'Relaxing Massage',
-                      detail:
-                          'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf',
-                      type: 'Back',
-                      time: '10 mins',
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      width: double.infinity,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 8,
+                            color: Color(0x40000000),
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Image.network(
+                                'https://picsum.photos/seed/459/600',
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Name Massage',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFFB1B1B1),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFDBDBDB),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          "Type : Back",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFDBDBDB),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          "≈ 5 minutes",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 10, 10, 0),
+                                width: 30, // ความกว้างของปุ่ม
+                                height: 30, // ความสูงของปุ่ม
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFDBDBDB), // พื้นหลังของปุ่ม
+                                  borderRadius: BorderRadius.circular(
+                                      10), // ทำให้เป็นสี่เหลี่ยม
+                                ),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  icon: const FaIcon(
+                                    FontAwesomeIcons.solidBookmark,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    MassageCard(
-                      image: 'https://picsum.photos/seed/459/600',
-                      name: 'Relaxing Massage',
-                      detail: 'A relaxing massage to relieve stress.',
-                      type: 'Full Body',
-                      time: '15 mins',
-                    ),
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      width: double.infinity,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 8,
+                            color: Color(0x40000000),
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Image.network(
+                                'https://picsum.photos/seed/459/600',
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Name Massage',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFFB1B1B1),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFDBDBDB),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          "Type : Back",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFDBDBDB),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          "≈ 5 minutes",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 10, 10, 0),
+                                width: 30, // ความกว้างของปุ่ม
+                                height: 30, // ความสูงของปุ่ม
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFDBDBDB), // พื้นหลังของปุ่ม
+                                  borderRadius: BorderRadius.circular(
+                                      10), // ทำให้เป็นสี่เหลี่ยม
+                                ),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  icon: const FaIcon(
+                                    FontAwesomeIcons.solidBookmark,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 )
               ],
@@ -312,6 +621,139 @@ class _HomepageWidgetState extends State<HomepageWidget> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRecommendationCard(Map<String, String> massage) {
+    return Container(
+      padding: const EdgeInsets.all(20.0),
+      child: Container(
+        width: 290,
+        height: 230,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 15,
+              color: const Color(0x40000000),
+              offset: Offset(0, 5),
+            )
+          ],
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              height: 135,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    child: Image.network(
+                      massage['image'] ?? 'https://picsum.photos/seed/695/600',
+                      width: 290,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Container(
+                      width: 35,
+                      height: 35,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Color(0x99DBDBDB),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        alignment: Alignment.center,
+                        icon: const FaIcon(
+                          FontAwesomeIcons.solidBookmark,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 15,
+                    child: Container(
+                      height: 30,
+                      padding: EdgeInsets.symmetric(horizontal: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 12.5,
+                            backgroundImage: NetworkImage(
+                              massage['avatar'] ??
+                                  'https://picsum.photos/seed/32/600',
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            'Type: ${massage['type'] ?? 'Unknown'}',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Text(
+                massage['name'] ?? 'Unnamed Massage',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Row(
+                children: [
+                  Icon(FontAwesomeIcons.solidClock,
+                      size: 15, color: Color(0xFFB1B1B1)),
+                  SizedBox(width: 5),
+                  Text(
+                    '≈ ${massage['duration'] ?? '15 mins'}',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF676767)),
+                  ),
+                  SizedBox(width: 10),
+                  Icon(FontAwesomeIcons.solidStar,
+                      size: 15, color: Color(0xFFB1B1B1)),
+                  SizedBox(width: 5),
+                  Text(
+                    '${massage['rating'] ?? '4.8/5.0'}',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF676767)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 5),
+          ],
+        ),
       ),
     );
   }
