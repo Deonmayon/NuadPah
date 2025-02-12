@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardLarge.dart';
-import 'package:frontend/api/massage.dart';
-import 'dart:convert';
 
 class HomepageWidget extends StatefulWidget {
   const HomepageWidget({Key? key}) : super(key: key);
@@ -264,7 +261,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Widget _buildRecentlyViewedCard() {
-    return MassageCardSmall(
+    return MassageCardLarge(
       image: 'https://picsum.photos/seed/695/600',
       avatar: 'https://picsum.photos/seed/32/600',
       name: 'Name Massage',
