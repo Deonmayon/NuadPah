@@ -111,7 +111,7 @@ class SingleMassageTab extends StatelessWidget {
           description: 'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
           type: 'Type: Back',
           duration: '≈ 5 minutes',
-          imageUrl: 'https://picsum.photos/seed/459/600',
+          imageUrl: 'assets/images/Massage_Image11.png',
         );
       },
     );
@@ -130,9 +130,9 @@ class SetOfMassageTab extends StatelessWidget {
           description: 'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
           type: 'Type: Back, Shoulder, Neck',
           duration: '≈ 15 minutes',
-          imageUrl1: 'https://picsum.photos/seed/459/600',
-          imageUrl2: 'https://picsum.photos/seed/459/601',
-          imageUrl3: 'https://picsum.photos/seed/459/602',
+          imageUrl1: 'assets/images/Massage_Image01.png',
+          imageUrl2: 'assets/images/Massage_Image03.png',
+          imageUrl3: 'assets/images/Massage_Image11.png',
         );
       },
     );
@@ -178,7 +178,7 @@ class MassageCard extends StatelessWidget {
             padding: const EdgeInsets.all(10.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
+              child: Image.asset(
                 imageUrl,
                 width: 100,
                 height: 100,
@@ -342,7 +342,7 @@ class MassageCardSet extends StatelessWidget {
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                         ),
-                        child: Image.network(
+                        child: Image.asset(
                           imageUrl1,
                           width: 65,
                           height: 80,
@@ -353,7 +353,7 @@ class MassageCardSet extends StatelessWidget {
                         borderRadius: const BorderRadius.only(
                           topRight: Radius.circular(10),
                         ),
-                        child: Image.network(
+                        child: Image.asset(
                           imageUrl2,
                           width: 65,
                           height: 80,
@@ -367,7 +367,7 @@ class MassageCardSet extends StatelessWidget {
                         bottomLeft: Radius.circular(10),
                         bottomRight: Radius.circular(10),
                       ),
-                      child: Image.network(
+                      child: Image.asset(
                         imageUrl3,
                         width: 130,
                         height: 80,

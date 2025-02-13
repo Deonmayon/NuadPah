@@ -27,4 +27,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/
+    - assets/images/Massage_Image01.png
+    - assets/images/Massage_Image03.png
+    - assets/images/Massage_Image11.png
+    - assets/images/profilePicture.jpg

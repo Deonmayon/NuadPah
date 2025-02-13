@@ -62,8 +62,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ],
               ),
               ClipOval(
-                child: Image.network(
-                  'https://picsum.photos/seed/396/600',
+                child: Image.asset(
+                  'assets/images/profilePicture.jpg',
                   width: 50,
                   height: 50,
                   fit: BoxFit.cover,
@@ -188,8 +188,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                             padding: const EdgeInsets.all(10.0),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(5),
-                              child: Image.network(
-                                'https://picsum.photos/seed/459/600',
+                              child: Image.asset(
+                                'assets/images/Massage_Image01.png',
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.cover,
@@ -317,8 +317,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                             padding: const EdgeInsets.all(10.0),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(5),
-                              child: Image.network(
-                                'https://picsum.photos/seed/459/600',
+                              child: Image.asset(
+                                'assets/images/Massage_Image03.png',
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.cover,
@@ -446,8 +446,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                             padding: const EdgeInsets.all(10.0),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(5),
-                              child: Image.network(
-                                'https://picsum.photos/seed/459/600',
+                              child: Image.asset(
+                                'assets/images/Massage_Image11.png',
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.cover,
@@ -630,8 +630,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    child: Image.network(
-                      massage['image'] ?? 'https://picsum.photos/seed/695/600',
+                    child: Image.asset(
+                      massage['image'] ?? 'assets/images/Massage_Image01.png',
                       width: 290,
                       height: 120,
                       fit: BoxFit.cover,
@@ -675,9 +675,9 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                         children: [
                           CircleAvatar(
                             radius: 12.5,
-                            backgroundImage: NetworkImage(
+                            backgroundImage: AssetImage(
                               massage['avatar'] ??
-                                  'https://picsum.photos/seed/32/600',
+                                  'assets/images/Massage_Image01.png',
                             ),
                           ),
                           SizedBox(width: 4),
@@ -763,8 +763,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    child: Image.network(
-                      'https://picsum.photos/seed/695/600',
+                    child: Image.asset(
+                      'assets/images/Massage_Image11.png',
                       width: 290,
                       height: 120,
                       fit: BoxFit.cover,
@@ -809,8 +809,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                         children: [
                           CircleAvatar(
                             radius: 12.5,
-                            backgroundImage: NetworkImage(
-                              'https://picsum.photos/seed/32/600',
+                            backgroundImage: AssetImage(
+                              'assets/images/Massage_Image03.png',
                             ),
                           ),
                           SizedBox(width: 4),

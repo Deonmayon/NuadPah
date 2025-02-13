@@ -22,9 +22,9 @@ class _SetOfMassageManagePageState extends State<SetOfMassageManagePage> {
   final int totalPages = 251;
   final List<Map<String, String>> massageData = List.generate(4, (index) {
     return {
-      "image1": "https://picsum.photos/200?random=${index + 1}", // ใช้ภาพตัวอย่างแบบสุ่ม
-      "image2": "https://picsum.photos/200?random=${index + 2}",
-      "image3": "https://picsum.photos/200?random=${index + 3}",
+      "image1": 'assets/images/Massage_Image01.png', // ใช้ภาพตัวอย่างแบบสุ่ม
+      "image2": 'assets/images/Massage_Image03.png',
+      "image3": 'assets/images/Massage_Image11.png',
       "name": "Name Set of Massage",
       "type": "Type: Back, Shoulder, Neck",
       "duration": "15 minutes"
@@ -34,19 +34,19 @@ class _SetOfMassageManagePageState extends State<SetOfMassageManagePage> {
   final List<Map<String, String>> items = [
     {
       "name": "Name Massage 1",
-      "image": "https://fastly.picsum.photos/id/611/200/200.jpg?hmac=1Tkz2gFbAArMMLUWylD-8s6PzYgu0sPIdO71hlp9Xs0", // ใส่ URL รูปที่ต้องการ
+      "image": 'assets/images/Massage_Image01.png', // ใส่ URL รูปที่ต้องการ
       "type": "Type: Back",
       "duration": "4 minutes"
     },
     {
       "name": "Name Massage 2",
-      "image": "https://fastly.picsum.photos/id/721/200/200.jpg?hmac=QLtStUqefglPXev8bwvDQ34SN-dSYO2_a299oUpbP7g", // ใส่ URL รูปที่ต้องการ
+      "image": 'assets/images/Massage_Image11.png', // ใส่ URL รูปที่ต้องการ
       "type": "Type: Shoulder",
       "duration": "5 minutes"
     },
     {
       "name": "Name Massage 3",
-      "image": "https://fastly.picsum.photos/id/586/200/200.jpg?hmac=qCQKBciYy8H3AxcVxnTZLYwXw02r33F5_3E4UmlB8H4", // ใส่ URL รูปที่ต้องการ
+      "image": 'assets/images/Massage_Image03.png', // ใส่ URL รูปที่ต้องการ
       "type": "Type: Neck",
       "duration": "7 minutes"
     },
@@ -733,7 +733,7 @@ class _SetOfMassageManagePageState extends State<SetOfMassageManagePage> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 ClipRRect(
-                                                  child: Image.network(
+                                                  child: Image.asset(
                                                     item["image1"]!,
                                                     width: 45,
                                                     height: 45,
@@ -741,7 +741,7 @@ class _SetOfMassageManagePageState extends State<SetOfMassageManagePage> {
                                                   ),
                                                 ),
                                                 ClipRRect(
-                                                  child: Image.network(
+                                                  child: Image.asset(
                                                     item["image2"]!,
                                                     width: 45,
                                                     height: 45,
@@ -751,7 +751,7 @@ class _SetOfMassageManagePageState extends State<SetOfMassageManagePage> {
                                               ],
                                             ),
                                             ClipRRect(
-                                              child: Image.network(
+                                              child: Image.asset(
                                                 item["image3"]!,
                                                 width: 90,
                                                 height: 45,
