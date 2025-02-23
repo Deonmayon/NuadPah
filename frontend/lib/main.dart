@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:frontend/pages/profile.dart';
-import 'package:frontend/pages/singleMassageManage.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/pages/forgetpassword/reset.dart';
 import 'package:frontend/pages/forgetpassword/forget.dart';
 import 'package:frontend/pages/forgetpassword/otp.dart';
 import 'package:frontend/pages/register.dart';
 import 'package:frontend/pages/login.dart';
-import 'package:frontend/pages/setofMassageManage.dart';
 import 'package:frontend/pages/homepage2.dart';
-import 'package:frontend/pages/UserManage.dart';
 import 'package:frontend/pages/favouritepage.dart';
 import 'package:frontend/pages/learnpage.dart';
 
@@ -42,9 +39,6 @@ class MyApp extends StatelessWidget {
         '/home2' : (context) => const HomepageWidget(),
         '/profile' : (context) => const ProfilePage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
-        '/singlemanage' : (context) => const SingleMassageManagePage(),
-        '/setofmanage' : (context) => const SetOfMassageManagePage(),
-        '/usermanage' : (context) => const UserManagePage(),
         '/favourite' : (context) => const Favouritepage(),
         '/learn' : (context) => const Learnpage(),
       },
