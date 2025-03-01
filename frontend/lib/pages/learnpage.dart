@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 
-class Learnpage extends StatefulWidget {
-  const Learnpage({Key? key}) : super(key: key);
+class LearnPage extends StatefulWidget {
+  const LearnPage({Key? key}) : super(key: key);
 
   @override
-  State<Learnpage> createState() => _LearnState();
+  State<LearnPage> createState() => _LearnState();
 }
 
-class _LearnState extends State<Learnpage> {
+class _LearnState extends State<LearnPage> {
   final TextEditingController textController = TextEditingController();
   final FocusNode textFieldFocusNode = FocusNode();
   int _selectedTab = 0; // 0: Single Massage, 1: Set of Massage

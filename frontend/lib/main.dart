@@ -11,6 +11,7 @@ import 'package:frontend/pages/login.dart';
 import 'package:frontend/pages/homepage2.dart';
 import 'package:frontend/pages/favouritepage.dart';
 import 'package:frontend/pages/learnpage.dart';
+import 'package:frontend/pages/mappage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: '/learn',
+      initialRoute: '/map',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login' : (context) => const LoginPage(),
@@ -40,7 +41,8 @@ class MyApp extends StatelessWidget {
         '/profile' : (context) => const ProfilePage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
         '/favourite' : (context) => const Favouritepage(),
-        '/learn' : (context) => const Learnpage(),
+        '/learn' : (context) => const LearnPage(),
+        '/map' : (context) => MapPage(),
       },
     );
   }
