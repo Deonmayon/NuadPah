@@ -13,7 +13,7 @@ class ApiService {
       final response = await _dio.get('/massage/single-list');
       // print(response.data.toString());
       return response;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(
           'Failed to get all massages: ${e.response?.data ?? e.message}');
     }
@@ -35,7 +35,23 @@ class ApiService {
           options: Options(headers: {'Content-Type': 'application/json'}));
 
       return response;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to add massage: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Reccomend massages
+  Future<Response> getReccomendMassages(String email) async {
+    try {
+      final response = await _dio.post('/massage/recommend',
+          data: {
+            'email': email,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
       throw Exception(
           'Failed to add massage: ${e.response?.data ?? e.message}');
     }

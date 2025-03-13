@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardLarge.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../api/massage.dart';
 
 class HomepageWidget extends StatefulWidget {
-  const HomepageWidget({Key? key}) : super(key: key);
+  final String email;
+
+  const HomepageWidget({Key? key, required this.email}) : super(key: key);
 
   @override
   State<HomepageWidget> createState() => _HomepageWidgetState();
@@ -13,22 +17,53 @@ class HomepageWidget extends StatefulWidget {
 class _HomepageWidgetState extends State<HomepageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<Map<String, String>> massages = [
-    {'type': 'Back', 'name': 'Relaxing Back Massage'},
-    {'type': 'Arms', 'name': 'Arm Soothing Massage'},
-    {'type': 'Legs', 'name': 'Leg Comfort Massage'},
-    {'type': 'Neck', 'name': 'Neck Pain Relief'},
-    {'type': 'Back', 'name': 'Deep Tissue Back Massage'},
-  ];
+  String _errorMessage = '';
+
+  List<dynamic> massages = [];
 
   String selectedType = 'All massages';
 
   @override
+  void initState() {
+    super.initState();
+    Future.wait([fetchMassages()]);
+  }
+
+  Future<void> fetchMassages() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    try {
+      final response = await apiService.getAllMassages();
+      print(response.data);
+
+      setState(() {
+        massages = (response.data as List)
+            .map((item) =>
+                item.map((key, value) => MapEntry(key, value.toString())))
+            .toList();
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  // final List<Map<String, String>> massages = [
+  //   {'type': 'Back', 'name': 'Relaxing Back Massage'},
+  //   {'type': 'Arms', 'name': 'Arm Soothing Massage'},
+  //   {'type': 'Legs', 'name': 'Leg Comfort Massage'},
+  //   {'type': 'Neck', 'name': 'Neck Pain Relief'},
+  //   {'type': 'Back', 'name': 'Deep Tissue Back Massage'},
+  // ];
+
+  @override
   Widget build(BuildContext context) {
+    print(massages);
     final filteredMassages = selectedType == 'All massages'
         ? massages
         : massages
-            .where((massage) => massage['type'] == selectedType)
+            .where((massages) => massages['mt_type'] == selectedType)
             .toList();
 
     return GestureDetector(
@@ -86,7 +121,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 const Padding(
                   padding: EdgeInsets.only(top: 20.0, left: 20),
                   child: Text(
-                    'Recommend',
+                    'Reccommend',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 32,
@@ -130,10 +165,10 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     itemBuilder: (context, index) {
                       final massage = filteredMassages[index];
                       return MassageCardLarge(
-                        image: 'https://picsum.photos/seed/695/600',
+                        image: massage['mt_image_name'],
                         avatar: 'https://picsum.photos/seed/32/600',
-                        name: massage['name'] ?? 'Unnamed Massage',
-                        type: massage['type'] ?? 'Unknown',
+                        name: massage['mt_name'] ?? 'Unnamed Massage',
+                        type: massage['mt_type'] ?? 'Unknown',
                         duration: '15 mins',
                         rating: '4.8/5.0',
                       );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:frontend/pages/homepage.dart';
+import 'package:frontend/pages/homepage2.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'signup.dart';
 import '/pages/forgetpassword/forget.dart';
@@ -22,7 +24,7 @@ class _SignInPageState extends State<SignInPage> {
   String _errorMessage = '';
 
   Future<void> _signin() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
       final response = await apiService.signIn(
@@ -32,13 +34,15 @@ class _SignInPageState extends State<SignInPage> {
 
       if (response.statusCode == 201) {
         // pull token from response and set token (like localStorage)
-        final token = response.data['token'];
+        final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => WelcomePage()),
+          MaterialPageRoute(
+              builder: (context) =>
+                  HomepageWidget(email: _emailController.text)),
         );
       } else {
         setState(() {

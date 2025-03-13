@@ -27,20 +27,26 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: '/home',
+      initialRoute: '/signin',
       routes: {
         '/': (context) => const WelcomePage(),
-        '/signin' : (context) => const SignInPage(),
-        '/signup' : (context) => const SignUpPage(),
-        '/forget' : (context) => const ForgetPage(),
-        '/otp' : (context) => const OTPPage( email: '',),
-        '/reset' : (context) => const ResetPage( email: '',),
-        '/home' : (context) => const HomepageWidget(),
-        '/profile' : (context) => const ProfilePage(),
+        '/signin': (context) => const SignInPage(),
+        '/signup': (context) => const SignUpPage(),
+        '/forget': (context) => const ForgetPage(),
+        '/otp': (context) => const OTPPage(
+              email: '',
+            ),
+        '/reset': (context) => const ResetPage(
+              email: '',
+            ),
+        '/home': (context) => const HomepageWidget(
+              email: '',
+            ),
+        '/profile': (context) => const ProfilePage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
-        '/singlemanage' : (context) => const SingleMassageManagePage(),
-        '/setofmanage' : (context) => const SetOfMassageManagePage(),
-        '/usermanage' : (context) => const UserManagePage(),
+        '/singlemanage': (context) => const SingleMassageManagePage(),
+        '/setofmanage': (context) => const SetOfMassageManagePage(),
+        '/usermanage': (context) => const UserManagePage(),
       },
     );
   }

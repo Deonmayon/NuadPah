@@ -23,7 +23,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String _errorMessage = '';
 
   Future<void> _signup() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
       final response = await apiService.signUp(
