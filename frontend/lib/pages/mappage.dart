@@ -12,9 +12,11 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
-  final LatLng _initialPosition = const LatLng(13.7563, 100.5018); // Bangkok, Thailand
+  final LatLng _initialPosition = const LatLng(
+      13.651463326521963, 100.49647964423752); // KMUTT, Bangkok, Thailand
   final Set<Marker> _markers = {};
-  final String _placesApiKey = ""; // แทนที่ด้วย API Key ของคุณ
+  final String _placesApiKey =
+      "AIzaSyCN5n-i2muyF01pUKT9dMxquw1MKxbJt0Y"; // แทนที่ด้วย API Key ของคุณ
   final TextEditingController textController = TextEditingController();
   final FocusNode textFieldFocusNode = FocusNode();
 
@@ -53,78 +55,75 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack (
-        children: [
-          GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(
+      body: Stack(children: [
+        GoogleMap(
+          onMapCreated: _onMapCreated,
+          initialCameraPosition: CameraPosition(
             target: _initialPosition,
             zoom: 12.0,
           ),
-            markers: _markers,
-          ),
-          Positioned(
-            top: 20,
-            left: 20,
-            right: 20,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-              child: Container(
-                width: 372,
-                height: 45,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
-                    BoxShadow(
-                      blurRadius: 15,
-                      color: Color(0x3F000000),
-                      offset: Offset(0, 5),
+          markers: _markers,
+        ),
+        Positioned(
+          top: 20,
+          left: 20,
+          right: 20,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+            child: Container(
+              width: 372,
+              height: 45,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [
+                  BoxShadow(
+                    blurRadius: 15,
+                    color: Color(0x3F000000),
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: FaIcon(
+                      FontAwesomeIcons.magnifyingGlass,
+                      color: Color(0xFFB1B1B1),
+                      size: 20,
                     ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: FaIcon(
-                        FontAwesomeIcons.magnifyingGlass,
-                        color: Color(0xFFB1B1B1),
-                        size: 20,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10),
-                        child: TextFormField(
-                          controller: textController,
-                          focusNode: textFieldFocusNode,
-                          decoration: InputDecoration(
-                            hintText: 'Search',
-                            hintStyle: const TextStyle(
-                              fontFamily: 'Roboto',
-                              color: Color(0xFFB1B1B1),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: TextFormField(
+                        controller: textController,
+                        focusNode: textFieldFocusNode,
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          hintStyle: const TextStyle(
+                            fontFamily: 'Roboto',
+                            color: Color(0xFFB1B1B1),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
                           ),
                         ),
                       ),
                     ),
-                    
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
         ),
-      ]
-    ),
+      ]),
       bottomNavigationBar: HomeBottomNavigationBar(
         initialIndex: 2,
         onTap: (index) {},
