@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:camera/camera.dart';
 import 'dart:async';
 
-void main() {
+List<CameraDescription> cameras = [];
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    cameras = await availableCameras();
+  } on CameraException catch (e) {
+    print('Camera error: ${e.code}, ${e.description}');
+  }
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
@@ -33,9 +43,13 @@ class _LandscapePageState extends State<LandscapePage> {
   Timer? timer;
   PanelState currentState = PanelState.done;
 
+  CameraController? cameraController;
+  bool isCameraInitialized = false;
+
   @override
   void initState() {
     super.initState();
+    _initializeCamera();
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if ((currentState == PanelState.rub ||
               currentState == PanelState.again ||
@@ -48,6 +62,38 @@ class _LandscapePageState extends State<LandscapePage> {
         _showEndDialog(); // เรียก dialog ทันที
       }
     });
+  }
+  
+  Future<void> _initializeCamera() async {
+    if (cameras.isEmpty) {
+      print('No cameras available');
+      return;
+    }
+
+    CameraDescription? selectedCamera;
+    for (var camera in cameras) {
+      if (camera.lensDirection == CameraLensDirection.back) {
+        selectedCamera = camera;
+        break;
+      }
+    }
+    
+    selectedCamera ??= cameras.first;
+    
+    cameraController = CameraController(
+      selectedCamera,
+      ResolutionPreset.medium,
+      enableAudio: false,
+    );
+
+    try {
+      await cameraController!.initialize();
+      setState(() {
+        isCameraInitialized = true;
+      });
+    } on CameraException catch (e) {
+      print('Camera initialization error: ${e.code}, ${e.description}');
+    }
   }
 
   void _showEndDialog() {
@@ -191,6 +237,7 @@ class _LandscapePageState extends State<LandscapePage> {
   @override
   void dispose() {
     timer?.cancel();
+    cameraController?.dispose();
     super.dispose();
   }
 
@@ -251,6 +298,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
+                      Positioned.fill(child: buildCameraView()),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -313,6 +361,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
+                      Positioned.fill(child: buildCameraView()),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -375,6 +424,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
+                      Positioned.fill(child: buildCameraView()),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -458,6 +508,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
+                      Positioned.fill(child: buildCameraView()),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -514,6 +565,25 @@ class _LandscapePageState extends State<LandscapePage> {
       }(),
     );
   }
+
+  Widget buildCameraView() {
+    if (!isCameraInitialized || cameraController == null) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFFC0A172),
+        ),
+      );
+    }
+    
+    return Transform.scale(
+      scale: 1.0,
+      child: AspectRatio(
+        aspectRatio: cameraController!.value.aspectRatio,
+        child: CameraPreview(cameraController!),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
