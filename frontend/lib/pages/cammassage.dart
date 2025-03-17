@@ -4,35 +4,34 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 
-List<CameraDescription> cameras = [];
-
+late List<CameraDescription> cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
-    print('Camera error: ${e.code}, ${e.description}');
-  }
+  final cameras = await availableCameras();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  runApp(MyApp());
+  runApp(MyApp(cameras: cameras));
 }
 
 enum PanelState { start, correct, place, rub, again, done }
 
 class MyApp extends StatelessWidget {
+  final List<CameraDescription> cameras;
+  const MyApp({Key? key, required this.cameras}) : super(key: key);
   @override
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: LandscapePage(),
+        home: LandscapePage(cameras: cameras),
       );
 }
 
 class LandscapePage extends StatefulWidget {
+  final List<CameraDescription> cameras;
+
+  const LandscapePage({Key? key, required this.cameras}) : super(key: key);
   @override
   _LandscapePageState createState() => _LandscapePageState();
 }
@@ -43,13 +42,31 @@ class _LandscapePageState extends State<LandscapePage> {
   Timer? timer;
   PanelState currentState = PanelState.done;
 
-  CameraController? cameraController;
-  bool isCameraInitialized = false;
+  late CameraController _controller;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+
+    _controller = CameraController(widget.cameras[0], ResolutionPreset.max);
+    _controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            print('assess was denied');
+            break;
+          default:
+            print('Error: ${e.code}\nError Message: ${e.description}');
+            break;
+        }
+      }
+    });
+
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if ((currentState == PanelState.rub ||
               currentState == PanelState.again ||
@@ -62,38 +79,6 @@ class _LandscapePageState extends State<LandscapePage> {
         _showEndDialog(); // เรียก dialog ทันที
       }
     });
-  }
-  
-  Future<void> _initializeCamera() async {
-    if (cameras.isEmpty) {
-      print('No cameras available');
-      return;
-    }
-
-    CameraDescription? selectedCamera;
-    for (var camera in cameras) {
-      if (camera.lensDirection == CameraLensDirection.back) {
-        selectedCamera = camera;
-        break;
-      }
-    }
-    
-    selectedCamera ??= cameras.first;
-    
-    cameraController = CameraController(
-      selectedCamera,
-      ResolutionPreset.medium,
-      enableAudio: false,
-    );
-
-    try {
-      await cameraController!.initialize();
-      setState(() {
-        isCameraInitialized = true;
-      });
-    } on CameraException catch (e) {
-      print('Camera initialization error: ${e.code}, ${e.description}');
-    }
   }
 
   void _showEndDialog() {
@@ -237,7 +222,7 @@ class _LandscapePageState extends State<LandscapePage> {
   @override
   void dispose() {
     timer?.cancel();
-    cameraController?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -277,9 +262,9 @@ class _LandscapePageState extends State<LandscapePage> {
     return Expanded(
       child: () {
         if (currentState == PanelState.again) {
-          state = PanelState.rub; 
+          state = PanelState.rub;
         } else if (currentState == PanelState.done) {
-          state = PanelState.rub; 
+          state = PanelState.rub;
         }
 
         switch (state) {
@@ -298,7 +283,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: buildCameraView()),
+                      Positioned.fill(child: CameraPreview(_controller)),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -361,7 +346,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: buildCameraView()),
+                      Positioned.fill(child: CameraPreview(_controller)),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -424,7 +409,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: buildCameraView()),
+                      Positioned.fill(child: CameraPreview(_controller)),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -450,19 +435,19 @@ class _LandscapePageState extends State<LandscapePage> {
                             child: Center(
                               child: Builder(
                                 builder: (context) {
-                                  if (currentState  == PanelState.rub) {
+                                  if (currentState == PanelState.rub) {
                                     return Text("Rub down to the line",
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 20,
                                             fontWeight: FontWeight.w500));
-                                  } else if (currentState  == PanelState.again) {
+                                  } else if (currentState == PanelState.again) {
                                     return Text("Great ! Do it again",
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 20,
                                             fontWeight: FontWeight.w500));
-                                  } else if (currentState  == PanelState.done) {
+                                  } else if (currentState == PanelState.done) {
                                     return Text("Done !",
                                         style: TextStyle(
                                             color: Colors.white,
@@ -495,7 +480,7 @@ class _LandscapePageState extends State<LandscapePage> {
                     ],
                   ),
                 ));
-          
+
           case PanelState.start:
           default:
             return DottedBorder(
@@ -508,7 +493,7 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: buildCameraView()),
+                      Positioned.fill(child: CameraPreview(_controller)),
                       Positioned(
                         top: 20,
                         left: 20,
@@ -560,30 +545,10 @@ class _LandscapePageState extends State<LandscapePage> {
                     ],
                   ),
                 ));
-          
         }
       }(),
     );
   }
-
-  Widget buildCameraView() {
-    if (!isCameraInitialized || cameraController == null) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: Color(0xFFC0A172),
-        ),
-      );
-    }
-    
-    return Transform.scale(
-      scale: 1.0,
-      child: AspectRatio(
-        aspectRatio: cameraController!.value.aspectRatio,
-        child: CameraPreview(cameraController!),
-      ),
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) => Scaffold(

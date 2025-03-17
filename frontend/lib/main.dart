@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:camera/camera.dart';
+
 import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:frontend/pages/profile.dart';
@@ -14,7 +17,19 @@ import 'package:frontend/pages/learnpage.dart';
 import 'package:frontend/pages/mappage.dart';
 import 'package:frontend/pages/cammassage.dart';
 
-void main() {
+late List<CameraDescription> cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize cameras before runApp
+  cameras = await availableCameras();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
   runApp(const MyApp());
 }
 
@@ -44,7 +59,7 @@ class MyApp extends StatelessWidget {
         '/favourite' : (context) => const Favouritepage(),
         '/learn' : (context) => const LearnPage(),
         '/map' : (context) => MapPage(),
-        '/cam' : (context) => LandscapePage(),
+        '/cam' : (context) => LandscapePage(cameras: cameras),
       },
     );
   }
