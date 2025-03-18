@@ -100,8 +100,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ],
               ),
               ClipOval(
-                child: Image.network(
-                  'https://picsum.photos/seed/396/600',
+                child: Image.asset(
+                  'assets/images/profilePicture.jpg',
                   width: 50,
                   height: 50,
                   fit: BoxFit.cover,

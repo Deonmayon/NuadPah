@@ -10,7 +10,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool isAdmin = true; // สถานะสำหรับตรวจสอบ Admin
 
   @override
   Widget build(BuildContext context) {
@@ -110,29 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
               showArrow: false,
             ),
 
-            // แสดงข้อมูลสำหรับ Admin เท่านั้น
-            if (isAdmin)
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Admin',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      color: Color(0xFFB1B1B1),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            if (isAdmin)
-              const SizedBox(height: 10),
-              const ProfileFunctionBar(
-                icon: Icons.help_outline,
-                title: 'Admin',
-              ),
+            
           ],
         ),
       ),

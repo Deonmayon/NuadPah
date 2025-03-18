@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+
 class SingleMassageDetailPage extends StatefulWidget {
   const SingleMassageDetailPage({super.key});
 
@@ -31,8 +32,8 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                 height: 225,
                 child: Stack(
                   children: [
-                    Image.network(
-                      'https://picsum.photos/seed/459/600',
+                    Image.asset(
+                      'assets/images/Massage_Image01.png',
                       width: double.infinity,
                       height: 210,
                       fit: BoxFit.cover,
@@ -78,9 +79,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                           children: [
                             CircleAvatar(
                               radius: 12.5,
-                              backgroundImage: NetworkImage(
-                                'https://picsum.photos/seed/32/600',
-                              ),
+                              backgroundImage: AssetImage('assets/images/Massage_Image01.png'),
                             ),
                             SizedBox(width: 8),
                             Text(
@@ -251,7 +250,7 @@ class ReviewCard extends StatelessWidget {
               CircleAvatar(
                 radius: 15,
                 backgroundImage:
-                    NetworkImage('https://picsum.photos/seed/624/600'),
+                    AssetImage('assets/images/profilePicture.jpg'),
               ),
               SizedBox(width: 8),
               Text(
