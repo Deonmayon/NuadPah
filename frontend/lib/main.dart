@@ -11,7 +11,6 @@ import 'package:frontend/pages/forgetpassword/forget.dart';
 import 'package:frontend/pages/forgetpassword/otp.dart';
 import 'package:frontend/pages/signup.dart';
 import 'package:frontend/pages/signin.dart';
-import 'package:frontend/pages/setofMassageManage.dart';
 import 'package:frontend/pages/homepage2.dart';
 import 'package:frontend/pages/favouritepage.dart';
 import 'package:frontend/pages/learnpage.dart';
@@ -30,6 +29,11 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    print(
+        "Flutter Error: ${details.exceptionAsString()}"); // Only print error message
+  };
 
   runApp(const MyApp());
 }
