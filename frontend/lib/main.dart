@@ -21,10 +21,11 @@ late List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   cameras = await availableCameras();
   SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
   ]);
   runApp(const MyApp());
 }
@@ -40,22 +41,22 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: '/cam',
+      initialRoute: '/map',
       routes: {
         '/': (context) => const WelcomePage(),
-        '/login' : (context) => const LoginPage(),
-        '/register' : (context) => const RegisterPage(),
-        '/forget' : (context) => const ForgetPage(),
-        '/otp' : (context) => const OTPPage(),
-        '/reset' : (context) => const ResetPage(),
-        '/home' : (context) => const Homepage(),
-        '/home2' : (context) => const HomepageWidget(),
-        '/profile' : (context) => const ProfilePage(),
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/forget': (context) => const ForgetPage(),
+        '/otp': (context) => const OTPPage(),
+        '/reset': (context) => const ResetPage(),
+        '/home': (context) => const Homepage(),
+        '/home2': (context) => const HomepageWidget(),
+        '/profile': (context) => const ProfilePage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
-        '/favourite' : (context) => const Favouritepage(),
-        '/learn' : (context) => const LearnPage(),
-        '/map' : (context) => MapPage(),
-        '/cam' : (context) => LandscapePage(cameras: cameras),
+        '/favourite': (context) => const Favouritepage(),
+        '/learn': (context) => const LearnPage(),
+        '/map': (context) => MapPage(),
+        '/cam': (context) => LandscapePage(cameras: cameras),
       },
     );
   }
