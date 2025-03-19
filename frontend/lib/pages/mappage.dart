@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
-// import 'package:frontend/components/reviewsWidget.dart';
+import 'package:frontend/components/reviewsWidget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -20,6 +20,8 @@ class _MapPageState extends State<MapPage> {
   final String _placesApiKey = "AIzaSyCN5n-i2muyF01pUKT9dMxquw1MKxbJt0Y";
 
   Map<String, dynamic>? selectedMarker;
+  String? selectedMarkerPhotoUrl;
+  List<dynamic>? selectedMarkerReviews;
 
   final TextEditingController textController = TextEditingController();
   final FocusNode textFieldFocusNode = FocusNode();
@@ -79,8 +81,8 @@ class _MapPageState extends State<MapPage> {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
         setState(() {
-          _currentPosition = LatLng(currentLocation.latitude! - 23.7602903,
-              currentLocation.longitude! + 222.586355364);
+          _currentPosition =
+              LatLng(currentLocation.latitude!, currentLocation.longitude!);
           print(_currentPosition);
         });
       }
@@ -121,9 +123,11 @@ class _MapPageState extends State<MapPage> {
             snippet: place['vicinity'],
           ),
           onTap: () {
-            setState(() {
-              selectedMarker = place;
-            });
+            _fetchPlaceDetails(place['place_id']); // ดึงข้อมูลเพิ่มเติม
+            _showPlaceDetails(place); // แสดง bottom sheet
+            // setState(() {
+            //   selectedMarker = place;
+            // });
           },
         );
         newMarkers.add(marker);
@@ -135,6 +139,89 @@ class _MapPageState extends State<MapPage> {
         _markers.addAll(newMarkers);
       });
     }
+  }
+
+  Future<void> _fetchPlaceDetails(String placeId) async {
+    final String url =
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name,formatted_address,photos,reviews&key=$_placesApiKey";
+
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final place = data['result'];
+
+      setState(() {
+        selectedMarker = place;
+      });
+
+      // ดึงรูปภาพ
+      if (place['photos'] != null && place['photos'].isNotEmpty) {
+        final photoReference = place['photos'][0]['photo_reference'];
+        final photoUrl = await _getPhotoUrl(photoReference);
+        setState(() {
+          selectedMarkerPhotoUrl = photoUrl;
+        });
+      }
+
+      // ดึงรีวิว
+      if (place['reviews'] != null && place['reviews'].isNotEmpty) {
+        setState(() {
+          selectedMarkerReviews = place['reviews'];
+        });
+      }
+    }
+  }
+
+  Future<String?> _getPhotoUrl(String photoReference) async {
+    final String photoUrl =
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$_placesApiKey";
+    return photoUrl;
+  }
+
+  void _showPlaceDetails(Map<String, dynamic> place) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // ให้ bottom sheet ขยายเต็มหน้าจอ
+      builder: (context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (selectedMarkerPhotoUrl != null)
+                  Image.network(selectedMarkerPhotoUrl!),
+                Text(
+                  place['name'],
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Rating: ${place['rating']} / 5 (${place['user_ratings_total']})',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  place['formatted_address'] ?? 'No address available',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 16),
+                if (selectedMarkerReviews != null)
+                  ReviewsWidget(
+                      reviews:
+                          selectedMarkerReviews!), // เรียกใช้ ReviewsWidget
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Close"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -155,7 +242,7 @@ class _MapPageState extends State<MapPage> {
                   },
                   onCameraMove: (CameraPosition position) {
                     setState(() {
-                      _zoom = position.zoom; // อัพเดตค่า _zoom เมื่อมีการซูม
+                      _zoom = position.zoom;
                     });
                   }),
               Positioned(
