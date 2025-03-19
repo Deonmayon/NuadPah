@@ -19,7 +19,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   String _errorMessage = '';
 
-  List<dynamic> massages = [];
+  List<dynamic> recmassages = [];
 
   String selectedType = 'All massages';
 
@@ -37,7 +37,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       print("API response: ${response.data}");
 
       setState(() {
-        massages = (response.data as List)
+        recmassages = (response.data as List)
             .map((item) => item.map((key, value) => MapEntry(key, value)))
             .toList();
       });
@@ -60,10 +60,10 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   @override
   Widget build(BuildContext context) {
     print("-----------------------------");
-    print("massages response: ${massages}");
+    print("massages response: ${recmassages}");
     final filteredMassages = selectedType == 'All massages'
-        ? massages
-        : massages
+        ? recmassages
+        : recmassages
             .where((massages) => massages['mt_type'] == selectedType)
             .toList();
 
@@ -122,7 +122,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 const Padding(
                   padding: EdgeInsets.only(top: 20.0, left: 20),
                   child: Text(
-                    'Reccommend',
+                    'Recommend',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 32,
@@ -158,99 +158,36 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     ],
                   ),
                 ),
-                // SizedBox(
-                //   height: 280, // กำหนดพื้นที่ให้เหมาะสม
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     itemCount: filteredMassages.length,
-                //     itemBuilder: (context, index) {
-                //       final massage = filteredMassages[index];
-                //       return MassageCardLarge(
-                //         image: massage['mt_image_name'],
-                //         avatar: 'https://picsum.photos/seed/32/600',
-                //         name: massage['mt_name'] ?? 'Unnamed Massage',
-                //         type: massage['mt_type'] ?? 'Unknown',
-                //         duration: '15 mins',
-                //         rating: '4.8/5.0',
-                //       );
-                //     },
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 280, // กำหนดพื้นที่ให้เหมาะสม
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     itemCount: filteredMassages.length,
-                //     itemBuilder: (context, index) {
-                //       final massage = filteredMassages[index];
-                //       return MassageCardLarge(
-                //         name: massage['name'] ?? 'Unknown Name',
-                //         score: massage['score']?.toString() ?? 'N/A',
-                //         type: (massage['mt_type'] ??
-                //                 (massage['ms_types']?.join(', ') ?? '')) ??
-                //             'Unknown',
-                //         image: (massage['class'] == 'set'
-                //             ? (massage['ms_image_names'] as List<dynamic>?)
-                //                 ?.cast<String>()
-                //                 .firstWhere(
-                //                   (imageUrl) => imageUrl.isNotEmpty,
-                //                   orElse: () =>
-                //                       'https://via.placeholder.com/290x140',
-                //                 )
-                //             : massage['mt_image_name'] ??
-                //                 'https://via.placeholder.com/290x140'),
-                //         isSet: massage['class'] == 'set',
-                //       );
-                //       // return MassageCardLarge(
-                //       //   name: massage['name'] ?? 'Unknown Name',
-                //       //   type: (massage['mt_type'] ??
-                //       //           massage['ms_types']?.join(', ')) ??
-                //       //       'Unknown',
-                //       //   rating: massage['score']?.toString() ?? 'N/A',
-                //       //   images: massage['class'] == 'set'
-                //       //       ? (massage['ms_image_names'] as List<dynamic>?)
-                //       //               ?.cast<String>() ??
-                //       //           []
-                //       //       : [
-                //       //           massage['mt_image_name'] ??
-                //       //               'https://picsum.photos/id/237/200/300'
-                //       //         ],
-                //       //   isSet: massage['class'] == 'set',
-                //       // );
-                //     },
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 280, // Set the height as needed
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     itemCount: filteredMassages.length,
-                //     itemBuilder: (context, index) {
-                //       final massage = filteredMassages[index];
-                //       return MassageCardLarge(
-                //         name: massage['name'] ?? 'Unknown Name',
-                //         score: massage['score']?.toString() ?? 'N/A',
-                //         type: (massage['mt_type'] ??
-                //                 (massage['ms_types']?.join(', ') ?? '')) ??
-                //             'Unknown',
-                //         image: (massage['class'] == 'set'
-                //             ? (massage['ms_image_names'] is List
-                //                     ? (massage['ms_image_names']
-                //                         as List<dynamic>)
-                //                     : [massage['ms_image_names']])
-                //                 .firstWhere(
-                //                 (imageUrl) => imageUrl.isNotEmpty,
-                //                 orElse: () =>
-                //                     'https://via.placeholder.com/290x140',
-                //               )
-                //             : massage['mt_image_name'] ??
-                //                 'https://via.placeholder.com/290x140'),
-                //         isSet: massage['class'] == 'set',
-                //       );
-                //     },
-                //   ),
-                // ),
-
+                SizedBox(
+                  height: 280, // Set the height as needed
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: filteredMassages.length,
+                    itemBuilder: (context, index) {
+                      final massage = filteredMassages[index];
+                      return MassageCardLarge(
+                        name: massage['name'] ?? 'Unknown Name',
+                        score: massage['score']?.toString() ?? 'N/A',
+                        type: (massage['mt_type'] ??
+                                (massage['ms_types']?.join(', ') ?? '')) ??
+                            'Unknown',
+                        image: (massage['class'] == 'set'
+                            ? (massage['ms_image_names'] is List
+                                    ? (massage['ms_image_names']
+                                        as List<dynamic>)
+                                    : [massage['ms_image_names']])
+                                .firstWhere(
+                                (imageUrl) => imageUrl.isNotEmpty,
+                                orElse: () =>
+                                    'https://via.placeholder.com/290x140',
+                              )
+                            : massage['mt_image_name'] ??
+                                'https://via.placeholder.com/290x140'),
+                        isSet: massage['class'] == 'set',
+                      );
+                    },
+                  ),
+                ),
                 const Padding(
                   padding: EdgeInsets.only(left: 20),
                   child: Text(
@@ -264,10 +201,10 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  // child: Row(
-                  //   children:
-                  //       List.generate(2, (index) => _buildRecentlyViewedCard()),
-                  // ),
+                  child: Row(
+                    children:
+                        List.generate(5, (index) => _buildRecentlyViewedCard()),
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -371,15 +308,14 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     );
   }
 
-  // Widget _buildRecentlyViewedCard() {
-  //   return MassageCardLarge(
-  //     name: 'Name Massage',
-  //     type: 'Shoulder',
-  //     rating: '4.8/5.0',
-  //     images: [
-  //       'https://picsum.photos/seed/695/600'
-  //     ], // Wrap single image in a list
-  //     isSet: false, // Set to false since it's a single image
-  //   );
-  // }
+  Widget _buildRecentlyViewedCard() {
+    return MassageCardLarge(
+      name: 'Name Massage',
+      type: 'Shoulder',
+      score: '4.8 / 5.0', // Add the required argument 'score'
+      image:
+          'https://picsum.photos/seed/picsum/200/300', // Add the required argument 'image'
+      isSet: false, // Set to false since it's a single image
+    );
+  }
 }

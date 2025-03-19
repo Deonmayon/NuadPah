@@ -7,6 +7,7 @@ environment:
   sdk: ">=2.17.0 <4.0.0"
 
 dependencies:
+  shared_preferences: ^2.0.9 # Or the latest stable version available
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
@@ -17,10 +18,10 @@ dependencies:
   curved_navigation_bar: ^1.0.6
   google_maps_flutter: ^2.5.0
   google_maps_flutter_web: ^0.5.0
-  http: ^0.13.0 
+  http: ^0.13.0
   dotted_border: ^2.1.0
   camera: ^0.11.1
-  
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
 

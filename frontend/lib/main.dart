@@ -26,8 +26,8 @@ Future<void> main() async {
   cameras = await availableCameras();
 
   SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
   ]);
 
   FlutterError.onError = (FlutterErrorDetails details) {
