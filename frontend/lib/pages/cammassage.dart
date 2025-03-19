@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 late List<CameraDescription> cameras;
 Future<void> main() async {
@@ -47,6 +48,29 @@ class _LandscapePageState extends State<LandscapePage> {
   @override
   void initState() {
     super.initState();
+
+    // เชื่อมต่อกับเซิร์ฟเวอร์ Python
+    IO.Socket socket = IO.io(
+      'http://10.0.2.2:5000',  // เปลี่ยนเป็น IP จริงของเซิร์ฟเวอร์
+      IO.OptionBuilder()
+          .setTransports(['websocket']) // ใช้ WebSocket
+          .disableAutoConnect() // ป้องกันการเชื่อมต่ออัตโนมัติ
+          .build(),
+    );
+
+    socket.connect(); // เชื่อมต่อ
+
+    socket.onConnect((_) {
+      print('Connected to server');
+      socket.emit('message', 'Hello from Flutter!'); // ส่งข้อความไปเซิร์ฟเวอร์
+    });
+
+    socket.on('message', (data) {
+      print('Server: $data'); // ควรแสดงข้อความจากเซิร์ฟเวอร์ใน Flutter terminal
+    });
+
+    socket.onConnectError((data) => print('Connect Error: $data'));
+    socket.onDisconnect((_) => print('Disconnected from server'));
 
     _controller = CameraController(widget.cameras[0], ResolutionPreset.max);
     _controller.initialize().then((_) {
