@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
+// import 'package:frontend/components/reviewsWidget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -123,7 +124,6 @@ class _MapPageState extends State<MapPage> {
             setState(() {
               selectedMarker = place;
             });
-            _showPlaceDetails(place);
           },
         );
         newMarkers.add(marker);
@@ -135,39 +135,6 @@ class _MapPageState extends State<MapPage> {
         _markers.addAll(newMarkers);
       });
     }
-  }
-
-  void _showPlaceDetails(Map<String, dynamic> place) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(16),
-          height: 200,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                place['name'],
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                place['vicinity'] ?? 'No address available',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text("Close"),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   @override
