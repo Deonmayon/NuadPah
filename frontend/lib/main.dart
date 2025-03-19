@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
+import 'package:provider/provider.dart';
+import 'user_provider.dart';
 
 import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
@@ -35,7 +37,12 @@ Future<void> main() async {
         "Flutter Error: ${details.exceptionAsString()}"); // Only print error message
   };
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

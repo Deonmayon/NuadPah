@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:frontend/pages/favouritepage.dart';
+import 'package:frontend/pages/homepage2.dart';
+import 'package:frontend/pages/learnpage.dart';
+import 'package:frontend/pages/mappage.dart';
 
 class HomeBottomNavigationBar extends StatefulWidget {
   final int initialIndex; // กำหนดค่า index เริ่มต้น
@@ -16,9 +20,7 @@ class HomeBottomNavigationBar extends StatefulWidget {
       _HomeBottomNavigationBarState();
 }
 
-class _HomeBottomNavigationBarState
-    extends State<HomeBottomNavigationBar> {
-      
+class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
   late int _selectedIndex;
 
   final List<String> _titles = ['Home', 'Learn', 'Location', 'Bookmark'];
@@ -66,7 +68,41 @@ class _HomeBottomNavigationBarState
               setState(() {
                 _selectedIndex = index;
               });
-              widget.onTap(index); // เรียก callback
+              if (index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomepageWidget(
+                            email: '',
+                          )),
+                );
+
+                widget.onTap(index);
+              }
+              if (index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LearnPage()),
+                );
+
+                widget.onTap(index);
+              }
+              if (index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MapPage()),
+                );
+
+                widget.onTap(index);
+              }
+              if (index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Favouritepage()),
+                );
+
+                widget.onTap(index);
+              } // เรียก callback
             },
           ),
         ),
@@ -92,7 +128,9 @@ class _HomeBottomNavigationBarState
             }).toList(),
           ),
         ),
-        SizedBox(height: 10,)
+        SizedBox(
+          height: 10,
+        )
       ],
     );
   }

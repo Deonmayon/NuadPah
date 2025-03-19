@@ -4,6 +4,8 @@ import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardLarge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../api/massage.dart';
+import 'package:provider/provider.dart';
+import '../../user_provider.dart';
 
 class HomepageWidget extends StatefulWidget {
   final String email;
@@ -31,9 +33,11 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   Future<void> fetchMassages() async {
     final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final email =
+        Provider.of<UserProvider>(context, listen: false).email; // Get email
 
     try {
-      final response = await apiService.getReccomendMassages(widget.email);
+      final response = await apiService.getReccomendMassages(email);
       print("API response: ${response.data}");
 
       setState(() {
@@ -61,11 +65,21 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   Widget build(BuildContext context) {
     print("---------------------------------------------------");
     print("massages response: ${recmassages}");
+    // final filteredMassages = selectedType == 'All massages'
+    //     ? recmassages
+    //     : recmassages
+    //         .where((massages) => massages['mt_type'] == selectedType)
+    //         .toList();
     final filteredMassages = selectedType == 'All massages'
         ? recmassages
-        : recmassages
-            .where((massages) => massages['mt_type'] == selectedType)
-            .toList();
+        : recmassages.where((massage) {
+            if (massage['ms_types'] != null) {
+              return massage['ms_types'].contains(selectedType);
+            } else if (massage['mt_type'] != null) {
+              return massage['mt_type'] == selectedType;
+            }
+            return false; // If both are null, exclude from results
+          }).toList();
 
     return GestureDetector(
       onTap: () {
@@ -146,11 +160,11 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('Arms'),
+                      _buildFilterButton('Arm'),
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('Legs'),
+                      _buildFilterButton('Shoulder'),
                       SizedBox(
                         width: 20,
                       ),
@@ -273,13 +287,49 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     );
   }
 
+  // Widget _buildFilterButton(String type) {
+  //   bool isSelected = selectedType == type;
+
+  //   return GestureDetector(
+  //     onTap: () {
+  //       setState(() {
+  //         selectedType = type;
+  //       });
+  //     },
+  //     child: Column(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Text(
+  //           type,
+  //           style: TextStyle(
+  //             fontSize: 14,
+  //             fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+  //             color: isSelected ? Colors.black : Colors.grey,
+  //           ),
+  //         ),
+  //         if (isSelected)
+  //           Container(
+  //             margin: const EdgeInsets.only(top: 2),
+  //             width: 5, // ความกว้างของจุด
+  //             height: 5, // ความสูงของจุด
+  //             decoration: BoxDecoration(
+  //               color: Color(0xFFC0A172),
+  //               shape: BoxShape.circle,
+  //             ),
+  //           ),
+  //       ],
+  //     ),
+  //   );
+  // }
   Widget _buildFilterButton(String type) {
-    bool isSelected = selectedType == type;
+    // Normalize both selectedType and type to lowercase for a case-insensitive comparison
+    bool isSelected = selectedType.toLowerCase() == type.toLowerCase();
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedType = type;
+          selectedType =
+              type.toLowerCase(); // Ensure selectedType is stored in lowercase
         });
       },
       child: Column(
@@ -296,8 +346,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
           if (isSelected)
             Container(
               margin: const EdgeInsets.only(top: 2),
-              width: 5, // ความกว้างของจุด
-              height: 5, // ความสูงของจุด
+              width: 5, // Width of the dot
+              height: 5, // Height of the dot
               decoration: BoxDecoration(
                 color: Color(0xFFC0A172),
                 shape: BoxShape.circle,

@@ -10,6 +10,8 @@ import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
+import '../user_provider.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -37,6 +39,9 @@ class _SignInPageState extends State<SignInPage> {
         final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+
+        Provider.of<UserProvider>(context, listen: false)
+            .setEmail(_emailController.text);
 
         Navigator.push(
           context,
@@ -154,7 +159,7 @@ class _SignInPageState extends State<SignInPage> {
                           child: TextButton(
                             onPressed: _forget,
                             child: Text(
-                              'forget your password ?',
+                              'Forget your password ?',
                               style: TextStyle(
                                 color: Color(0xFFBFAB93),
                                 fontSize: 14,
