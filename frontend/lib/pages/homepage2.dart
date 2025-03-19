@@ -23,7 +23,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   List<dynamic> recmassages = [];
 
-  String selectedType = 'All massages';
+  String selectedType = 'all massages';
 
   @override
   void initState() {
@@ -65,12 +65,14 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   Widget build(BuildContext context) {
     print("---------------------------------------------------");
     print("massages response: ${recmassages}");
+    print("Selected type: $selectedType");
     // final filteredMassages = selectedType == 'All massages'
     //     ? recmassages
     //     : recmassages
     //         .where((massages) => massages['mt_type'] == selectedType)
     //         .toList();
-    final filteredMassages = selectedType == 'All massages'
+
+    final filteredMassages = selectedType == 'all massages'
         ? recmassages
         : recmassages.where((massage) {
             if (massage['ms_types'] != null) {
@@ -287,40 +289,6 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     );
   }
 
-  // Widget _buildFilterButton(String type) {
-  //   bool isSelected = selectedType == type;
-
-  //   return GestureDetector(
-  //     onTap: () {
-  //       setState(() {
-  //         selectedType = type;
-  //       });
-  //     },
-  //     child: Column(
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         Text(
-  //           type,
-  //           style: TextStyle(
-  //             fontSize: 14,
-  //             fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
-  //             color: isSelected ? Colors.black : Colors.grey,
-  //           ),
-  //         ),
-  //         if (isSelected)
-  //           Container(
-  //             margin: const EdgeInsets.only(top: 2),
-  //             width: 5, // ความกว้างของจุด
-  //             height: 5, // ความสูงของจุด
-  //             decoration: BoxDecoration(
-  //               color: Color(0xFFC0A172),
-  //               shape: BoxShape.circle,
-  //             ),
-  //           ),
-  //       ],
-  //     ),
-  //   );
-  // }
   Widget _buildFilterButton(String type) {
     // Normalize both selectedType and type to lowercase for a case-insensitive comparison
     bool isSelected = selectedType.toLowerCase() == type.toLowerCase();
