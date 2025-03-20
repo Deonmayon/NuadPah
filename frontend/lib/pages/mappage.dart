@@ -12,7 +12,6 @@ class MapPage extends StatefulWidget {
   _MapPageState createState() => _MapPageState();
 }
 
-
 class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
   Location _locationController = new Location();
@@ -58,21 +57,21 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _getCurrentLocation() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
 
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
-      if (!_serviceEnabled) {
+    serviceEnabled = await _locationController.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _locationController.requestService();
+      if (!serviceEnabled) {
         return;
       }
     }
 
-    _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permissionGranted = await _locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _locationController.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
         return;
       }
     }
@@ -94,7 +93,7 @@ class _MapPageState extends State<MapPage> {
     if (_currentPosition == null) return;
 
     final String url =
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition!.latitude},${_currentPosition!.longitude}&radius=5000&keyword=spa&key=$_placesApiKey";
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition!.latitude},${_currentPosition!.longitude}&radius=5000&keyword=spa&key=$_placesApiKey&language=th";
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
@@ -107,10 +106,6 @@ class _MapPageState extends State<MapPage> {
         markerId: MarkerId('myLocation'),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         position: _currentPosition!,
-        infoWindow: InfoWindow(
-          title: 'My Location',
-          snippet: 'Current Location',
-        ),
       ));
 
       for (var place in results) {
@@ -119,16 +114,9 @@ class _MapPageState extends State<MapPage> {
           markerId: MarkerId(place['place_id']),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
           position: LatLng(location['lat'], location['lng']),
-          infoWindow: InfoWindow(
-            title: place['name'],
-            snippet: place['vicinity'],
-          ),
           onTap: () {
-            _fetchPlaceDetails(place['place_id']); // ดึงข้อมูลเพิ่มเติม
-            _showDetailplacePopup(place); // แสดง bottom sheet
-            // setState(() {
-            //   selectedMarker = place;
-            // });
+            _fetchPlaceDetails(place['place_id']);
+            _showDetailPlacePopup(place);
           },
         );
         newMarkers.add(marker);
@@ -144,7 +132,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _fetchPlaceDetails(String placeId) async {
     final String url =
-        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name,formatted_address,photos,reviews&key=$_placesApiKey";
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name,formatted_address,photos,reviews&key=$_placesApiKey&language=th";
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
@@ -175,57 +163,18 @@ class _MapPageState extends State<MapPage> {
 
   Future<String?> _getPhotoUrl(String photoReference) async {
     final String photoUrl =
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$_placesApiKey";
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$_placesApiKey&language=th";
     return photoUrl;
   }
 
-  void _showPlaceDetails(Map<String, dynamic> place) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // ให้ bottom sheet ขยายเต็มหน้าจอ
-      builder: (context) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (selectedMarkerPhotoUrl != null)
-                  Image.network(selectedMarkerPhotoUrl!),
-                Text(
-                  place['name'],
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Rating: ${place['rating']} / 5 (${place['user_ratings_total']})',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  place['formatted_address'] ?? 'No address available',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 16),
-                if (selectedMarkerReviews != null)
-                  ReviewsWidget(
-                      reviews:
-                          selectedMarkerReviews!), // เรียกใช้ ReviewsWidget
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("Close"),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  String limitTextLength(String text, int maxLength) {
+    if (text.length > maxLength) {
+      return '${text.substring(0, maxLength)}...';
+    }
+    return text;
   }
 
-  void _showDetailplacePopup(Map<String, dynamic> place) {
+  void _showDetailPlacePopup(Map<String, dynamic> place) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -248,37 +197,41 @@ class _MapPageState extends State<MapPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                        height: 50,
-                        decoration:
-                            const BoxDecoration(color: Color(0xFFFFFFFF)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Name Location',
-                                style: TextStyle(
+                      height: 50,
+                      decoration: const BoxDecoration(color: Color(0xFFFFFFFF)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              limitTextLength(
+                                  place['name'] ?? 'ไม่ระบุชื่อ', 25),
+                              style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
                                   fontFamily: 'Roboto',
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                            ],
-                          ),
+                                  overflow: TextOverflow.ellipsis),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
                         ),
+                      ),
                     ),
                     Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text(
+                                place['vicinity'] ?? 'ไม่ระบุที่อยู่',
+                              ),
+                              const SizedBox(height: 10),
                               RatingStars(
                                 rating: place['rating']?.toDouble() ?? 0.0,
                                 reviewCount: place['user_ratings_total'] ?? 0,
@@ -290,52 +243,51 @@ class _MapPageState extends State<MapPage> {
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFC0A172),
                                   borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(
-                                    Icons.star,
-                                    color: Colors.white,
-                                    size: 15,
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Direction',
-                                    style: TextStyle(
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      FontAwesomeIcons.diamondTurnRight,
                                       color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
+                                      size: 15,
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'ไปยังแผนที่',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                'assets/images/Massage_Image01.png',
-                                width: 140,
-                                height: 160,
-                                fit: BoxFit.cover,
+                              const SizedBox(height: 10),
+                              if (selectedMarkerPhotoUrl != null)
+                                Image.network(
+                                  selectedMarkerPhotoUrl!,
+                                  height: 200,
+                                ),
+                              const SizedBox(height: 20),
+                              const Text(
+                                'รีวิวของผู้ใช้งาน',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'Reviews',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            ReviewCard(),
-                          ],
+                              const SizedBox(height: 20),
+                              if (selectedMarkerReviews != null)
+                                ReviewsCard(reviews: selectedMarkerReviews!),
+                              // ReviewCard(),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   ],
                 ),
               ),
@@ -345,7 +297,6 @@ class _MapPageState extends State<MapPage> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -400,12 +351,13 @@ class _MapPageState extends State<MapPage> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            padding: const EdgeInsets.only(
+                                left: 10, top: 2, right: 10),
                             child: TextFormField(
                               controller: textController,
                               focusNode: textFieldFocusNode,
                               decoration: InputDecoration(
-                                hintText: 'Search',
+                                hintText: 'ค้นหา',
                                 hintStyle: const TextStyle(
                                   fontFamily: 'Roboto',
                                   color: Color(0xFFB1B1B1),
@@ -431,80 +383,6 @@ class _MapPageState extends State<MapPage> {
       bottomNavigationBar: HomeBottomNavigationBar(
         initialIndex: 2,
         onTap: (index) {},
-      ),
-    );
-  }
-}
-
-class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              CircleAvatar(
-                radius: 15,
-                backgroundImage:
-                    AssetImage('assets/images/profilePicture.jpg'),
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Cameron Williamson',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: Color.fromRGBO(103, 103, 103, 1),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: List.generate(
-              5,
-              (index) => Padding(
-                padding:
-                    const EdgeInsets.only(right: 5.0), // ระยะห่างระหว่างไอคอน
-                child: Icon(
-                  index < 4
-                      ? FontAwesomeIcons.solidStar
-                      : FontAwesomeIcons.star,
-                  color: index < 4
-                      ? const Color.fromRGBO(192, 161, 114, 1)
-                      : Colors.grey,
-                  size: 15,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Lorem ipsum dolor sit amet,  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              color: Color.fromRGBO(103, 103, 103, 1),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -541,13 +419,9 @@ class RatingStars extends StatelessWidget {
         const SizedBox(width: 5),
         for (int i = 0; i < fullStars; i++)
           Icon(Icons.star, color: starColor, size: 18),
-
-        if (hasHalfStar)
-          Icon(Icons.star_half, color: starColor, size: 18),
-
+        if (hasHalfStar) Icon(Icons.star_half, color: starColor, size: 18),
         for (int i = 0; i < remainingStars; i++)
           const Icon(Icons.star_border, color: Colors.grey, size: 18),
-
         const SizedBox(width: 5),
         Text(
           "($reviewCount)", // จำนวนรีวิว

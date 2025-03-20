@@ -22,7 +22,6 @@ dependencies:
   camera: ^0.11.1
   location: ^5.0.0
   socket_io_client: ^3.0.2
-  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -40,3 +39,4 @@ flutter:
     - assets/images/Massage_Image03.png
     - assets/images/Massage_Image11.png
     - assets/images/profilePicture.jpg
+    - assets/images/reviewer.png

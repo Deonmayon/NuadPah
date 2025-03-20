@@ -16,12 +16,10 @@ class HomeBottomNavigationBar extends StatefulWidget {
       _HomeBottomNavigationBarState();
 }
 
-class _HomeBottomNavigationBarState
-    extends State<HomeBottomNavigationBar> {
-      
+class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
   late int _selectedIndex;
 
-  final List<String> _titles = ['Home', 'Learn', 'Location', 'Bookmark'];
+  final List<String> _titles = ['หน้าหลัก', 'เรียน', 'แผนที่', 'บันทึก'];
   final List<IconData> _icons = [
     Icons.home,
     Icons.book,
@@ -92,7 +90,9 @@ class _HomeBottomNavigationBarState
             }).toList(),
           ),
         ),
-        SizedBox(height: 10,)
+        SizedBox(
+          height: 10,
+        )
       ],
     );
   }
