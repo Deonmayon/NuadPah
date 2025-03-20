@@ -12,6 +12,7 @@ class MapPage extends StatefulWidget {
   _MapPageState createState() => _MapPageState();
 }
 
+
 class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
   Location _locationController = new Location();
@@ -124,7 +125,7 @@ class _MapPageState extends State<MapPage> {
           ),
           onTap: () {
             _fetchPlaceDetails(place['place_id']); // ดึงข้อมูลเพิ่มเติม
-            _showPlaceDetails(place); // แสดง bottom sheet
+            _showDetailplacePopup(place); // แสดง bottom sheet
             // setState(() {
             //   selectedMarker = place;
             // });
@@ -224,6 +225,128 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  void _showDetailplacePopup(Map<String, dynamic> place) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFFFFFFFF),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(20)),
+              child: Container(
+                width: double.infinity,
+                height: 450,
+                color: const Color(0xFFFFFFFF),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        height: 50,
+                        decoration:
+                            const BoxDecoration(color: Color(0xFFFFFFFF)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Name Location',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Roboto',
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ),
+                    Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              RatingStars(
+                                rating: place['rating']?.toDouble() ?? 0.0,
+                                reviewCount: place['user_ratings_total'] ?? 0,
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                height: 30,
+                                width: 104,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFC0A172),
+                                  borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Direction',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                'assets/images/Massage_Image01.png',
+                                width: 140,
+                                height: 160,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Reviews',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            ReviewCard(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -309,6 +432,132 @@ class _MapPageState extends State<MapPage> {
         initialIndex: 2,
         onTap: (index) {},
       ),
+    );
+  }
+}
+
+class ReviewCard extends StatelessWidget {
+  const ReviewCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              CircleAvatar(
+                radius: 15,
+                backgroundImage:
+                    AssetImage('assets/images/profilePicture.jpg'),
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Cameron Williamson',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Color.fromRGBO(103, 103, 103, 1),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: List.generate(
+              5,
+              (index) => Padding(
+                padding:
+                    const EdgeInsets.only(right: 5.0), // ระยะห่างระหว่างไอคอน
+                child: Icon(
+                  index < 4
+                      ? FontAwesomeIcons.solidStar
+                      : FontAwesomeIcons.star,
+                  color: index < 4
+                      ? const Color.fromRGBO(192, 161, 114, 1)
+                      : Colors.grey,
+                  size: 15,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Lorem ipsum dolor sit amet,  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: Color.fromRGBO(103, 103, 103, 1),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class RatingStars extends StatelessWidget {
+  final double rating;
+  final int reviewCount;
+  final Color starColor;
+
+  const RatingStars({
+    Key? key,
+    required this.rating,
+    required this.reviewCount,
+    this.starColor = const Color(0xFFC0A172), // ทองอ่อน
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    int fullStars = rating.floor();
+    bool hasHalfStar = (rating - fullStars) >= 0.5;
+    int remainingStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return Row(
+      children: [
+        Text(
+          rating.toStringAsFixed(1),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w300,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        const SizedBox(width: 5),
+        for (int i = 0; i < fullStars; i++)
+          Icon(Icons.star, color: starColor, size: 18),
+
+        if (hasHalfStar)
+          Icon(Icons.star_half, color: starColor, size: 18),
+
+        for (int i = 0; i < remainingStars; i++)
+          const Icon(Icons.star_border, color: Colors.grey, size: 18),
+
+        const SizedBox(width: 5),
+        Text(
+          "($reviewCount)", // จำนวนรีวิว
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w300,
+            fontFamily: 'Roboto',
+          ),
+        ),
+      ],
     );
   }
 }
