@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -167,6 +168,17 @@ class _MapPageState extends State<MapPage> {
     return photoUrl;
   }
 
+  Future<void> _launchMapsUrl(double lat, double lng, String title) async {
+    final url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$lat,$lng&query_place_id=${selectedMarker?['place_id']}');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   String limitTextLength(String text, int maxLength) {
     if (text.length > maxLength) {
       return '${text.substring(0, maxLength)}...';
@@ -237,31 +249,39 @@ class _MapPageState extends State<MapPage> {
                                 reviewCount: place['user_ratings_total'] ?? 0,
                               ),
                               const SizedBox(height: 10),
-                              Container(
-                                height: 30,
-                                width: 104,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFC0A172),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
-                                      FontAwesomeIcons.diamondTurnRight,
-                                      color: Colors.white,
-                                      size: 15,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'ไปยังแผนที่',
-                                      style: TextStyle(
+                              GestureDetector(
+                                onTap: () {
+                                  _launchMapsUrl(
+                                      place['geometry']['location']['lat'],
+                                      place['geometry']['location']['lng'],
+                                      place['name']);
+                                },
+                                child: Container(
+                                  height: 30,
+                                  width: 104,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFC0A172),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        FontAwesomeIcons.diamondTurnRight,
                                         color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
+                                        size: 15,
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'ไปยังแผนที่',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 10),
