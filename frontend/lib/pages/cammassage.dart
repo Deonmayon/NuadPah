@@ -41,7 +41,7 @@ class _LandscapePageState extends State<LandscapePage> {
   static const maxSeconds = 300, maxRounds = 20;
   int remainingSeconds = maxSeconds, currentRound = 0;
   Timer? timer;
-  PanelState currentState = PanelState.done;
+  PanelState currentState = PanelState.rub;
 
   late CameraController _controller;
 
@@ -51,7 +51,7 @@ class _LandscapePageState extends State<LandscapePage> {
 
     // เชื่อมต่อกับเซิร์ฟเวอร์ Python
     IO.Socket socket = IO.io(
-      'http://10.0.2.2:5000',  // เปลี่ยนเป็น IP จริงของเซิร์ฟเวอร์
+      'http://10.0.2.2:5000', // เปลี่ยนเป็น IP จริงของเซิร์ฟเวอร์
       IO.OptionBuilder()
           .setTransports(['websocket']) // ใช้ WebSocket
           .disableAutoConnect() // ป้องกันการเชื่อมต่ออัตโนมัติ
@@ -258,8 +258,8 @@ class _LandscapePageState extends State<LandscapePage> {
         alignment: Alignment.center,
         children: [
           SizedBox(
-            width: 80,
-            height: 80,
+            width: 64,
+            height: 64,
             child: CircularProgressIndicator(
               value: value,
               strokeWidth: 7,
@@ -271,10 +271,10 @@ class _LandscapePageState extends State<LandscapePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(label,
-                  style: TextStyle(fontSize: 12, color: Color(0xFFC0A172))),
+                  style: TextStyle(fontSize: 8, color: Color(0xFFC0A172))),
               Text(text,
                   style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFFC0A172))),
             ],
@@ -300,29 +300,31 @@ class _LandscapePageState extends State<LandscapePage> {
                     width: 5,
                   ),
                   borderRadius: BorderRadius.all(
-                    Radius.circular(30),
+                    Radius.circular(200),
                   ),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -341,15 +343,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -363,29 +365,31 @@ class _LandscapePageState extends State<LandscapePage> {
             return DottedBorder(
                 color: Color(0xFFC0A172),
                 strokeWidth: 5,
-                dashPattern: [25, 25],
+                dashPattern: [10, 10],
                 borderType: BorderType.RRect,
-                radius: Radius.circular(30),
+                radius: Radius.circular(200),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -404,15 +408,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -426,29 +430,31 @@ class _LandscapePageState extends State<LandscapePage> {
             return DottedBorder(
                 color: Color(0xFFC0A172),
                 strokeWidth: 5,
-                dashPattern: [25, 25],
+                dashPattern: [10, 10],
                 borderType: BorderType.RRect,
-                radius: Radius.circular(30),
+                radius: Radius.circular(200),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -486,15 +492,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -510,29 +516,31 @@ class _LandscapePageState extends State<LandscapePage> {
             return DottedBorder(
                 color: Color(0xFFC0A172),
                 strokeWidth: 5,
-                dashPattern: [25, 25],
+                dashPattern: [10, 10],
                 borderType: BorderType.RRect,
-                radius: Radius.circular(30),
+                radius: Radius.circular(200),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -551,15 +559,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -577,14 +585,13 @@ class _LandscapePageState extends State<LandscapePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Padding(
-          padding: EdgeInsets.all(5),
+          padding: EdgeInsets.symmetric(horizontal: 83, vertical: 12),
           child: Column(
             children: [
               Expanded(
                 child: Row(
                   children: [
                     buildPanelByState(currentState),
-                    SizedBox(width: 10),
                     buildPanelByState(currentState)
                   ],
                 ),
