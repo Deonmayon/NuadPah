@@ -16,6 +16,9 @@ import 'package:frontend/pages/favouritepage.dart';
 import 'package:frontend/pages/learnpage.dart';
 import 'package:frontend/pages/mappage.dart';
 import 'package:frontend/pages/cammassage.dart';
+import 'package:frontend/pages/accountdetails.dart';
+import 'package:frontend/pages/report.dart';
+import 'package:frontend/pages/help.dart';
 
 late List<CameraDescription> cameras;
 
@@ -43,7 +46,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: '/cam',
+      initialRoute: '/help',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),
@@ -54,7 +57,10 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const Homepage(),
         '/home2': (context) => const HomepageWidget(),
         '/profile': (context) => const ProfilePage(),
+        '/accountdetails': (context) => const AccountdetailsPage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
+        '/report': (context) => const ReportPage(),
+        '/help': (context) => const HelpPage(),
         '/favourite': (context) => const Favouritepage(),
         '/learn': (context) => const LearnPage(),
         '/map': (context) => MapPage(),
