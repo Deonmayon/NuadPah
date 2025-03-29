@@ -209,8 +209,24 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                         )),
                     SizedBox(height: 10),
                     // Review Card
-                    ReviewCard(),
-                    SizedBox(height: 10),
+
+                    SizedBox(
+                      height:
+                          320, // กำหนดความสูงส่วนที่เลื่อนได้ (ปรับตามต้องการ)
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: const [
+                            ReviewCard(),
+                            SizedBox(height: 10),
+                            ReviewCard(),
+                            SizedBox(height: 10),
+                            ReviewCard(),
+                            SizedBox(height: 10),
+                            // เพิ่มได้อีก
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
