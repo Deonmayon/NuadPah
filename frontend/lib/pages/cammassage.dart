@@ -110,18 +110,18 @@ class _LandscapePageState extends State<LandscapePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Enjoyed it?"),
-          content: Text("Share your experience with us!"),
+          title: Text("สนุกไหม?"),
+          content: Text("แบ่งปันความคิดเห็นของคุณกับเรา"),
           actions: <Widget>[
             TextButton(
-              child: Text('No'),
+              child: Text('ไม่'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _showRetryDialog();
               },
             ),
             TextButton(
-              child: Text('Yes'),
+              child: Text('ใช่'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _showReviewDialog();
@@ -142,7 +142,7 @@ class _LandscapePageState extends State<LandscapePage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text("Rate and Review"),
+              title: Text("คะแนนและความคิดเห็น"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -167,21 +167,21 @@ class _LandscapePageState extends State<LandscapePage> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      hintText: "Share your massage experience here...",
+                      hintText: "แบ่งปันความคิดเห็นของคุณ",
                     ),
                   ),
                 ],
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: Text('ยกเลิก'),
                   onPressed: () {
                     Navigator.of(context).pop();
                     _showRetryDialog();
                   },
                 ),
                 TextButton(
-                  child: Text('Submit'),
+                  child: Text('ยืนยัน'),
                   onPressed: () {
                     print("User rated: $_selectedStars stars"); // ลอง print ดู
                     Navigator.of(context).pop();
@@ -201,17 +201,17 @@ class _LandscapePageState extends State<LandscapePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Ready to try again?"),
-          content: Text("Tap restart"),
+          title: Text("พร้อมที่จะเริ่มใหม่หรือยัง?"),
+          content: Text("แตะที่ปุ่ม 'เริ่มใหม่' เพื่อเริ่มเกมใหม่"),
           actions: <Widget>[
             TextButton(
-              child: Text('No'),
+              child: Text('ไม่'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Restart'),
+              child: Text('เริ่มใหม่'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _resetGame();

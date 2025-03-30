@@ -93,7 +93,7 @@ class _ForgetPageState extends State<ForgetPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Enter Your Email',
+                          'กรุณากรอกอีเมลที่ลงทะเบียนไว้',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -102,7 +102,7 @@ class _ForgetPageState extends State<ForgetPage> {
                         ),
                         SizedBox(height: 20),
                         Text(
-                          'We’ll send you a reset link to your email',
+                          'เราจะส่งรหัส OTP ไปยังอีเมลของคุณ',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xFF676767),
@@ -121,7 +121,7 @@ class _ForgetPageState extends State<ForgetPage> {
                         // Sign In Button
                         SizedBox(height: 20),
                         SubmitBox(
-                          buttonText: 'Submit',
+                          buttonText: 'ยืนยัน',
                           onPress: _otp,
                         ),
 

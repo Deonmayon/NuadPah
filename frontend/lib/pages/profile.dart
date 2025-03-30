@@ -28,9 +28,8 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             const Text(
-              'Profile',
+              'โปรไฟล์',
               style: TextStyle(
-                  fontFamily: 'Roboto',
                   fontSize: 20,
                   fontWeight: FontWeight.w700),
             ),
@@ -56,7 +55,6 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Text(
                 'Esther Howard',
                 style: TextStyle(
-                    fontFamily: 'Roboto',
                     fontSize: 20,
                     fontWeight: FontWeight.w500),
               ),
@@ -66,9 +64,8 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Profile',
+                  'โปรไฟล์',
                   style: TextStyle(
-                      fontFamily: 'Roboto',
                       color: Color(0xFFB1B1B1),
                       fontSize: 12,
                       fontWeight: FontWeight.w600),
@@ -77,16 +74,15 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const ProfileFunctionBar(
               icon: Icons.person,
-              title: 'Account details',
+              title: 'รายละเอียดบัญชี',
             ),
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'About',
+                  'เกี่ยวกับ',
                   style: TextStyle(
-                      fontFamily: 'Roboto',
                       color: Color(0xFFB1B1B1),
                       fontSize: 12,
                       fontWeight: FontWeight.w600),
@@ -95,17 +91,17 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const ProfileFunctionBar(
               icon: Icons.report_problem,
-              title: 'Report',
+              title: 'แจ้งปัญหา',
             ),
             const SizedBox(height: 10),
             const ProfileFunctionBar(
               icon: Icons.help_outline,
-              title: 'Help',
+              title: 'ช่วยเหลือ',
             ),
             const SizedBox(height: 10),
             const ProfileFunctionBar(
               icon: Icons.logout,
-              title: 'Logout',
+              title: 'ลงชื่อออก',
               showArrow: false,
             ),
 

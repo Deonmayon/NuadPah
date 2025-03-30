@@ -26,11 +26,8 @@ class _ReportPageState extends State<ReportPage> {
               },
             ),
             const Text(
-              'Report',
-              style: TextStyle(
-                  fontFamily: 'Roboto',
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700),
+              'แจ้งปัญหา',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(width: 30),
           ],
@@ -46,41 +43,29 @@ class _ReportPageState extends State<ReportPage> {
             const Padding(
               padding: EdgeInsets.only(top: 20, left: 20),
               child: Text(
-                'Describe the problem*:',
-                style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
+                'อธิบายปัญหาของคุณ*:',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
             Padding(
               padding: EdgeInsets.only(top: 5, left: 20),
               child: Text(
-                '1.What were you DOING?',
-                style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
+                '1.คุณพบปัญหาอะไร?',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
             Padding(
               padding: EdgeInsets.only(top: 1, left: 20),
               child: Text(
-                '2.What HAPPENED (error, nothing, etc.)',
-                style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
+                '2.คุณพบปัญหานี้เมื่อไหร่?',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
             Padding(
               padding: EdgeInsets.only(top: 1, left: 20),
               child: Text(
-                '3.What did you EXPECT to happen?',
-                style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
+                '3.คุณพบปัญหานี้ที่ส่วนไหน?',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
             const Padding(
@@ -88,7 +73,7 @@ class _ReportPageState extends State<ReportPage> {
               child: TextField(
                 maxLines: 5,
                 decoration: InputDecoration(
-                  hintText: 'Type here...',
+                  hintText: 'กรุณาอธิบายปัญหาของคุณ',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -117,7 +102,7 @@ class _ReportPageState extends State<ReportPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Send Report', 
+                            'ส่งข้อมูล',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 20,

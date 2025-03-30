@@ -27,7 +27,7 @@ class _FavouritePageState extends State<Favouritepage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Saved Massages',
+              'ท่านวดที่บันทึกไว้',
               style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 20,

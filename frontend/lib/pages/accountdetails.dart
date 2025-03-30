@@ -27,9 +27,8 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
               },
             ),
             const Text(
-              'Account details',
+              'รายละเอียดบัญชี',
               style: TextStyle(
-                  fontFamily: 'Roboto',
                   fontSize: 20,
                   fontWeight: FontWeight.w700),
             ),
@@ -58,7 +57,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   EditableField(label: "First name", initialValue: "Jookroo"),
-                  SizedBox(height: 1),
+                  SizedBox(height: 5),
                   EditableField(label: "Last name", initialValue: "Oorkooj"),
                 ],
               ),
@@ -66,7 +65,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
             SizedBox(height: 40),
             const ProfileFunctionBar(
               icon: Icons.person,
-              title: 'Edit profile picture', 
+              title: 'แก้ไขรูปภาพโปรไฟล์', 
             ),
           ],
         ),

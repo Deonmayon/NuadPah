@@ -222,7 +222,7 @@ class _MapPageState extends State<MapPage> {
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Roboto',
+                                  
                                   overflow: TextOverflow.ellipsis),
                             ),
                             IconButton(
@@ -379,7 +379,7 @@ class _MapPageState extends State<MapPage> {
                               decoration: InputDecoration(
                                 hintText: 'ค้นหา',
                                 hintStyle: const TextStyle(
-                                  fontFamily: 'Roboto',
+                                  
                                   color: Color(0xFFB1B1B1),
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -433,7 +433,7 @@ class RatingStars extends StatelessWidget {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w300,
-            fontFamily: 'Roboto',
+            
           ),
         ),
         const SizedBox(width: 5),
@@ -448,7 +448,7 @@ class RatingStars extends StatelessWidget {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w300,
-            fontFamily: 'Roboto',
+            
           ),
         ),
       ],

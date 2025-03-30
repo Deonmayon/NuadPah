@@ -362,7 +362,7 @@ class _SetMassageDetailPageState extends State<SetMassageDetailPage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Learn with AI',
+                                  'เรียนรู้ด้วย AI',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 20,
@@ -422,7 +422,7 @@ class _SetMassageDetailPageState extends State<SetMassageDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Rate and Reviews',
+                              'คะแนนและรีวิว',
                               style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w700,

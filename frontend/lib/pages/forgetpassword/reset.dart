@@ -87,7 +87,7 @@ class _ResetPageState extends State<ResetPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Enter New Password',
+                          'ใส่รหัสผ่านใหม่',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -120,7 +120,7 @@ class _ResetPageState extends State<ResetPage> {
                         // Reset Password Button
                         SubmitBox(
                         onPress: _login,
-                        buttonText: 'Reset Password',
+                        buttonText: 'รีเซ็ตรหัสผ่าน',
                         ),
                         // Container(
                         //   width: double.infinity,

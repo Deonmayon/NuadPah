@@ -28,9 +28,9 @@ class _HelpState extends State<HelpPage> {
               },
             ),
             const Text(
-              'Help',
+              'ช่วยเหลือ',
               style: TextStyle(
-                  fontFamily: 'Roboto',
+                  
                   fontSize: 20,
                   fontWeight: FontWeight.w700),
             ),
@@ -78,9 +78,9 @@ class _HelpState extends State<HelpPage> {
                           controller: textController,
                           focusNode: textFieldFocusNode,
                           decoration: InputDecoration(
-                            hintText: 'Search Help',
+                            hintText: 'ค้นหาคำถามที่คุณสงสัย',
                             hintStyle: const TextStyle(
-                              fontFamily: 'Roboto',
+                             
                               color: Color(0xFFB1B1B1),
                               fontSize: 20,
                               fontWeight: FontWeight.w500,
@@ -104,9 +104,9 @@ class _HelpState extends State<HelpPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'FAQ',
+                  'คำถามที่พบบ่อย',
                   style: TextStyle(
-                      fontFamily: 'Roboto',
+                    
                       color: Colors.black,
                       fontSize: 14,
                       fontWeight: FontWeight.w500),
