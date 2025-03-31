@@ -18,7 +18,7 @@ class _MapPageState extends State<MapPage> {
   Location _locationController = new Location();
   LatLng? _currentPosition;
   final Set<Marker> _markers = {};
-  final String _placesApiKey = "AIzaSyCN5n-i2muyF01pUKT9dMxquw1MKxbJt0Y";
+  final String _placesApiKey = "AIzaSyBWRGOdUOHL2L3Ii-GUOgjAKFdk-cigVMM";
 
   Map<String, dynamic>? selectedMarker;
   String? selectedMarkerPhotoUrl;
@@ -222,7 +222,6 @@ class _MapPageState extends State<MapPage> {
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
-                                  
                                   overflow: TextOverflow.ellipsis),
                             ),
                             IconButton(
@@ -379,7 +378,6 @@ class _MapPageState extends State<MapPage> {
                               decoration: InputDecoration(
                                 hintText: 'ค้นหา',
                                 hintStyle: const TextStyle(
-                                  
                                   color: Color(0xFFB1B1B1),
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -433,7 +431,6 @@ class RatingStars extends StatelessWidget {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w300,
-            
           ),
         ),
         const SizedBox(width: 5),
@@ -448,7 +445,6 @@ class RatingStars extends StatelessWidget {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w300,
-            
           ),
         ),
       ],
