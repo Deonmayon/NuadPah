@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/env.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/reviewsWidget.dart';
@@ -18,7 +19,7 @@ class _MapPageState extends State<MapPage> {
   Location _locationController = new Location();
   LatLng? _currentPosition;
   final Set<Marker> _markers = {};
-  final String _placesApiKey = "AIzaSyBWRGOdUOHL2L3Ii-GUOgjAKFdk-cigVMM";
+  final String _placesApiKey = Env.googleMapsAPIKey;
 
   Map<String, dynamic>? selectedMarker;
   String? selectedMarkerPhotoUrl;
@@ -33,6 +34,7 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    print(_placesApiKey);
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -84,7 +86,7 @@ class _MapPageState extends State<MapPage> {
         setState(() {
           _currentPosition =
               LatLng(currentLocation.latitude!, currentLocation.longitude!);
-          print(_currentPosition);
+          // print(_currentPosition);
         });
       }
     });

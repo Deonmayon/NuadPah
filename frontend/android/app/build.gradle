@@ -5,6 +5,22 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def getEnvValue(key, defaultValue) {
+    def envFile = rootProject.file('../.env')
+    if (!envFile.exists()) {
+        return defaultValue
+    }
+    
+    def env = [:]
+    envFile.readLines().each { line ->
+        def (k, v) = line.split('=', 2).collect { it.trim() }
+        if (k && v) {
+            env[k] = v
+        }
+    }
+    return env.get(key, defaultValue)
+}
+
 android {
     namespace = "com.example.frontend"
     compileSdk = flutter.compileSdkVersion
@@ -28,6 +44,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        manifestPlaceholders += [
+            GOOGLEMAPS_API_KEY: getEnvValue("GOOGLEMAPS_API_KEY", "DEFAULT_KEY")
+        ]
     }
 
     buildTypes {
