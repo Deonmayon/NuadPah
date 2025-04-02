@@ -307,7 +307,9 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: CameraPreview(_controller)),
+                      Positioned.fill(
+                          child: Transform.scale(
+                              scale: 1.35, child: CameraPreview(_controller))),
                       Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
@@ -372,7 +374,9 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: CameraPreview(_controller)),
+                      Positioned.fill(
+                          child: Transform.scale(
+                              scale: 1.35, child: CameraPreview(_controller))),
                       Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
@@ -437,7 +441,9 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: CameraPreview(_controller)),
+                      Positioned.fill(
+                          child: Transform.scale(
+                              scale: 1.35, child: CameraPreview(_controller))),
                       Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
@@ -523,7 +529,9 @@ class _LandscapePageState extends State<LandscapePage> {
                   borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
-                      Positioned.fill(child: CameraPreview(_controller)),
+                      Positioned.fill(
+                          child: Transform.scale(
+                              scale: 1.35, child: CameraPreview(_controller))),
                       Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
@@ -584,15 +592,34 @@ class _LandscapePageState extends State<LandscapePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        backgroundColor: Color(0xFF252525),
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 83, vertical: 12),
+          padding: EdgeInsets.symmetric(
+              vertical: 12), // ลบ horizontal padding เพื่อใช้พื้นที่เต็มกว้าง
           child: Column(
             children: [
               Expanded(
-                child: Row(
+                child: Stack(
                   children: [
-                    buildPanelByState(currentState),
-                    buildPanelByState(currentState)
+                    // Panel ซ้าย (เกยมาขวา 20%)
+                    Positioned(
+                      left: 90,
+                      top: 0,
+                      bottom: 0,
+                      width: 485.5 * 0.8, // 80% ของความกว้างจอ
+                      child: buildPanelByState(currentState),
+                    ),
+                    // Panel ขวา (เกยมาซ้าย 20%)
+                    Positioned(
+                      right: 90,
+                      top: 0,
+                      bottom: 0,
+                      width: 485.5 * 0.8, // 80% ของความกว้างจอ
+                      child: ClipRect(
+                        clipper: _RightPanelClipper(),
+                        child: buildPanelByState(currentState),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -600,4 +627,16 @@ class _LandscapePageState extends State<LandscapePage> {
           ),
         ),
       );
+}
+
+// Custom Clipper สำหรับตัดส่วนด้านขวา
+class _RightPanelClipper extends CustomClipper<Rect> {
+  @override
+  Rect getClip(Size size) {
+    // ตัดด้านซ้ายของ Panel ขวา 20% เพื่อไม่ให้เกย Panel ซ้าย
+    return Rect.fromLTRB(size.width * 0.05, 0, size.width, size.height);
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) => false;
 }

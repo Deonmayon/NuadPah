@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'NuadPah',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
           headlineLarge: TextStyle(fontWeight: FontWeight.w900), // Black
         ),
       ),
-      initialRoute: '/map',
+      initialRoute: '/cam',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),
