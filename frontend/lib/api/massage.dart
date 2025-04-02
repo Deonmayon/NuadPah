@@ -11,7 +11,6 @@ class ApiService {
   Future<Response> getAllMassages() async {
     try {
       final response = await _dio.get('/massage/single-list');
-      // print(response.data.toString());
       return response;
     } on DioException catch (e) {
       throw Exception(

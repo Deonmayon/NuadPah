@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardLarge.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../api/massage.dart';
 import 'package:provider/provider.dart';
 import '../../user_provider.dart';
@@ -38,7 +37,6 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
     try {
       final response = await apiService.getReccomendMassages(email);
-      print("API response: ${response.data}");
 
       setState(() {
         recmassages = (response.data as List)
@@ -53,24 +51,9 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     }
   }
 
-  // final List<Map<String, String>> massages = [
-  //   {'type': 'Back', 'name': 'Relaxing Back Massage'},
-  //   {'type': 'Arms', 'name': 'Arm Soothing Massage'},
-  //   {'type': 'Legs', 'name': 'Leg Comfort Massage'},
-  //   {'type': 'Neck', 'name': 'Neck Pain Relief'},
-  //   {'type': 'Back', 'name': 'Deep Tissue Back Massage'},
-  // ];
 
   @override
   Widget build(BuildContext context) {
-    print("---------------------------------------------------");
-    print("massages response: ${recmassages}");
-    print("Selected type: $selectedType");
-    // final filteredMassages = selectedType == 'All massages'
-    //     ? recmassages
-    //     : recmassages
-    //         .where((massages) => massages['mt_type'] == selectedType)
-    //         .toList();
 
     final filteredMassages = selectedType == 'all massages'
         ? recmassages

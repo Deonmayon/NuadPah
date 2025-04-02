@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
+import 'package:frontend/components/massagecardSmall.dart';
+import '../../api/massage.dart';
 
 class LearnPage extends StatefulWidget {
   const LearnPage({Key? key}) : super(key: key);
@@ -9,10 +11,34 @@ class LearnPage extends StatefulWidget {
   State<LearnPage> createState() => _LearnState();
 }
 
+
 class _LearnState extends State<LearnPage> {
   final TextEditingController textController = TextEditingController();
   final FocusNode textFieldFocusNode = FocusNode();
-  int _selectedTab = 0; // 0: Single Massage, 1: Set of Massage
+  int _selectedTab = 0;
+
+  List<dynamic> massages = [];
+
+  Future<void> fetchMassages() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    try {
+      final response = await apiService.getAllMassages();
+
+      print("Raw response: ${response}");
+
+      setState(() {
+        massages = (response.data as List)
+            .map((item) => item.map((key, value) => MapEntry(key, value)))
+            .toList();
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
 
   String selectedTime = "Please select";
   final List<String> timeOptions = [
@@ -338,6 +364,9 @@ class _LearnState extends State<LearnPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("---------------------------------------------------");
+    print("massages response: ${massages}");
+    print("---------------------------------------------------");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -517,7 +546,7 @@ class SetOfMassageTab extends StatelessWidget {
       itemCount: 3,
       itemBuilder: (context, index) {
         return MassageCardSet(
-          title: 'Name Set of Massage',
+          title: 'Name sdfSet of Massage',
           description:
               'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
           type: 'Type: Back, Shoulder, Neck',
