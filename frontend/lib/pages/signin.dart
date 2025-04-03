@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/homepage2.dart';
-import 'package:frontend/pages/welcome.dart';
 import 'signup.dart';
 import '/pages/forgetpassword/forget.dart';
 import '/components/emailtextfield.dart';

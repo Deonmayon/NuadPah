@@ -32,8 +32,7 @@ Future<void> main() async {
   ]);
 
   FlutterError.onError = (FlutterErrorDetails details) {
-    print(
-        "Flutter Error: ${details.exceptionAsString()}"); // Only print error message
+    print("Flutter Error: ${details.exceptionAsString()}"); // Only print error message
   };
 
   runApp(
