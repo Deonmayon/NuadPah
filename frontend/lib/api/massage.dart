@@ -55,4 +55,21 @@ class ApiService {
           'Failed to add massage: ${e.response?.data ?? e.message}');
     }
   }
+
+  // Set Favorite Massage
+  Future<Response> setFavorite(String email, int id) async {
+    try {
+      final response = await _dio.post('/user/fav-single',
+          data: {
+            'email': email,
+            'mt_id': id,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to add massage: ${e.response?.data ?? e.message}');
+    }
+  }
 }
