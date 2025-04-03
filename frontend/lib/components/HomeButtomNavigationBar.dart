@@ -23,7 +23,7 @@ class HomeBottomNavigationBar extends StatefulWidget {
 class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
   late int _selectedIndex;
 
-  final List<String> _titles = ['Home', 'Learn', 'Location', 'Bookmark'];
+  final List<String> _titles = ['หน้าหลัก', 'เรียน', 'แผนที่', 'บันทึก'];
   final List<IconData> _icons = [
     Icons.home,
     Icons.book,

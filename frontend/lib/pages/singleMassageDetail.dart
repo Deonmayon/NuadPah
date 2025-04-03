@@ -98,7 +98,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                             ),
                             SizedBox(width: 4),
                             Text(
-                              '\u2248 5 mins',
+                              '\u2248 5 นาที',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w400,
@@ -172,7 +172,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Learn with AI',
+                                  'เรียนรู้ด้วย AI',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 20,
@@ -201,9 +201,8 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Rate and Reviews',
+                    Text('คะแนนและรีวิว',
                         style: TextStyle(
-                          fontFamily: 'Roboto',
                           fontWeight: FontWeight.w700,
                           fontSize: 20,
                           color: Colors.black,
@@ -211,8 +210,24 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                         )),
                     SizedBox(height: 10),
                     // Review Card
-                    ReviewCard(),
-                    SizedBox(height: 10),
+
+                    SizedBox(
+                      height:
+                          400, // กำหนดความสูงส่วนที่เลื่อนได้ (ปรับตามต้องการ)
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: const [
+                            ReviewCard(),
+                            SizedBox(height: 10),
+                            ReviewCard(),
+                            SizedBox(height: 10),
+                            ReviewCard(),
+                            SizedBox(height: 10),
+                            // เพิ่มได้อีก
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

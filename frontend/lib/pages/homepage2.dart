@@ -104,7 +104,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
-                    'Hello, Esther',
+                    'สวัสดี, Esther',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 20,
@@ -112,7 +112,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     ),
                   ),
                   Text(
-                    'Welcome to Nuadpah',
+                    'ยินดีต้อนรับเข้าสู่ NuadPah',
                     style: TextStyle(
                       color: Color(0xFF676767),
                       fontSize: 12,
@@ -142,7 +142,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 const Padding(
                   padding: EdgeInsets.only(top: 20.0, left: 20),
                   child: Text(
-                    'Recommend',
+                    'แนะนำสำหรับคุณ',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 32,
@@ -211,7 +211,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 const Padding(
                   padding: EdgeInsets.only(left: 20),
                   child: Text(
-                    'Recently viewed',
+                    'พึ่งดูไปล่าสุด',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 32,
@@ -232,7 +232,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     const Padding(
                       padding: EdgeInsets.only(left: 20),
                       child: Text(
-                        'All Massages',
+                        'ท่านวดทั้งหมด',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 32,
@@ -243,7 +243,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     const Padding(
                       padding: EdgeInsets.only(right: 20),
                       child: Text(
-                        'See all',
+                        'ดูทั้งหมด',
                         style: TextStyle(
                           color: Color(0xFFB1B1B1),
                           fontSize: 20,

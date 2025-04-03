@@ -187,7 +187,7 @@ class _OTPPageState extends State<OTPPage> {
                     children: [
                       const SizedBox(height: 20),
                       const Text(
-                        'Enter Verification Code',
+                        'ใส่รหัส OTP',
                         style: TextStyle(
                           fontSize: 28,
                           color: Color(0xFFBFAB93),
@@ -195,13 +195,13 @@ class _OTPPageState extends State<OTPPage> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Text(
-                        'We have sent a verification code to',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF676767),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        Text(
+                          'เราจะส่งรหัส OTP ไปยัง',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF676767),
+                            fontWeight: FontWeight.bold,
+                          ),
                       ),
                       SizedBox(height: 10),
                       Text(
@@ -304,7 +304,7 @@ class _OTPPageState extends State<OTPPage> {
 
                       // Next Button
                       SubmitBox(
-                        buttonText: 'Next',
+                        buttonText: 'ต่อไป',
                         onPress: _verifyotp,
                         showArrow: true,
                       ),

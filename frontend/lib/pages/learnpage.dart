@@ -179,7 +179,7 @@ class _LearnState extends State<LearnPage> {
                           children: [
                             const SizedBox(width: 20),
                             const Text(
-                              'Filter',
+                              'กรองการค้นหา',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
@@ -227,7 +227,7 @@ class _LearnState extends State<LearnPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  "Time",
+                                  "ระยะเวลา",
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -293,7 +293,7 @@ class _LearnState extends State<LearnPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  "Type",
+                                  "ประเภท",
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -383,7 +383,7 @@ class _LearnState extends State<LearnPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Learn',
+              'เรียนรู้การนวด',
               style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 20,
@@ -439,7 +439,7 @@ class _LearnState extends State<LearnPage> {
                           controller: textController,
                           focusNode: textFieldFocusNode,
                           decoration: InputDecoration(
-                            hintText: 'Search',
+                            hintText: 'ค้นหาท่านวดที่คุณต้องการ',
                             hintStyle: const TextStyle(
                               fontFamily: 'Roboto',
                               color: Color(0xFFB1B1B1),

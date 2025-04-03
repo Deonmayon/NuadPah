@@ -120,7 +120,7 @@ class _SignInPageState extends State<SignInPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Sign In',
+                          'ลงชื่อเข้าใช้',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -170,7 +170,7 @@ class _SignInPageState extends State<SignInPage> {
                         // Sign In Button
                         SubmitBox(
                           onPress: _signin,
-                          buttonText: 'Sign In',
+                          buttonText: 'ลงชื่อเข้าใช้',
                           showArrow: true,
                         ),
                         SizedBox(height: 30),
@@ -178,7 +178,7 @@ class _SignInPageState extends State<SignInPage> {
                         // Or Sign In With Text
                         Center(
                           child: Text(
-                            'Or Sign In With',
+                            'หรือลงชื่อเข้าใช้ด้วย',
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
@@ -223,11 +223,11 @@ class _SignInPageState extends State<SignInPage> {
                         Center(
                           child: RichText(
                             text: TextSpan(
-                              text: "Don't have an account? ",
+                              text: "ยังไม่มีบัญชี? ",
                               style: TextStyle(color: Colors.grey),
                               children: [
                                 TextSpan(
-                                  text: 'Create One',
+                                  text: 'ลงทะเบียน',
                                   style: TextStyle(
                                     color: Color(0xFFBFAB93),
                                     fontWeight: FontWeight.w500,

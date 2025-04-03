@@ -109,7 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Sign Up',
+                          'ลงทะเบียน',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -163,7 +163,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         // Sign In Button
                         SubmitBox(
-                          buttonText: 'Sign Up',
+                          buttonText: 'ลงทะเบียน',
                           onPress: _signup,
                           showArrow: true,
                         ),
@@ -173,7 +173,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         // Or Sign In With Text
                         Center(
                           child: Text(
-                            'Or Sign Up With',
+                            'หรือลงทะเบียนด้วย',
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
@@ -218,11 +218,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         Center(
                           child: RichText(
                             text: TextSpan(
-                              text: "Already have an account? ",
+                              text: "มีบัญชีแล้ว? ",
                               style: TextStyle(color: Colors.grey),
                               children: [
                                 TextSpan(
-                                  text: 'Sign In',
+                                  text: 'ลงชื่อเข้าใช้',
                                   style: TextStyle(
                                     color: Color(0xFFBFAB93),
                                     fontWeight: FontWeight.w500,

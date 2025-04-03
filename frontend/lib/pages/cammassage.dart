@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 late List<CameraDescription> cameras;
 Future<void> main() async {
@@ -40,13 +41,36 @@ class _LandscapePageState extends State<LandscapePage> {
   static const maxSeconds = 300, maxRounds = 20;
   int remainingSeconds = maxSeconds, currentRound = 0;
   Timer? timer;
-  PanelState currentState = PanelState.done;
+  PanelState currentState = PanelState.rub;
 
   late CameraController _controller;
 
   @override
   void initState() {
     super.initState();
+
+    // เชื่อมต่อกับเซิร์ฟเวอร์ Python
+    IO.Socket socket = IO.io(
+      'http://10.0.2.2:5000', // เปลี่ยนเป็น IP จริงของเซิร์ฟเวอร์
+      IO.OptionBuilder()
+          .setTransports(['websocket']) // ใช้ WebSocket
+          .disableAutoConnect() // ป้องกันการเชื่อมต่ออัตโนมัติ
+          .build(),
+    );
+
+    socket.connect(); // เชื่อมต่อ
+
+    socket.onConnect((_) {
+      print('Connected to server');
+      socket.emit('message', 'Hello from Flutter!'); // ส่งข้อความไปเซิร์ฟเวอร์
+    });
+
+    socket.on('message', (data) {
+      print('Server: $data'); // ควรแสดงข้อความจากเซิร์ฟเวอร์ใน Flutter terminal
+    });
+
+    socket.onConnectError((data) => print('Connect Error: $data'));
+    socket.onDisconnect((_) => print('Disconnected from server'));
 
     _controller = CameraController(widget.cameras[0], ResolutionPreset.max);
     _controller.initialize().then((_) {
@@ -86,18 +110,18 @@ class _LandscapePageState extends State<LandscapePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Enjoyed it?"),
-          content: Text("Share your experience with us!"),
+          title: Text("สนุกไหม?"),
+          content: Text("แบ่งปันความคิดเห็นของคุณกับเรา"),
           actions: <Widget>[
             TextButton(
-              child: Text('No'),
+              child: Text('ไม่'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _showRetryDialog();
               },
             ),
             TextButton(
-              child: Text('Yes'),
+              child: Text('ใช่'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _showReviewDialog();
@@ -118,7 +142,7 @@ class _LandscapePageState extends State<LandscapePage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text("Rate and Review"),
+              title: Text("คะแนนและความคิดเห็น"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -143,21 +167,21 @@ class _LandscapePageState extends State<LandscapePage> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      hintText: "Share your massage experience here...",
+                      hintText: "แบ่งปันความคิดเห็นของคุณ",
                     ),
                   ),
                 ],
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: Text('ยกเลิก'),
                   onPressed: () {
                     Navigator.of(context).pop();
                     _showRetryDialog();
                   },
                 ),
                 TextButton(
-                  child: Text('Submit'),
+                  child: Text('ยืนยัน'),
                   onPressed: () {
                     print("User rated: $_selectedStars stars"); // ลอง print ดู
                     Navigator.of(context).pop();
@@ -177,17 +201,17 @@ class _LandscapePageState extends State<LandscapePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Ready to try again?"),
-          content: Text("Tap restart"),
+          title: Text("พร้อมที่จะเริ่มใหม่หรือยัง?"),
+          content: Text("แตะที่ปุ่ม 'เริ่มใหม่' เพื่อเริ่มเกมใหม่"),
           actions: <Widget>[
             TextButton(
-              child: Text('No'),
+              child: Text('ไม่'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Restart'),
+              child: Text('เริ่มใหม่'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _resetGame();
@@ -234,8 +258,8 @@ class _LandscapePageState extends State<LandscapePage> {
         alignment: Alignment.center,
         children: [
           SizedBox(
-            width: 80,
-            height: 80,
+            width: 64,
+            height: 64,
             child: CircularProgressIndicator(
               value: value,
               strokeWidth: 7,
@@ -247,10 +271,10 @@ class _LandscapePageState extends State<LandscapePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(label,
-                  style: TextStyle(fontSize: 12, color: Color(0xFFC0A172))),
+                  style: TextStyle(fontSize: 8, color: Color(0xFFC0A172))),
               Text(text,
                   style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFFC0A172))),
             ],
@@ -276,29 +300,31 @@ class _LandscapePageState extends State<LandscapePage> {
                     width: 5,
                   ),
                   borderRadius: BorderRadius.all(
-                    Radius.circular(30),
+                    Radius.circular(200),
                   ),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -317,15 +343,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -339,29 +365,31 @@ class _LandscapePageState extends State<LandscapePage> {
             return DottedBorder(
                 color: Color(0xFFC0A172),
                 strokeWidth: 5,
-                dashPattern: [25, 25],
+                dashPattern: [10, 10],
                 borderType: BorderType.RRect,
-                radius: Radius.circular(30),
+                radius: Radius.circular(200),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -380,15 +408,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -402,29 +430,31 @@ class _LandscapePageState extends State<LandscapePage> {
             return DottedBorder(
                 color: Color(0xFFC0A172),
                 strokeWidth: 5,
-                dashPattern: [25, 25],
+                dashPattern: [10, 10],
                 borderType: BorderType.RRect,
-                radius: Radius.circular(30),
+                radius: Radius.circular(200),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -462,15 +492,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -486,29 +516,31 @@ class _LandscapePageState extends State<LandscapePage> {
             return DottedBorder(
                 color: Color(0xFFC0A172),
                 strokeWidth: 5,
-                dashPattern: [25, 25],
+                dashPattern: [10, 10],
                 borderType: BorderType.RRect,
-                radius: Radius.circular(30),
+                radius: Radius.circular(200),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(200),
                   child: Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_controller)),
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xB3C0A172),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xB3C0A172),
+                              child: IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          )),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(top: 73),
                           child: Container(
                             width: 250,
                             height: 40,
@@ -527,15 +559,15 @@ class _LandscapePageState extends State<LandscapePage> {
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
+                          bottom: 42,
+                          left: 90,
                           child: buildIndicator(
                               remainingSeconds / maxSeconds,
                               "Time",
                               "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
                       Positioned(
-                        bottom: 20,
-                        right: 20,
+                        bottom: 42,
+                        right: 90,
                         child: GestureDetector(
                           onTap: incrementRound,
                           child: buildIndicator(currentRound / maxRounds,
@@ -553,14 +585,13 @@ class _LandscapePageState extends State<LandscapePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Padding(
-          padding: EdgeInsets.all(5),
+          padding: EdgeInsets.symmetric(horizontal: 83, vertical: 12),
           child: Column(
             children: [
               Expanded(
                 child: Row(
                   children: [
                     buildPanelByState(currentState),
-                    SizedBox(width: 10),
                     buildPanelByState(currentState)
                   ],
                 ),
