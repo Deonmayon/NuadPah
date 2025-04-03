@@ -14,6 +14,7 @@ pubspec.lock
 **/android/gradlew.bat
 **/android/local.properties
 **/android/key.properties
+**/android/app
 
 # iOS specific
 **/ios/Flutter/.last_build_id
