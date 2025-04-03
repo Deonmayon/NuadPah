@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/pages/homepage2.dart';
 import 'signin.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
@@ -35,13 +35,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (response.statusCode == 201) {
         // pull token from response and set token (like localStorage)
-        final token = response.data['token'];
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
+        // final token = response.data['token'];
+        // final prefs = await SharedPreferences.getInstance();
+        // await prefs.setString('token', token);
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => WelcomePage()),
+          MaterialPageRoute(builder: (context) => HomepageWidget( email: _emailController.text)),
         );
       } else {
         setState(() {
@@ -78,7 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Get Started!',
+                    'เริ่มกันเลย!',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -124,14 +124,14 @@ class _SignUpPageState extends State<SignUpPage> {
                             Expanded(
                               child: EmailTextField(
                                 controller: _firstnameController,
-                                hintText: 'First Name',
+                                hintText: 'ชื่อ',
                               ),
                             ),
                             SizedBox(width: 20),
                             Expanded(
                               child: EmailTextField(
                                 controller: _lastnameController,
-                                hintText: 'Last Name',
+                                hintText: 'นามสกุล',
                               ),
                             ),
                           ],
@@ -141,14 +141,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         // Email TextField
                         EmailTextField(
                           controller: _emailController,
-                          hintText: 'Email',
+                          hintText: 'อีเมล',
                         ),
                         SizedBox(height: 20),
 
                         // Password TextField
                         PasswordField(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: 'รหัสผ่าน',
                         ),
                         SizedBox(height: 20),
 

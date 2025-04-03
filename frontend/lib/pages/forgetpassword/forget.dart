@@ -110,14 +110,14 @@ class _ForgetPageState extends State<ForgetPage> {
                         // Email TextField
                         EmailTextField(
                           controller: _emailController,
-                          hintText: 'Email',
+                          hintText: 'อีเมล',
                         ),
                         SizedBox(height: 40),
 
                         // Sign In Button
                         SizedBox(height: 20),
                         SubmitBox(
-                          buttonText: 'Submit',
+                          buttonText: 'ส่งรหัส OTP',
                           onPress: _sendotp,
                           showArrow: true,
                         ),

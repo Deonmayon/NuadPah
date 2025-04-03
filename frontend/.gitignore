@@ -36,6 +36,16 @@ pubspec.lock
 **/ios/**/xcuserdata
 **/ios/.generated/
 
+# Linux specific
+**/linux/flutter
+
+# macOS specific
+**/macos/Flutter/
+
+# Windows specific
+**/windows/flutter
+
+
 # Coverage
 coverage/
 .test_coverage.dart

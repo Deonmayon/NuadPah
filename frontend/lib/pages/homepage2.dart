@@ -18,8 +18,6 @@ class HomepageWidget extends StatefulWidget {
 class _HomepageWidgetState extends State<HomepageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String _errorMessage = '';
-
   List<dynamic> recmassages = [];
   List<dynamic> massages = [];
 
@@ -84,8 +82,6 @@ class _HomepageWidgetState extends State<HomepageWidget> {
             }
             return false; // If both are null, exclude from results
           }).toList();
-
-    print(filteredMassages);
 
     return GestureDetector(
       onTap: () {
@@ -211,7 +207,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 const Padding(
                   padding: EdgeInsets.only(left: 20),
                   child: Text(
-                    'พึ่งดูไปล่าสุด',
+                    'เพิ่งดูไปล่าสุด',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 32,
@@ -228,27 +224,37 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
+                    children: [
+                    GestureDetector(
+                      onTap: () {
+                      Navigator.pushNamed(context, '/learn');
+                      },
+                      child: const Padding(
                       padding: EdgeInsets.only(left: 20),
                       child: Text(
                         'ท่านวดทั้งหมด',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
                         ),
                       ),
+                      ),
                     ),
-                    const Padding(
+                    GestureDetector(
+                      onTap: () {
+                      Navigator.pushNamed(context, '/learn');
+                      },
+                      child: const Padding(
                       padding: EdgeInsets.only(right: 20),
                       child: Text(
                         'ดูทั้งหมด',
                         style: TextStyle(
-                          color: Color(0xFFB1B1B1),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
+                        color: Color(0xFFB1B1B1),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
                         ),
+                      ),
                       ),
                     ),
                   ],

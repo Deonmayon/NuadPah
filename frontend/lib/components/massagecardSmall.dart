@@ -103,7 +103,7 @@ class MassageCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
-                          "≈ $time minutes",
+                          "$time minutes",
                           style: const TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,

@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
           headlineLarge: TextStyle(fontWeight: FontWeight.w900), // Black
         ),
       ),
-      initialRoute: '/map',
+      initialRoute: '/login',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login': (context) => const SignInPage(),

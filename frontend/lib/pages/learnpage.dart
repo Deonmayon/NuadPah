@@ -19,12 +19,6 @@ class _LearnState extends State<LearnPage> {
 
   List<dynamic> massages = [];
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchMassages(); // Call the method here
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -42,8 +36,7 @@ class _LearnState extends State<LearnPage> {
       });
     } catch (e) {
       setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
+        print("Error fetching massages: ${e.toString()}"); // Only prints error message
       });
     }
   }
@@ -61,11 +54,6 @@ class _LearnState extends State<LearnPage> {
   final List<String> typeOptions = [
     "back",
     "neck",
-  ];
-
-  final List<Widget> _tabsContent = [
-    SingleMassageTab(massages: []),
-    SetOfMassageTab(),
   ];
 
   Future<String?> _showTimePicker() async {
@@ -477,9 +465,8 @@ class _LearnState extends State<LearnPage> {
                 ),
               ),
             ),
-            // Expanded(
-            //   child: _tabsContent[_selectedTab],
-            // ),
+            const SizedBox(height: 20),
+            // แสดงผลตามแท็บที่เลือก
             Expanded(
               child: _selectedTab == 0
                   ? SingleMassageTab(massages: massages)

@@ -89,7 +89,7 @@ class _SignInPageState extends State<SignInPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Welcome Back!',
+                    'ยินดีต้อนรับกลับ!',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -132,14 +132,14 @@ class _SignInPageState extends State<SignInPage> {
                         // Email TextField
                         EmailTextField(
                           controller: _emailController,
-                          hintText: 'Email',
+                          hintText: 'อีเมล',
                         ),
                         SizedBox(height: 20),
 
                         // Password TextField
                         PasswordField(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: 'รหัสผ่าน',
                         ),
 
                         if (_errorMessage.isNotEmpty)
@@ -157,7 +157,7 @@ class _SignInPageState extends State<SignInPage> {
                           child: TextButton(
                             onPressed: _forget,
                             child: Text(
-                              'Forget your password ?',
+                              'ลืมรหัสผ่าน?',
                               style: TextStyle(
                                 color: Color(0xFFBFAB93),
                                 fontSize: 14,
