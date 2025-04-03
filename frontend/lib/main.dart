@@ -19,6 +19,7 @@ import 'package:frontend/pages/cammassage.dart';
 
 late List<CameraDescription> cameras;
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

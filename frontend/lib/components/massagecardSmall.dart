@@ -6,7 +6,7 @@ class MassageCard extends StatelessWidget {
   final String name;
   final String detail;
   final String type;
-  final String time;
+  final int time;
 
   const MassageCard({
     Key? key,
@@ -103,7 +103,7 @@ class MassageCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
-                          "≈ $time",
+                          "≈ $time minutes",
                           style: const TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,
@@ -164,7 +164,7 @@ class MyApp extends StatelessWidget {
             name: 'Relaxing Massage',
             detail: 'A relaxing massage to relieve stress and tension.',
             type: 'Swedish',
-            time: '60 mins',
+            time: 100,
           ),
         ),
       ),

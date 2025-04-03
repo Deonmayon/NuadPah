@@ -19,18 +19,26 @@ class _LearnState extends State<LearnPage> {
 
   List<dynamic> massages = [];
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   fetchMassages(); // Call the method here
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.wait([fetchMassages()]);
+  }
+
   Future<void> fetchMassages() async {
     final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
       final response = await apiService.getAllMassages();
 
-      print("Raw response: ${response}");
-
       setState(() {
-        massages = (response.data as List)
-            .map((item) => item.map((key, value) => MapEntry(key, value)))
-            .toList();
+        massages = response.data as List;
       });
     } catch (e) {
       setState(() {
@@ -56,7 +64,7 @@ class _LearnState extends State<LearnPage> {
   ];
 
   final List<Widget> _tabsContent = [
-    SingleMassageTab(),
+    SingleMassageTab(massages: []),
     SetOfMassageTab(),
   ];
 
@@ -364,9 +372,9 @@ class _LearnState extends State<LearnPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("---------------------------------------------------");
-    print("massages response: ${massages}");
-    print("---------------------------------------------------");
+    // print("---------------------------------------------------");
+    // print("massages response: ${massages}");
+    // print("---------------------------------------------------");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -469,8 +477,13 @@ class _LearnState extends State<LearnPage> {
                 ),
               ),
             ),
+            // Expanded(
+            //   child: _tabsContent[_selectedTab],
+            // ),
             Expanded(
-              child: _tabsContent[_selectedTab],
+              child: _selectedTab == 0
+                  ? SingleMassageTab(massages: massages)
+                  : SetOfMassageTab(),
             ),
           ],
         ),
@@ -519,19 +532,23 @@ class _LearnState extends State<LearnPage> {
 }
 
 class SingleMassageTab extends StatelessWidget {
+  final List<dynamic> massages;
+
+  const SingleMassageTab({required this.massages});
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      itemCount: 4,
+      itemCount: massages.length,
       itemBuilder: (context, index) {
+        final massage = massages[index];
         return MassageCard(
-          title: 'Name Massage',
-          description:
-              'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
-          type: 'Type: Back',
-          duration: '≈ 5 minutes',
-          imageUrl: 'assets/images/Massage_Image11.png',
+          image: massage['mt_image_name'] ?? 'https://via.placeholder.com/100',
+          name: massage['mt_name'] ?? 'Unknown Massage',
+          detail: massage['mt_detail'] ?? 'No description available.',
+          type: massage['mt_type'] ?? 'Unknown Type',
+          time: massage['mt_time'] ?? 'Unknown Duration',
         );
       },
     );
@@ -556,151 +573,6 @@ class SetOfMassageTab extends StatelessWidget {
           imageUrl3: 'assets/images/Massage_Image11.png',
         );
       },
-    );
-  }
-}
-
-class MassageCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final String type;
-  final String duration;
-  final String imageUrl;
-
-  const MassageCard({
-    required this.title,
-    required this.description,
-    required this.type,
-    required this.duration,
-    required this.imageUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      width: double.infinity,
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 8,
-            color: Color(0x40000000),
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                imageUrl,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFB1B1B1),
-                      fontSize: 12,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 2, horizontal: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFDBDBDB),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          type,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 2, horizontal: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFDBDBDB),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          duration,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 10, 10, 0),
-                width: 30, // ความกว้างของปุ่ม
-                height: 30, // ความสูงของปุ่ม
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Color(0xFFDBDBDB), // พื้นหลังของปุ่ม
-                  borderRadius:
-                      BorderRadius.circular(10), // ทำให้เป็นสี่เหลี่ยม
-                ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  alignment: Alignment.center,
-                  icon: const FaIcon(
-                    FontAwesomeIcons.solidBookmark,
-                    size: 15,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {},
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

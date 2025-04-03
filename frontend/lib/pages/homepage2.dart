@@ -240,7 +240,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       detail:
                           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                       type: 'Back',
-                      time: '5 minutes',
+                      time: 10,
                     ),
                     MassageCard(
                       image: 'https://picsum.photos/seed/459/600',
@@ -248,7 +248,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       detail:
                           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                       type: 'Back',
-                      time: '5 minutes',
+                      time: 5,
                     ),
                     MassageCard(
                       image: 'https://picsum.photos/seed/459/600',
@@ -256,7 +256,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       detail:
                           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                       type: 'Back',
-                      time: '5 minutes',
+                      time: 5,
                     ),
                   ],
                 )
