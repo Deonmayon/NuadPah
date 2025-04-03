@@ -21,16 +21,18 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   String _errorMessage = '';
 
   List<dynamic> recmassages = [];
+  List<dynamic> massages = [];
 
   String selectedType = 'all massages';
 
   @override
   void initState() {
     super.initState();
+    Future.wait([fetchRecMassages()]);
     Future.wait([fetchMassages()]);
   }
 
-  Future<void> fetchMassages() async {
+  Future<void> fetchRecMassages() async {
     final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
     final email =
         Provider.of<UserProvider>(context, listen: false).email; // Get email
@@ -42,6 +44,23 @@ class _HomepageWidgetState extends State<HomepageWidget> {
         recmassages = (response.data as List)
             .map((item) => item.map((key, value) => MapEntry(key, value)))
             .toList();
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchMassages() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    try {
+      final response = await apiService.getAllMassages();
+
+      setState(() {
+        massages = response.data as List;
       });
     } catch (e) {
       setState(() {
@@ -65,6 +84,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
             }
             return false; // If both are null, exclude from results
           }).toList();
+
+    print(filteredMassages);
 
     return GestureDetector(
       onTap: () {
@@ -232,34 +253,47 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     ),
                   ],
                 ),
+                // Column(
+                //   children: [
+                //     MassageCard(
+                //       image: 'https://picsum.photos/seed/459/600',
+                //       name: 'Name Massage',
+                //       detail:
+                //           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                //       type: 'Back',
+                //       time: 5,
+                //     ),
+                //     MassageCard(
+                //       image: 'https://picsum.photos/seed/459/600',
+                //       name: 'Name Massage',
+                //       detail:
+                //           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                //       type: 'Back',
+                //       time: 5,
+                //     ),
+                //   ],
+                // )
                 Column(
-                  children: [
-                    MassageCard(
-                      image: 'https://picsum.photos/seed/459/600',
-                      name: 'Name Massage',
-                      detail:
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                      type: 'Back',
-                      time: 10,
-                    ),
-                    MassageCard(
-                      image: 'https://picsum.photos/seed/459/600',
-                      name: 'Name Massage',
-                      detail:
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                      type: 'Back',
-                      time: 5,
-                    ),
-                    MassageCard(
-                      image: 'https://picsum.photos/seed/459/600',
-                      name: 'Name Massage',
-                      detail:
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                      type: 'Back',
-                      time: 5,
-                    ),
-                  ],
-                )
+                  children: massages.isNotEmpty
+                      ? massages.take(4).map((massage) {
+                          return MassageCard(
+                            image: massage['mt_image_name'] ?? 'https://via.placeholder.com/100',
+                            name: massage['mt_name'] ?? 'Unknown Massage',
+                            detail: massage['mt_detail'] ?? 'No description available.',
+                            type: massage['mt_type'] ?? 'Unknown Type',
+                            time: massage['mt_time'] ?? 0,
+                          );
+                        }).toList()
+                      : [
+                          const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text(
+                              'No massages available.',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          ),
+                        ],
+                ),
               ],
             ),
           ),

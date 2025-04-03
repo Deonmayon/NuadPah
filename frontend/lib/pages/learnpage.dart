@@ -544,7 +544,7 @@ class SingleMassageTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final massage = massages[index];
         return MassageCard(
-          image: massage['mt_image_name'] ?? 'https://via.placeholder.com/100',
+          image: massage['mt_image_name'] ?? 'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
