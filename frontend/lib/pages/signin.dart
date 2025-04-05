@@ -24,7 +24,7 @@ class _SignInPageState extends State<SignInPage> {
   String _errorMessage = '';
 
   Future<void> _signin() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
       final response = await apiService.signIn(
@@ -37,9 +37,6 @@ class _SignInPageState extends State<SignInPage> {
         final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
-
-        Provider.of<UserProvider>(context, listen: false)
-            .setEmail(_emailController.text);
 
         Navigator.push(
           context,

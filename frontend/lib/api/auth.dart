@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 
-class ApiService {
+class AuthApiService {
   final String baseUrl;
   final Dio _dio;
 
-  ApiService({required this.baseUrl})
+  AuthApiService({required this.baseUrl})
       : _dio = Dio(BaseOptions(baseUrl: baseUrl));
 
   // Sign up
@@ -75,14 +75,20 @@ class ApiService {
     }
   }
 
-  // Get email from token
-  Future<Response> getToken(String token) async {
+  // Get user's data from token
+  Future<Response> getUserData(String token) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.post(
         '/auth/userdata',
         data: {
-          'token': token,
+          'email': "",
         },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
       );
 
       return response;

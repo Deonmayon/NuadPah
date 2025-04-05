@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../api/massage.dart';
 
-
 class SingleMassageManagePage extends StatefulWidget {
   const SingleMassageManagePage({Key? key}) : super(key: key);
 
@@ -18,7 +17,8 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController textController = TextEditingController();
   final TextEditingController _nameMassageController = TextEditingController();
-  final TextEditingController _detailMassageController = TextEditingController();
+  final TextEditingController _detailMassageController =
+      TextEditingController();
   String? _selectedMassageType;
   String? _selectedMassageTime;
   File? _selectedImage;
@@ -36,9 +36,10 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
   }
 
   Future<void> _fetchMassageData() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
     try {
-      final response = await apiService.getAllMassages(); // Assuming you have a MassageApi class with getMassages method
+      final response = await apiService
+          .getAllMassages(); // Assuming you have a MassageApi class with getMassages method
       if (response.statusCode == 200) {
         final data = response.data as List<dynamic>;
         setState(() {
@@ -60,10 +61,9 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
     }
   }
 
-
-
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
@@ -158,237 +158,245 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                        Expanded(
-                          child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                            'Name Massage',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                              fontSize: 14,
-                            ),
-                            ),
-                            const SizedBox(height: 5),
-                            TextFormField(
-                            controller: _nameMassageController,
-                            decoration: InputDecoration(
-                              hintText: 'Name Massage',
-                              hintStyle: TextStyle(
-                              fontFamily: 'Roboto',
-                              color: Color(0xFF676767),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF676767),
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF676767),
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              ),
-                              border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Flexible(
-                              flex: 1,
-                              child: Column(
-                                crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  'Type',
+                                  'Name Massage',
                                   style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                  fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                    fontSize: 14,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  constraints: BoxConstraints(
-                                  minHeight:
-                                    35, // กำหนดความสูงขั้นต่ำ
-                                  ),
-                                  child: DropdownButtonFormField(
-                                  isExpanded: true,
+                                const SizedBox(height: 5),
+                                TextFormField(
+                                  controller: _nameMassageController,
                                   decoration: InputDecoration(
-                                    hintText: 'Select',
+                                    hintText: 'Name Massage',
                                     hintStyle: TextStyle(
-                                    fontFamily: 'Roboto',
-                                    color: Color(0xFF676767),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
+                                      fontFamily: 'Roboto',
+                                      color: Color(0xFF676767),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xFF676767),
-                                      width: 2,
-                                    ),
-                                    borderRadius:
-                                      BorderRadius.circular(10),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xFF676767),
-                                      width: 2,
-                                    ),
-                                    borderRadius:
-                                      BorderRadius.circular(10),
-                                    ),
-                                    border: OutlineInputBorder(
-                                    borderRadius:
-                                      BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  items: ['Back', 'Neck', 'Foot']
-                                    .map((type) => DropdownMenuItem(
-                                        value: type,
-                                        child: Text(type,
-                                          overflow: TextOverflow
-                                            .visible),
-                                      ))
-                                    .toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                    _selectedMassageType = value
-                                      as String;// Cast to string
-                                    });
-                                  },
-                                  ),
-                                ),
-                                ],
-                              ),
-                              ),
-                              const SizedBox(width: 10),
-                              Flexible(
-                              flex: 1,
-                              child: Column(
-                                crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                children: [
-                                Text(
-                                  'Time',
-                                  style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  constraints: BoxConstraints(
-                                  minHeight:
-                                    35, // กำหนดความสูงขั้นต่ำ
-                                  ),
-                                  child: DropdownButtonFormField(
-                                  isExpanded: true,
-                                  decoration: InputDecoration(
-                                    hintText: 'Select',
-                                    hintStyle: TextStyle(
-                                    fontFamily: 'Roboto',
-                                    color: Color(0xFF676767),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xFF676767),
-                                      width: 2,
-                                    ),
-                                    borderRadius:
-                                      BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF676767),
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xFF676767),
-                                      width: 2,
-                                    ),
-                                    borderRadius:
-                                      BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF676767),
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     border: OutlineInputBorder(
-                                    borderRadius:
-                                      BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
-                                  items: [
-                                    '5 mins',
-                                    '10 mins',
-                                    '15 mins'
-                                  ]
-                                    .map((time) => DropdownMenuItem(
-                                        value: time,
-                                        child: Text(time,
-                                          overflow: TextOverflow
-                                            .visible),
-                                      ))
-                                    .toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                    _selectedMassageTime = value
-                                      as String;// Cast to string
-                                    });
-                                  },
-                                  ),
                                 ),
-                                ],
-                              ),
-                              ),
-                            ],
+                                const SizedBox(height: 10),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Type',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            constraints: BoxConstraints(
+                                              minHeight:
+                                                  35, // กำหนดความสูงขั้นต่ำ
+                                            ),
+                                            child: DropdownButtonFormField(
+                                              isExpanded: true,
+                                              decoration: InputDecoration(
+                                                hintText: 'Select',
+                                                hintStyle: TextStyle(
+                                                  fontFamily: 'Roboto',
+                                                  color: Color(0xFF676767),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Color(0xFF676767),
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Color(0xFF676767),
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                              items: ['Back', 'Neck', 'Foot']
+                                                  .map((type) =>
+                                                      DropdownMenuItem(
+                                                        value: type,
+                                                        child: Text(type,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .visible),
+                                                      ))
+                                                  .toList(),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _selectedMassageType = value
+                                                      as String; // Cast to string
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Flexible(
+                                      flex: 1,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Time',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            constraints: BoxConstraints(
+                                              minHeight:
+                                                  35, // กำหนดความสูงขั้นต่ำ
+                                            ),
+                                            child: DropdownButtonFormField(
+                                              isExpanded: true,
+                                              decoration: InputDecoration(
+                                                hintText: 'Select',
+                                                hintStyle: TextStyle(
+                                                  fontFamily: 'Roboto',
+                                                  color: Color(0xFF676767),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Color(0xFF676767),
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Color(0xFF676767),
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                              items: [
+                                                '5 mins',
+                                                '10 mins',
+                                                '15 mins'
+                                              ]
+                                                  .map((time) =>
+                                                      DropdownMenuItem(
+                                                        value: time,
+                                                        child: Text(time,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .visible),
+                                                      ))
+                                                  .toList(),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _selectedMassageTime = value
+                                                      as String; // Cast to string
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
                           ),
-                        ),
-                        const SizedBox(width: 16),
+                          const SizedBox(width: 16),
 
-                        // Choose Image
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 25),
-                            width: 130,
-                            height: 139,
-                            decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Color(0xFF676767),
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: _selectedImage != null
-                            ? Image.file(
-                              _selectedImage!,
-                              width: 250,
-                              height: 250,
-                              fit: BoxFit.cover,
-                            )
-                            : Center(
-                            child: Text(
-                                '250x250',
-                                style: TextStyle(
+                          // Choose Image
+                          GestureDetector(
+                            onTap: _pickImage,
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 25),
+                              width: 130,
+                              height: 139,
+                              decoration: BoxDecoration(
+                                border: Border.all(
                                   color: Color(0xFF676767),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  width: 2,
                                 ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              child: _selectedImage != null
+                                  ? Image.file(
+                                      _selectedImage!,
+                                      width: 250,
+                                      height: 250,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        '250x250',
+                                        style: TextStyle(
+                                          color: Color(0xFF676767),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                             ),
                           ),
-                        ),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -594,7 +602,11 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
     final selectedMassageType = _selectedMassageType;
     final selectedMassageTime = _selectedMassageTime;
 
-    if (nameMassage.isEmpty || detailMassage.isEmpty || selectedMassageType == null || selectedMassageTime == null || _selectedImage == null) {
+    if (nameMassage.isEmpty ||
+        detailMassage.isEmpty ||
+        selectedMassageType == null ||
+        selectedMassageTime == null ||
+        _selectedImage == null) {
       // Show error message if any field is empty
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill all fields and select an image')),
@@ -602,7 +614,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
       return;
     }
 
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3000');
     try {
       final response = await apiService.addMassage(
         nameMassage,
@@ -623,7 +635,8 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
       } else {
         // Handle error response
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating massage: ${response.statusCode}')),
+          SnackBar(
+              content: Text('Error creating massage: ${response.statusCode}')),
         );
       }
     } catch (e) {

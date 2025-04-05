@@ -26,7 +26,7 @@ class _LearnState extends State<LearnPage> {
   }
 
   Future<void> fetchMassages() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
       final response = await apiService.getAllMassages();

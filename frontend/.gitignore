@@ -6,6 +6,8 @@ build/
 .packages
 pubspec.lock
 
+.env*
+
 # Android specific
 **/android/**/gradle-wrapper.jar
 **/android/.gradle

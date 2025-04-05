@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 
-class ApiService {
+class MassageApiService {
   final String baseUrl;
   final Dio _dio;
 
-  ApiService({required this.baseUrl})
+  MassageApiService({required this.baseUrl})
       : _dio = Dio(BaseOptions(baseUrl: baseUrl));
 
   // Get all massages

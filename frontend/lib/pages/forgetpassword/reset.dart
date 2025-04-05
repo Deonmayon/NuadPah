@@ -24,7 +24,7 @@ class _ResetPageState extends State<ResetPage> {
   }
 
   Future<void> _newPassword() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3000');
 
     try {
       // Check password and confirm password match

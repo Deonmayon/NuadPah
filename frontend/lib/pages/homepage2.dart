@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardLarge.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../api/auth.dart';
 import '../../api/massage.dart';
-import 'package:provider/provider.dart';
-import '../../user_provider.dart';
 
 class HomepageWidget extends StatefulWidget {
   final String email;
@@ -22,21 +22,46 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   List<dynamic> massages = [];
 
   String selectedType = 'all massages';
+  String userEmail = '';
 
   @override
   void initState() {
     super.initState();
+    Future.wait([getUserEmail()]);
     Future.wait([fetchRecMassages()]);
     Future.wait([fetchMassages()]);
   }
 
-  Future<void> fetchRecMassages() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
-    final email =
-        Provider.of<UserProvider>(context, listen: false).email; // Get email
+  Future<void> getUserEmail() async {
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      print("Token is null, user not logged in.");
+      return;
+    }
 
     try {
-      final response = await apiService.getReccomendMassages(email);
+      final response = await apiService.getUserData(token);
+
+      setState(() {
+        userEmail = response.data['email'];
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchRecMassages() async {
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    try {
+      final response = await apiService.getReccomendMassages(userEmail);
 
       setState(() {
         recmassages = (response.data as List)
@@ -52,7 +77,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Future<void> fetchMassages() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
       final response = await apiService.getAllMassages();
@@ -68,10 +93,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     final filteredMassages = selectedType == 'all massages'
         ? recmassages
         : recmassages.where((massage) {
@@ -183,7 +206,9 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       final massage = filteredMassages[index];
                       return MassageCardLarge(
                         name: massage['name'] ?? 'Unknown Name',
-                        score: massage['score']?.toString() ?? 'N/A',
+                        score: massage['avg_rating'] != null
+                            ? '${massage['avg_rating']} / 5'
+                            : 'N/A',
                         type: (massage['mt_type'] ??
                                 (massage['ms_types']?.join(', ') ?? '')) ??
                             'Unknown',
@@ -224,37 +249,37 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                  children: [
                     GestureDetector(
                       onTap: () {
-                      Navigator.pushNamed(context, '/learn');
+                        Navigator.pushNamed(context, '/learn');
                       },
                       child: const Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: Text(
-                        'ท่านวดทั้งหมด',
-                        style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          'ท่านวดทั้งหมด',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
-                      Navigator.pushNamed(context, '/learn');
+                        Navigator.pushNamed(context, '/learn');
                       },
                       child: const Padding(
-                      padding: EdgeInsets.only(right: 20),
-                      child: Text(
-                        'ดูทั้งหมด',
-                        style: TextStyle(
-                        color: Color(0xFFB1B1B1),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text(
+                          'ดูทั้งหมด',
+                          style: TextStyle(
+                            color: Color(0xFFB1B1B1),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
                       ),
                     ),
                   ],
@@ -283,9 +308,11 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                   children: massages.isNotEmpty
                       ? massages.take(4).map((massage) {
                           return MassageCard(
-                            image: massage['mt_image_name'] ?? 'https://via.placeholder.com/100',
+                            image: massage['mt_image_name'] ??
+                                'https://via.placeholder.com/100',
                             name: massage['mt_name'] ?? 'Unknown Massage',
-                            detail: massage['mt_detail'] ?? 'No description available.',
+                            detail: massage['mt_detail'] ??
+                                'No description available.',
                             type: massage['mt_type'] ?? 'Unknown Type',
                             time: massage['mt_time'] ?? 0,
                           );
@@ -295,7 +322,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                             padding: EdgeInsets.all(20.0),
                             child: Text(
                               'No massages available.',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
                             ),
                           ),
                         ],

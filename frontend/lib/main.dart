@@ -23,7 +23,6 @@ import 'package:frontend/pages/setMassageDetail.dart';
 
 late List<CameraDescription> cameras;
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -39,7 +38,8 @@ Future<void> main() async {
   ]);
 
   FlutterError.onError = (FlutterErrorDetails details) {
-    print("Flutter Error: ${details.exceptionAsString()}"); // Only print error message
+    print(
+        "Flutter Error: ${details.exceptionAsString()}"); // Only print error message
   };
 
   runApp(
@@ -86,9 +86,13 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const SignInPage(),
         '/register': (context) => const SignUpPage(),
         '/forget': (context) => const ForgetPage(),
-        '/otp': (context) => const OTPPage( email: '',),
-        '/reset': (context) => const ResetPage( email: '',),
-        '/home': (context) => const HomepageWidget( email: ''),
+        '/otp': (context) => const OTPPage(
+              email: '',
+            ),
+        '/reset': (context) => const ResetPage(
+              email: '',
+            ),
+        '/home': (context) => const HomepageWidget(email: ''),
         '/profile': (context) => const ProfilePage(),
         '/accountdetails': (context) => const AccountdetailsPage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),
