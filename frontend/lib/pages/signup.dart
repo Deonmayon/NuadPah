@@ -34,10 +34,6 @@ class _SignUpPageState extends State<SignUpPage> {
       );
 
       if (response.statusCode == 201) {
-        // pull token from response and set token (like localStorage)
-        // final token = response.data['token'];
-        // final prefs = await SharedPreferences.getInstance();
-        // await prefs.setString('token', token);
 
         Navigator.push(
           context,

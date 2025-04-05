@@ -389,8 +389,8 @@ class _LearnState extends State<LearnPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Row(
                 children: [
-                  _buildTabButton('Single Massage', 0),
-                  _buildTabButton('Set of Massage', 1),
+                  _buildTabButton('ท่านวดเดี่ยว', 0),
+                  _buildTabButton('เซ็ตท่านวด', 1),
                 ],
               ),
             ),
