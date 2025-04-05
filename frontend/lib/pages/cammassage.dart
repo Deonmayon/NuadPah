@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+// import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 late List<CameraDescription> cameras;
 Future<void> main() async {
@@ -49,28 +49,28 @@ class _LandscapePageState extends State<LandscapePage> {
   void initState() {
     super.initState();
 
-    // เชื่อมต่อกับเซิร์ฟเวอร์ Python
-    IO.Socket socket = IO.io(
-      'http://10.0.2.2:5000', // เปลี่ยนเป็น IP จริงของเซิร์ฟเวอร์
-      IO.OptionBuilder()
-          .setTransports(['websocket']) // ใช้ WebSocket
-          .disableAutoConnect() // ป้องกันการเชื่อมต่ออัตโนมัติ
-          .build(),
-    );
+    // // เชื่อมต่อกับเซิร์ฟเวอร์ Python
+    // IO.Socket socket = IO.io(
+    //   'http://10.0.2.2:5000', // เปลี่ยนเป็น IP จริงของเซิร์ฟเวอร์
+    //   IO.OptionBuilder()
+    //       .setTransports(['websocket']) // ใช้ WebSocket
+    //       .disableAutoConnect() // ป้องกันการเชื่อมต่ออัตโนมัติ
+    //       .build(),
+    // );
 
-    socket.connect(); // เชื่อมต่อ
+    // socket.connect(); // เชื่อมต่อ
 
-    socket.onConnect((_) {
-      print('Connected to server');
-      socket.emit('message', 'Hello from Flutter!'); // ส่งข้อความไปเซิร์ฟเวอร์
-    });
+    // socket.onConnect((_) {
+    //   print('Connected to server');
+    //   socket.emit('message', 'Hello from Flutter!'); // ส่งข้อความไปเซิร์ฟเวอร์
+    // });
 
-    socket.on('message', (data) {
-      print('Server: $data'); // ควรแสดงข้อความจากเซิร์ฟเวอร์ใน Flutter terminal
-    });
+    // socket.on('message', (data) {
+    //   print('Server: $data'); // ควรแสดงข้อความจากเซิร์ฟเวอร์ใน Flutter terminal
+    // });
 
-    socket.onConnectError((data) => print('Connect Error: $data'));
-    socket.onDisconnect((_) => print('Disconnected from server'));
+    // socket.onConnectError((data) => print('Connect Error: $data'));
+    // socket.onDisconnect((_) => print('Disconnected from server'));
 
     _controller = CameraController(widget.cameras[0], ResolutionPreset.max);
     _controller.initialize().then((_) {
@@ -338,28 +338,28 @@ class _LandscapePageState extends State<LandscapePage> {
                               child: Text("Correct !",
                                   style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 20,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
                       ),
-                      Positioned(
-                          bottom: 42,
-                          left: 90,
-                          child: buildIndicator(
-                              remainingSeconds / maxSeconds,
-                              "Time",
-                              "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
-                      Positioned(
-                        bottom: 42,
-                        right: 90,
-                        child: GestureDetector(
-                          onTap: incrementRound,
-                          child: buildIndicator(currentRound / maxRounds,
-                              "Round", "$currentRound"),
-                        ),
-                      ),
+                      // Positioned(
+                      //     bottom: 42,
+                      //     left: 90,
+                      //     child: buildIndicator(
+                      //         remainingSeconds / maxSeconds,
+                      //         "Time",
+                      //         "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
+                      // Positioned(
+                      //   bottom: 42,
+                      //   right: 90,
+                      //   child: GestureDetector(
+                      //     onTap: incrementRound,
+                      //     child: buildIndicator(currentRound / maxRounds,
+                      //         "Round", "$currentRound"),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ));
@@ -405,28 +405,28 @@ class _LandscapePageState extends State<LandscapePage> {
                               child: Text("Place your fingers",
                                   style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 20,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
                       ),
-                      Positioned(
-                          bottom: 42,
-                          left: 90,
-                          child: buildIndicator(
-                              remainingSeconds / maxSeconds,
-                              "Time",
-                              "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
-                      Positioned(
-                        bottom: 42,
-                        right: 90,
-                        child: GestureDetector(
-                          onTap: incrementRound,
-                          child: buildIndicator(currentRound / maxRounds,
-                              "Round", "$currentRound"),
-                        ),
-                      ),
+                      // Positioned(
+                      //     bottom: 42,
+                      //     left: 90,
+                      //     child: buildIndicator(
+                      //         remainingSeconds / maxSeconds,
+                      //         "Time",
+                      //         "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
+                      // Positioned(
+                      //   bottom: 42,
+                      //   right: 90,
+                      //   child: GestureDetector(
+                      //     onTap: incrementRound,
+                      //     child: buildIndicator(currentRound / maxRounds,
+                      //         "Round", "$currentRound"),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ));
@@ -475,7 +475,7 @@ class _LandscapePageState extends State<LandscapePage> {
                                     return Text("Rub down to the line",
                                         style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 20,
+                                            fontSize: 16,
                                             fontWeight: FontWeight.w500));
                                   } else if (currentState == PanelState.again) {
                                     return Text("Great ! Do it again",
@@ -497,22 +497,22 @@ class _LandscapePageState extends State<LandscapePage> {
                           ),
                         ),
                       ),
-                      Positioned(
-                          bottom: 42,
-                          left: 90,
-                          child: buildIndicator(
-                              remainingSeconds / maxSeconds,
-                              "Time",
-                              "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
-                      Positioned(
-                        bottom: 42,
-                        right: 90,
-                        child: GestureDetector(
-                          onTap: incrementRound,
-                          child: buildIndicator(currentRound / maxRounds,
-                              "Round", "$currentRound"),
-                        ),
-                      ),
+                      // Positioned(
+                      //     bottom: 42,
+                      //     left: 90,
+                      //     child: buildIndicator(
+                      //         remainingSeconds / maxSeconds,
+                      //         "Time",
+                      //         "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
+                      // Positioned(
+                      //   bottom: 42,
+                      //   right: 90,
+                      //   child: GestureDetector(
+                      //     onTap: incrementRound,
+                      //     child: buildIndicator(currentRound / maxRounds,
+                      //         "Round", "$currentRound"),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ));
@@ -560,28 +560,28 @@ class _LandscapePageState extends State<LandscapePage> {
                               child: Text("Move Your Camera",
                                   style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 20,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
                       ),
-                      Positioned(
-                          bottom: 42,
-                          left: 90,
-                          child: buildIndicator(
-                              remainingSeconds / maxSeconds,
-                              "Time",
-                              "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
-                      Positioned(
-                        bottom: 42,
-                        right: 90,
-                        child: GestureDetector(
-                          onTap: incrementRound,
-                          child: buildIndicator(currentRound / maxRounds,
-                              "Round", "$currentRound"),
-                        ),
-                      ),
+                      // Positioned(
+                      //     bottom: 42,
+                      //     left: 90,
+                      //     child: buildIndicator(
+                      //         remainingSeconds / maxSeconds,
+                      //         "Time",
+                      //         "${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, '0')}")),
+                      // Positioned(
+                      //   bottom: 42,
+                      //   right: 90,
+                      //   child: GestureDetector(
+                      //     onTap: incrementRound,
+                      //     child: buildIndicator(currentRound / maxRounds,
+                      //         "Round", "$currentRound"),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ));
