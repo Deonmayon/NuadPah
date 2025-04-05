@@ -531,11 +531,15 @@ class SingleMassageTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final massage = massages[index];
         return MassageCard(
+          mt_id: massage['mt_id'] ?? 0,
           image: massage['mt_image_name'] ?? 'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
+          onFavoriteChanged: (isFavorite) {
+            print('Massage favorited: $isFavorite');
+          },
         );
       },
     );

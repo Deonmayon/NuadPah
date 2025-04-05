@@ -283,11 +283,15 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                   children: massages.isNotEmpty
                       ? massages.take(4).map((massage) {
                           return MassageCard(
+                            mt_id: massage['mt_id'],
                             image: massage['mt_image_name'] ?? 'https://via.placeholder.com/100',
                             name: massage['mt_name'] ?? 'Unknown Massage',
                             detail: massage['mt_detail'] ?? 'No description available.',
                             type: massage['mt_type'] ?? 'Unknown Type',
                             time: massage['mt_time'] ?? 0,
+                            onFavoriteChanged: (isFavorite) {
+                              print('Massage favorited: $isFavorite');
+                            },
                           );
                         }).toList()
                       : [

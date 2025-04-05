@@ -56,10 +56,43 @@ class ApiService {
     }
   }
 
-  // Set Favorite Massage
-  Future<Response> setFavorite(String email, int id) async {
+  // Get Favorite Single Massage
+  Future<Response> getFavSingle(String email) async {
+    try {
+      final response = await _dio.post('/user/get-fav-single',
+          data: {
+            'email': email,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to add massage: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Favorite a Single Massage
+  Future<Response> favSingle(String email, int id) async {
     try {
       final response = await _dio.post('/user/fav-single',
+          data: {
+            'email': email,
+            'mt_id': id,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to add massage: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Unfavorite a Single Massage
+  Future<Response> unfavSingle(String email, int id) async {
+    try {
+      final response = await _dio.delete('/user/unfav-single/$email/$id',
           data: {
             'email': email,
             'mt_id': id,

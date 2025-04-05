@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import '../user_provider.dart';
+import '../api/massage.dart';
 
-class MassageCard extends StatelessWidget {
+class MassageCard extends StatefulWidget {
   final String image;
   final String name;
   final String detail;
   final String type;
   final int time;
+  final int mt_id;
+  final Function(bool) onFavoriteChanged;
 
   const MassageCard({
     Key? key,
@@ -15,7 +20,61 @@ class MassageCard extends StatelessWidget {
     required this.detail,
     required this.type,
     required this.time,
+    required this.mt_id,
+    required this.onFavoriteChanged,
   }) : super(key: key);
+
+  @override
+  State<MassageCard> createState() => _MassageCardState();
+}
+
+class _MassageCardState extends State<MassageCard> {
+  bool isFavorite = false;
+  List<dynamic> favmassages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMassages();
+  }
+
+  Future<void> fetchMassages() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final email =
+        Provider.of<UserProvider>(context, listen: false).email; // Get email
+
+    try {
+      final response = await apiService.getFavSingle(email);
+
+      setState(() {
+        favmassages = (response.data as List)
+            .map((item) => item['mt_id'] as int)
+            .toList();
+        isFavorite = favmassages.contains(widget.mt_id);
+      });
+    } catch (e) {
+      print("Error fetching massages: ${e.toString()}");
+    }
+  }
+
+  Future<void> toggleFavorite() async {
+    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final email = Provider.of<UserProvider>(context, listen: false).email;
+
+    try {
+      if (!isFavorite) {
+        await apiService.favSingle(email, widget.mt_id);
+      } else {
+        await apiService.unfavSingle(email, widget.mt_id);
+      }
+      setState(() {
+        isFavorite = !isFavorite;
+      });
+      widget.onFavoriteChanged(isFavorite);
+    } catch (e) {
+      print("Error toggling favorite: ${e.toString()}");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +101,7 @@ class MassageCard extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Image.network(
-                image,
+                widget.image,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
@@ -57,7 +116,7 @@ class MassageCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    name,
+                    widget.name,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
@@ -65,7 +124,7 @@ class MassageCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    detail,
+                    widget.detail,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Color(0xFFB1B1B1),
@@ -85,7 +144,7 @@ class MassageCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
-                          "Type : $type",
+                          "Type : ${widget.type}",
                           style: const TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,
@@ -103,7 +162,7 @@ class MassageCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
-                          "$time minutes",
+                          "${widget.time} minutes",
                           style: const TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,
@@ -132,12 +191,12 @@ class MassageCard extends StatelessWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   alignment: Alignment.center,
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.solidBookmark,
                     size: 15,
-                    color: Colors.white,
+                    color: isFavorite ? const Color.fromARGB(255, 255, 200, 0) : Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: toggleFavorite,
                 ),
               ),
             ],
@@ -165,6 +224,10 @@ class MyApp extends StatelessWidget {
             detail: 'A relaxing massage to relieve stress and tension.',
             type: 'Swedish',
             time: 100,
+            mt_id: 1,
+            onFavoriteChanged: (isFavorite) {
+              print('Favorite status changed: $isFavorite');
+            },
           ),
         ),
       ),
