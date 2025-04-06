@@ -16,7 +16,7 @@ class _ForgetPageState extends State<ForgetPage> {
   String _errorMessage = '';
 
   Future<void> _sendotp() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3000');
 
     try {
       final response = await apiService.sendOTP(
@@ -26,7 +26,8 @@ class _ForgetPageState extends State<ForgetPage> {
       if (response.statusCode == 201) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => OTPPage(email: _emailController.text)),
+          MaterialPageRoute(
+              builder: (context) => OTPPage(email: _emailController.text)),
         );
       } else {
         setState(() {
@@ -123,7 +124,6 @@ class _ForgetPageState extends State<ForgetPage> {
                         ),
 
                         SizedBox(height: 30),
-
                       ],
                     ),
                   ),

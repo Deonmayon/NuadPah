@@ -6,9 +6,8 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // Fetch data from API
-    final api = ApiService(baseUrl: 'http://localhost:3000');
+    final api = MassageApiService(baseUrl: 'http://localhost:3000');
     api.getAllMassages().then((response) {
       print(response.data);
     }).catchError((error) {

@@ -23,7 +23,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String _errorMessage = '';
 
   Future<void> _signup() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
       final response = await apiService.signUp(
@@ -34,10 +34,16 @@ class _SignUpPageState extends State<SignUpPage> {
       );
 
       if (response.statusCode == 201) {
+        // pull token from response and set token (like localStorage)
+        final token = response.data['token'];
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomepageWidget( email: _emailController.text)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  HomepageWidget(email: _emailController.text)),
         );
       } else {
         setState(() {
