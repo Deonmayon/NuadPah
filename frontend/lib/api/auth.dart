@@ -4,15 +4,16 @@ import '../config/env.dart';
 class AuthApiService {
   final Dio _dio;
 
-  AuthApiService() : _dio = Dio(BaseOptions(
-    baseUrl: Env.apiBaseUrl,
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 3),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-  )) {
+  AuthApiService()
+      : _dio = Dio(BaseOptions(
+          baseUrl: 'https://senuadpahdocker-production.up.railway.app',
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        )) {
     _dio.interceptors.add(LogInterceptor(
       requestBody: true,
       responseBody: true,
@@ -23,11 +24,6 @@ class AuthApiService {
   // Sign up
   Future<Response> signUp(
       String email, String password, String firstname, String lastname) async {
-    print("apiBaseUrl: ${Env.apiBaseUrl}");
-    print("---------------------------------------------------------------");
-    print("---------------------------------------------------------------");
-    print("---------------------------------------------------------------");
-
     try {
       final response = await _dio.post(
         '/auth/signup',
@@ -52,11 +48,6 @@ class AuthApiService {
 
   // Sign in
   Future<Response> signIn(String email, String password) async {
-    print("apiBaseUrl: ${Env.apiBaseUrl}");
-    print("---------------------------------------------------------------");
-    print("---------------------------------------------------------------");
-    print("---------------------------------------------------------------");
-
     try {
       final response = await _dio.post(
         '/auth/signin',

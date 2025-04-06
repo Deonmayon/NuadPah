@@ -6,9 +6,9 @@ class MassageApiService {
 
   MassageApiService()
       : _dio = Dio(BaseOptions(
-          baseUrl: Env.apiBaseUrl,
-          connectTimeout: const Duration(seconds: 5),
-          receiveTimeout: const Duration(seconds: 3),
+          baseUrl: 'https://senuadpahdocker-production.up.railway.app',
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
