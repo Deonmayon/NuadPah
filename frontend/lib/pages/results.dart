@@ -1,10 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 
 class ResultsPage extends StatelessWidget {
-  final String imagePath;
+  final String imageUrl;
 
-  const ResultsPage({super.key, required this.imagePath});
+  const ResultsPage({super.key, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +12,17 @@ class ResultsPage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // ✅ แสดงรูปจาก path ที่ส่งมา
-            Image.file(
-              File(imagePath),
+            // ✅ แสดงภาพจาก URL
+            Image.network(
+              imageUrl,
               width: double.infinity,
               height: double.infinity,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(child: CircularProgressIndicator());
+              },
+              errorBuilder: (context, error, stackTrace) => Center(child: Text('โหลดภาพไม่สำเร็จ')),
             ),
 
             // ✅ ปุ่มย้อนกลับ

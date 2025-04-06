@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 import 'results.dart'; // import หน้า results
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 late List<CameraDescription> cameras;
 Future<void> main() async {
@@ -91,17 +93,35 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                       child: GestureDetector(
                         onTap: () async {
                           try {
-                            if (!_controller.value.isInitialized || _controller.value.isTakingPicture) return;
+                            if (!_controller.value.isInitialized ||
+                                _controller.value.isTakingPicture) return;
 
                             final image = await _controller.takePicture();
+                            var uri = Uri.parse(
+                                'http://nuadpah.phraya.net/predict-file');
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ResultsPage(imagePath: image.path),
-                              ),
-                            );
+                            var request = http.MultipartRequest('POST', uri);
+                            request.files.add(await http.MultipartFile.fromPath(
+                                'file', image.path));
+
+                            var response = await request.send();
+
+                            if (response.statusCode == 200) {
+                              var responseBody =
+                                  await response.stream.bytesToString();
+                              var jsonData = json.decode(responseBody);
+                              String imageUrl = jsonData['public_url'];
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ResultsPage(imageUrl: imageUrl),
+                                ),
+                              );
+                            } else {
+                              print('API error: ${response.statusCode}');
+                            }
                           } catch (e) {
                             print('Error capturing photo: $e');
                           }
