@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'results.dart'; // import หน้า results
 
 late List<CameraDescription> cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
 
-  SystemChrome.setPreferredOrientations([
-
-  ]);
+  SystemChrome.setPreferredOrientations([]);
   runApp(MyApp(cameras: cameras));
 }
 
@@ -34,36 +32,11 @@ class CamtakepicPage extends StatefulWidget {
 }
 
 class _CamtakepicPage extends State<CamtakepicPage> {
-
   late CameraController _controller;
 
   @override
   void initState() {
     super.initState();
-
-    // เชื่อมต่อกับเซิร์ฟเวอร์ Python
-    IO.Socket socket = IO.io(
-      'http://10.0.2.2:5000', // เปลี่ยนเป็น IP จริงของเซิร์ฟเวอร์
-      IO.OptionBuilder()
-          .setTransports(['websocket']) // ใช้ WebSocket
-          .disableAutoConnect() // ป้องกันการเชื่อมต่ออัตโนมัติ
-          .build(),
-    );
-
-    socket.connect(); // เชื่อมต่อ
-
-    socket.onConnect((_) {
-      print('Connected to server');
-      socket.emit('message', 'Hello from Flutter!'); // ส่งข้อความไปเซิร์ฟเวอร์
-    });
-
-    socket.on('message', (data) {
-      print('Server: $data'); // ควรแสดงข้อความจากเซิร์ฟเวอร์ใน Flutter terminal
-    });
-
-    socket.onConnectError((data) => print('Connect Error: $data'));
-    socket.onDisconnect((_) => print('Disconnected from server'));
-
     _controller = CameraController(widget.cameras[0], ResolutionPreset.max);
     _controller.initialize().then((_) {
       if (!mounted) {
@@ -112,22 +85,39 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                         ),
                       )),
                   Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: GestureDetector(
+                        onTap: () async {
+                          try {
+                            if (!_controller.value.isInitialized || _controller.value.isTakingPicture) return;
+
+                            final image = await _controller.takePicture();
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ResultsPage(imagePath: image.path),
+                              ),
+                            );
+                          } catch (e) {
+                            print('Error capturing photo: $e');
+                          }
+                        },
                         child: Container(
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: Color(0xFFC0A172), // สีตรงกลางปุ่ม
+                            color: Color(0xFFC0A172),
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white, // ขอบสีขาว
-                              width: 4,
-                            ),
+                            border: Border.all(color: Colors.white, width: 4),
                           ),
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                 ]),
               )
             ],

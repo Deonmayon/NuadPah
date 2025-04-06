@@ -21,7 +21,7 @@ import 'package:frontend/pages/report.dart';
 import 'package:frontend/pages/help.dart';
 import 'package:frontend/pages/setMassageDetail.dart';
 import 'package:frontend/pages/camtakepic.dart';
-import 'package:frontend/pages/results.dart';
+// import 'package:frontend/pages/results.dart';
 
 late List<CameraDescription> cameras;
 
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
           headlineLarge: TextStyle(fontWeight: FontWeight.w900), // Black
         ),
       ),
-      initialRoute: '/results',
+      initialRoute: '/camtest',
       routes: {
         '/': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),
@@ -89,7 +89,6 @@ class MyApp extends StatelessWidget {
         '/map': (context) => MapPage(),
         '/cam': (context) => LandscapePage(cameras: cameras),
         '/camtest': (context) => CamtakepicPage(cameras: cameras),
-        '/results': (context) => const ResultsPage(),
       },
     );
   }
