@@ -4,6 +4,7 @@ import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardSet.dart';
 import '../../api/massage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LearnPage extends StatefulWidget {
   const LearnPage({Key? key}) : super(key: key);
@@ -19,47 +20,8 @@ class _LearnState extends State<LearnPage> {
 
   List<dynamic> singleMassages = [];
   List<dynamic> setMassages = [];
-
-  @override
-  void initState() {
-    super.initState();
-    Future.wait([fetchSingleMassages()]);
-    Future.wait([fetchSetMassages()]);
-  }
-
-  Future<void> fetchSingleMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
-
-    try {
-      final response = await apiService.getAllMassages();
-
-      setState(() {
-        singleMassages = response.data as List;
-      });
-    } catch (e) {
-      setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
-      });
-    }
-  }
-
-  Future<void> fetchSetMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
-
-    try {
-      final response = await apiService.getAllSetMassages();
-
-      setState(() {
-        setMassages = response.data as List;
-      });
-    } catch (e) {
-      setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
-      });
-    }
-  }
+  List<dynamic> filteredSingleMassages = [];
+  List<dynamic> filteredSetMassages = [];
 
   String selectedTime = "Please select";
   final List<String> timeOptions = [
@@ -74,7 +36,73 @@ class _LearnState extends State<LearnPage> {
   final List<String> typeOptions = [
     "back",
     "neck",
+    "shoulder",
+    "arms",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.wait([fetchSingleMassages()]);
+    Future.wait([fetchSetMassages()]);
+    textController.addListener(_handleSearch);
+  }
+
+  Future<void> fetchSingleMassages() async {
+    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+
+    try {
+      final response = await apiService.getAllMassages();
+
+      setState(() {
+        singleMassages = response.data as List;
+        filteredSingleMassages = singleMassages;
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchSetMassages() async {
+    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+
+    try {
+      final response = await apiService.getAllSetMassages();
+
+      setState(() {
+        setMassages = response.data as List;
+        filteredSetMassages = setMassages;
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  void _handleSearch() {
+    final query = textController.text.toLowerCase();
+    setState(() {
+      if (_selectedTab == 0) {
+        filteredSingleMassages = singleMassages.where((massage) {
+          final name = (massage['mt_name'] ?? '').toString().toLowerCase();
+          final type = (massage['mt_type'] ?? '').toString().toLowerCase();
+          return name.contains(query) || type.contains(query);
+        }).toList();
+      } else {
+        filteredSetMassages = setMassages.where((massage) {
+          final name = (massage['ms_name'] ?? '').toString().toLowerCase();
+          final types =
+              (massage['ms_types'] as List<dynamic>? ?? []).join(' ').toLowerCase();
+          return name.contains(query) || types.contains(query);
+        }).toList();
+      }
+    });
+  }
 
   Future<String?> _showTimePicker() async {
     return await showModalBottomSheet<String>(
@@ -154,6 +182,29 @@ class _LearnState extends State<LearnPage> {
         );
       },
     );
+  }
+
+  void _applyFilters() {
+    setState(() {
+      if (_selectedTab == 0) {
+        filteredSingleMassages = singleMassages.where((massage) {
+          bool matchesTime =
+              selectedTime == "Please select" || massage['mt_time'] == selectedTime;
+          bool matchesType =
+              selectedType == "Please select" || massage['mt_type'] == selectedType;
+          return matchesTime && matchesType;
+        }).toList();
+      } else {
+        filteredSetMassages = setMassages.where((massage) {
+          bool matchesTime = selectedTime == "Please select" ||
+              massage['ms_time'].toString() == selectedTime;
+          bool matchesType = selectedType == "Please select" ||
+              (massage['ms_types'] as List<dynamic>).contains(selectedType);
+          return matchesTime && matchesType;
+        }).toList();
+      }
+      Navigator.pop(context);
+    });
   }
 
   void showFilterPopup() {
@@ -341,28 +392,31 @@ class _LearnState extends State<LearnPage> {
                     // Apply Button
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Color.fromRGBO(192, 161, 114, 1),
-                          boxShadow: const [
-                            BoxShadow(
-                              blurRadius: 15,
-                              color: Color(0x3F000000),
-                              offset: Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: const Text(
-                            "APPLY",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'Roboto',
+                      child: GestureDetector(
+                        onTap: _applyFilters,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Color.fromRGBO(192, 161, 114, 1),
+                            boxShadow: const [
+                              BoxShadow(
+                                blurRadius: 15,
+                                color: Color(0x3F000000),
+                                offset: Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: const Text(
+                              "APPLY",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Roboto',
+                              ),
                             ),
                           ),
                         ),
@@ -487,8 +541,8 @@ class _LearnState extends State<LearnPage> {
             // แสดงผลตามแท็บที่เลือก
             Expanded(
               child: _selectedTab == 0
-                  ? SingleMassageTab(massages: singleMassages)
-                  : SetOfMassageTab(massages: setMassages),
+                  ? SingleMassageTab(massages: filteredSingleMassages)
+                  : SetOfMassageTab(massages: filteredSetMassages),
             ),
           ],
         ),
@@ -534,6 +588,14 @@ class _LearnState extends State<LearnPage> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    textController.removeListener(_handleSearch);
+    textController.dispose();
+    textFieldFocusNode.dispose();
+    super.dispose();
+  }
 }
 
 class SingleMassageTab extends StatelessWidget {
@@ -543,6 +605,19 @@ class SingleMassageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (massages.isEmpty) {
+      return const Center(
+        child: Text(
+          'ไม่พบท่านวดที่คุณค้นหา',
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFFB1B1B1),
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 20),
       itemCount: massages.length,
@@ -550,8 +625,9 @@ class SingleMassageTab extends StatelessWidget {
         final massage = massages[index];
         return MassageCard(
           mt_id: massage['mt_id'] ?? 0,
-          image: massage['mt_image_name'] ??
-              'https://picsum.photos/seed/picsum/200/300',
+          // image: massage['mt_image_name'] ??
+          //     'https://picsum.photos/seed/picsum/200/300',
+          image: 'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
@@ -572,6 +648,19 @@ class SetOfMassageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (massages.isEmpty) {
+      return const Center(
+        child: Text(
+          'ไม่พบเซ็ตท่านวดที่คุณค้นหา',
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFFB1B1B1),
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 20),
       itemCount: massages.length,
@@ -586,15 +675,18 @@ class SetOfMassageTab extends StatelessWidget {
               (massage['ms_detail'] ?? 'No description available.') as String,
           types: (massage['ms_types'] as List<dynamic>? ?? []).cast<String>(),
           duration: (massage['ms_time'] ?? 0) as int,
-          imageUrl1: imageNames.isNotEmpty
-              ? imageNames[0] as String
-              : 'https://picsum.photos/seed/default1/200/300',
-          imageUrl2: imageNames.length > 1
-              ? imageNames[1] as String
-              : 'https://picsum.photos/seed/default2/200/300',
-          imageUrl3: imageNames.length > 2
-              ? imageNames[2] as String
-              : 'https://picsum.photos/seed/default3/200/300',
+          // imageUrl1: imageNames.isNotEmpty
+          //     ? imageNames[0] as String
+          //     : 'https://picsum.photos/seed/default1/200/300',
+          // imageUrl2: imageNames.length > 1
+          //     ? imageNames[1] as String
+          //     : 'https://picsum.photos/seed/default2/200/300',
+          // imageUrl3: imageNames.length > 2
+          //     ? imageNames[2] as String
+          //     : 'https://picsum.photos/seed/default3/200/300',
+          imageUrl1: 'https://picsum.photos/seed/picsum/200/300',
+          imageUrl2: 'https://picsum.photos/seed/picsum/200/300',
+          imageUrl3: 'https://picsum.photos/seed/picsum/200/300',
           onFavoriteChanged: (isFavorite) {
             // Replace with a logging framework or remove in production
           },

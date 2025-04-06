@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../api/auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({Key? key}) : super(key: key);
@@ -9,6 +12,81 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
+
+  late Map<String, dynamic> userData = {
+    'email': '',
+    'firstname': '',
+    'lastname': '',
+    'image_name': '',
+    'role': '',
+  };
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _detailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _detailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> loadData() async {
+    await getUserEmail();
+  }
+
+  Future<void> getUserEmail() async {
+    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      print("Token is null, user not logged in.");
+      return;
+    }
+
+    try {
+      final response = await apiService.getUserData(token);
+
+      print("User data: ${response.data}"); // Debugging line
+
+      setState(() {
+        userData = response.data;
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> _sendReport() async {
+    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    try {
+      await apiService.sendReport(
+        userData['email'],
+        _titleController.text,
+        _detailController.text,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ส่งรายงานสำเร็จ')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: ${e.toString()}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +121,23 @@ class _ReportPageState extends State<ReportPage> {
             const Padding(
               padding: EdgeInsets.only(top: 20, left: 20),
               child: Text(
+                'หัวข้อปัญหา*:',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+              child: TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  hintText: 'กรุณาระบุหัวข้อปัญหา',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20, left: 20),
+              child: Text(
                 'อธิบายปัญหาของคุณ*:',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
@@ -68,9 +163,10 @@ class _ReportPageState extends State<ReportPage> {
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 10, left: 20, right: 20),
               child: TextField(
+                controller: _detailController,
                 maxLines: 5,
                 decoration: InputDecoration(
                   hintText: 'กรุณาอธิบายปัญหาของคุณ',
@@ -95,9 +191,7 @@ class _ReportPageState extends State<ReportPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {
-                        debugPrint('Send Report button pressed');
-                      },
+                      onPressed: _sendReport,
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

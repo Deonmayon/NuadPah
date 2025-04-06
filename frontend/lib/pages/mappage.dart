@@ -338,65 +338,65 @@ class _MapPageState extends State<MapPage> {
                       _zoom = position.zoom;
                     });
                   }),
-              Positioned(
-                top: 20,
-                left: 20,
-                right: 20,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  child: Container(
-                    width: 372,
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(
-                          blurRadius: 15,
-                          color: Color(0x3F000000),
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: FaIcon(
-                            FontAwesomeIcons.magnifyingGlass,
-                            color: Color(0xFFB1B1B1),
-                            size: 20,
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 10, top: 2, right: 10),
-                            child: TextFormField(
-                              controller: textController,
-                              focusNode: textFieldFocusNode,
-                              decoration: InputDecoration(
-                                hintText: 'ค้นหา',
-                                hintStyle: const TextStyle(
-                                  color: Color(0xFFB1B1B1),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[200],
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: 20,
+              //   left: 20,
+              //   right: 20,
+              //   child: Padding(
+              //     padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+              //     child: Container(
+              //       width: 372,
+              //       height: 45,
+              //       decoration: BoxDecoration(
+              //         color: Colors.grey[200],
+              //         borderRadius: BorderRadius.circular(20),
+              //         boxShadow: const [
+              //           BoxShadow(
+              //             blurRadius: 15,
+              //             color: Color(0x3F000000),
+              //             offset: Offset(0, 5),
+              //           ),
+              //         ],
+              //       ),
+              //       // child: Row(
+              //       //   children: [
+              //       //     const Padding(
+              //       //       padding: EdgeInsets.only(left: 10),
+              //       //       child: FaIcon(
+              //       //         FontAwesomeIcons.magnifyingGlass,
+              //       //         color: Color(0xFFB1B1B1),
+              //       //         size: 20,
+              //       //       ),
+              //       //     ),
+              //       //     // Expanded(
+              //       //     //   child: Padding(
+              //       //     //     padding: const EdgeInsets.only(
+              //       //     //         left: 10, top: 2, right: 10),
+              //       //     //     child: TextFormField(
+              //       //     //       controller: textController,
+              //       //     //       focusNode: textFieldFocusNode,
+              //       //     //       decoration: InputDecoration(
+              //       //     //         hintText: 'ค้นหา',
+              //       //     //         hintStyle: const TextStyle(
+              //       //     //           color: Color(0xFFB1B1B1),
+              //       //     //           fontSize: 20,
+              //       //     //           fontWeight: FontWeight.w500,
+              //       //     //         ),
+              //       //     //         filled: true,
+              //       //     //         fillColor: Colors.grey[200],
+              //       //     //         border: OutlineInputBorder(
+              //       //     //           borderRadius: BorderRadius.circular(8),
+              //       //     //           borderSide: BorderSide.none,
+              //       //     //         ),
+              //       //     //       ),
+              //       //     //     ),
+              //       //     //   ),
+              //       //     // ),
+              //       //   ],
+              //       // ),
+              //     ),
+              //   ),
+              // ),
             ]),
       bottomNavigationBar: HomeBottomNavigationBar(
         initialIndex: 2,

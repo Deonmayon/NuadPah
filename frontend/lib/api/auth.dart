@@ -49,8 +49,13 @@ class AuthApiService {
       );
 
       return response;
-    } on DioError catch (e) {
-      throw Exception('Failed to sign in: ${e.response?.data ?? e.message}');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        // For incorrect password
+        throw "รหัสผ่านไม่ถูกต้อง";
+      }
+      // For other errors (network, server, etc.)
+      throw 'Failed to sign in: ${e.message}';
     }
   }
 
@@ -90,7 +95,6 @@ class AuthApiService {
           },
         ),
       );
-
       return response;
     } on DioError catch (e) {
       throw Exception(
@@ -142,4 +146,80 @@ class AuthApiService {
           'Failed to reset password: ${e.response?.data ?? e.message}');
     }
   }
+
+  // Update user data
+  Future<Response> updateUserData(
+      int id,
+      String email,
+      String newpw,
+      String firstname,
+      String lastname,
+      String imageName) async {
+    try {
+      final response = await _dio.put(
+        '/admin/edit-user/$id',
+        data: {
+          'email': email,
+          'password': newpw,
+          'firstname': firstname,
+          'lastname': lastname,
+          'image_name': imageName,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      return response;
+    } on DioError catch (e) {
+      throw Exception(
+          'Failed to update user data: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Send image to supabase
+  Future<Response> sendImageToSupabase(String imagePath) async {
+    try {
+      FormData formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(imagePath),
+      });
+
+      final response = await _dio.post(
+        '/image/upload',
+        data: formData,
+      );
+
+      return response;
+    } on DioError catch (e) {
+      throw Exception(
+          'Failed to send image to supabase: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Send Report
+  Future<Response> sendReport(String email, String title, String detail) async {
+    try {
+      final response = await _dio.post(
+        '/user/send-report',
+        data: {
+          'email': email,
+          'title': title,
+          'detail': detail,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      return response;
+    } on DioError catch (e) {
+      throw Exception(
+          'Failed to send report: ${e.response?.data ?? e.message}');
+    }
+  }
+
 }

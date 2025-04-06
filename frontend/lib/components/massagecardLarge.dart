@@ -43,7 +43,10 @@ class MassageCardLarge extends StatelessWidget {
               width: double.infinity,
               height: 135,
               child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
+                ),
                 child: Image.network(
                   image.isNotEmpty
                       ? image

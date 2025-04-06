@@ -8,6 +8,7 @@ import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -20,9 +21,16 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
+  bool _isObscured = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
 
   Future<void> _signin() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService(baseUrl: "10.0.2.2:3001");
 
     try {
       final response = await apiService.signIn(
@@ -40,7 +48,7 @@ class _SignInPageState extends State<SignInPage> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  HomepageWidget(email: _emailController.text)),
+                  HomepageWidget()),
         );
       } else {
         setState(() {
@@ -135,9 +143,12 @@ class _SignInPageState extends State<SignInPage> {
                         PasswordField(
                           controller: _passwordController,
                           hintText: 'รหัสผ่าน',
+                          isObscured: _isObscured,
+                          onToggle: _togglePasswordVisibility,
                         ),
 
                         if (_errorMessage.isNotEmpty)
+                          SizedBox(height: 10),
                           Padding(
                             padding: EdgeInsets.only(top: 8),
                             child: Text(
@@ -168,50 +179,6 @@ class _SignInPageState extends State<SignInPage> {
                           buttonText: 'ลงชื่อเข้าใช้',
                           showArrow: true,
                         ),
-                        SizedBox(height: 30),
-
-                        // Or Sign In With Text
-                        Center(
-                          child: Text(
-                            'หรือลงชื่อเข้าใช้ด้วย',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // Google Sign In Button
-                        Center(
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'G',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: Color(0xFFBFAB93),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
                         SizedBox(height: 30),
 
                         // Create Account Link

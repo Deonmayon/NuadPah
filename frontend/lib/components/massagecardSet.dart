@@ -47,7 +47,12 @@ class _MassageCardSetState extends State<MassageCardSet> {
   @override
   void initState() {
     super.initState();
-    fetchMassages();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    await getUserEmail();
+    await fetchMassages();
   }
 
   Future<void> getUserEmail() async {

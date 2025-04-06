@@ -5,11 +5,11 @@ import 'package:frontend/components/massagecardLarge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../api/auth.dart';
 import '../../api/massage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomepageWidget extends StatefulWidget {
-  final String email;
 
-  const HomepageWidget({Key? key, required this.email}) : super(key: key);
+  const HomepageWidget({Key? key}) : super(key: key);
 
   @override
   State<HomepageWidget> createState() => _HomepageWidgetState();
@@ -20,16 +20,37 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   List<dynamic> recmassages = [];
   List<dynamic> massages = [];
+  bool isLoading = true;
 
-  String selectedType = 'all massages';
+  String selectedType = 'all';  // Keep English internally
 
   late Map<String, dynamic> userData = {
     'email': '',
-    'first_name': '',
-    'last_name': '',
+    'firstname': '',
+    'lastname': '',
     'image_name': '',
     'role': '',
   };
+
+  // Update mapping to use lowercase types as in API
+  Map<String, String> typeMapping = {
+    'all': 'ท่านวดทั้งหมด',
+    'back': 'หลัง',
+    'arm': 'แขน',
+    'shoulder': 'ไหล่',
+    'neck': 'คอ',
+  };
+
+  String getThaiType(String englishType) {
+    return typeMapping[englishType] ?? englishType;
+  }
+
+  String getEnglishType(String thaiType) {
+    return typeMapping.entries
+        .firstWhere((entry) => entry.value == thaiType,
+            orElse: () => MapEntry(thaiType, thaiType))
+        .key;
+  }
 
   @override
   void initState() {
@@ -38,13 +59,21 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Future<void> loadData() async {
+    setState(() {
+      isLoading = true; // Set loading state to true before fetching
+    });
+
     await getUserEmail();
     await fetchRecMassages();
     await fetchMassages();
+
+    setState(() {
+      isLoading = false; // Set loading state to false after all data is fetched
+    });
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -73,7 +102,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Future<void> fetchRecMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
 
     final userEmail = userData['email'].toString();
 
@@ -96,7 +125,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Future<void> fetchMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
 
     try {
       final response = await apiService.getAllMassages();
@@ -114,15 +143,22 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredMassages = selectedType == 'all massages'
+
+    print('UserData: $userData');
+    print('Current selected type: $selectedType'); // Debug print
+    
+    final filteredMassages = selectedType == 'all'
         ? recmassages
         : recmassages.where((massage) {
-            if (massage['ms_types'] != null) {
-              return massage['ms_types'].contains(selectedType);
-            } else if (massage['mt_type'] != null) {
-              return massage['mt_type'] == selectedType;
+            // For single massage types
+            if (massage['mt_type'] != null) {
+              return massage['mt_type'].toLowerCase() == selectedType.toLowerCase();
             }
-            return false; // If both are null, exclude from results
+            // For massage sets
+            if (massage['ms_types'] != null) {
+              return massage['ms_types'].contains(selectedType.toLowerCase());
+            }
+            return false;
           }).toList();
 
     return GestureDetector(
@@ -140,10 +176,19 @@ class _HomepageWidgetState extends State<HomepageWidget> {
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
+                  if (isLoading)
+                  const SizedBox(
+                    width: 100,
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.grey,
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                    ),
+                  )
+                else
                   Text(
-                    'สวัสดี, Esther',
-                    style: TextStyle(
+                    'สวัสดี, ${userData['firstname'] ?? 'ผู้ใช้'}',
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -158,12 +203,25 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                   ),
                 ],
               ),
-              ClipOval(
-                child: Image.asset(
-                  'assets/images/profilePicture.jpg',
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: ClipOval(
+                  child: Image.network(
+                    'https://picsum.photos/seed/picsum/200/300',
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/default_profile.png',
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -196,76 +254,76 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('All massages'),
+                      _buildFilterButton('ท่านวดทั้งหมด'),
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('Back'),
+                      _buildFilterButton('หลัง'),
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('Arm'),
+                      _buildFilterButton('แขน'),
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('Shoulder'),
+                      _buildFilterButton('ไหล่'),
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('Neck'),
+                      _buildFilterButton('คอ'),
                     ],
                   ),
                 ),
                 SizedBox(
-                  height: 280, // Set the height as needed
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: filteredMassages.length,
-                    itemBuilder: (context, index) {
-                      final massage = filteredMassages[index];
-                      return MassageCardLarge(
-                        name: massage['name'] ?? 'Unknown Name',
-                        score: massage['avg_rating'] != null
-                            ? '${massage['avg_rating']} / 5'
-                            : 'N/A',
-                        type: (massage['mt_type'] ??
-                                (massage['ms_types']?.join(', ') ?? '')) ??
-                            'Unknown',
-                        image: (massage['class'] == 'set'
-                            ? (massage['ms_image_names'] is List
-                                    ? (massage['ms_image_names']
-                                        as List<dynamic>)
-                                    : [massage['ms_image_names']])
-                                .firstWhere(
-                                (imageUrl) => imageUrl.isNotEmpty,
-                                orElse: () =>
-                                    'https://via.placeholder.com/290x140',
-                              )
-                            : massage['mt_image_name'] ??
-                                'https://via.placeholder.com/290x140'),
-                        isSet: massage['class'] == 'set',
-                      );
-                    },
-                  ),
+                  height: 280,
+                  child: filteredMassages.isEmpty
+                      ? Center(
+                          child: Text(
+                            'ไม่พบท่านวดในหมวดหมู่นี้',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: filteredMassages.length,
+                          itemBuilder: (context, index) {
+                            final massage = filteredMassages[index];
+                            return MassageCardLarge(
+                              name: massage['name'] ?? 'Unknown Name',
+                              score: massage['avg_rating'] != null
+                                  ? '${massage['avg_rating']} / 5'
+                                  : 'N/A',
+                              type: (massage['mt_type'] ??
+                                      (massage['ms_types']?.join(', ') ?? '')) ??
+                                  'Unknown',
+                              image: 'https://picsum.photos/seed/picsum/200/300',
+                              isSet: massage['class'] == 'set',
+                            );
+                          },
+                        ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 20),
-                  child: Text(
-                    'เพิ่งดูไปล่าสุด',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children:
-                        List.generate(5, (index) => _buildRecentlyViewedCard()),
-                  ),
-                ),
+                // const Padding(
+                //   padding: EdgeInsets.only(left: 20),
+                //   child: Text(
+                //     'เพิ่งดูไปล่าสุด',
+                //     style: TextStyle(
+                //       color: Colors.black,
+                //       fontSize: 32,
+                //       fontWeight: FontWeight.w600,
+                //     ),
+                //   ),
+                // ),
+                // SingleChildScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //   child: Row(
+                //     children:
+                //         List.generate(5, (index) => _buildRecentlyViewedCard()),
+                //   ),
+                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -303,33 +361,12 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                     ),
                   ],
                 ),
-                // Column(
-                //   children: [
-                //     MassageCard(
-                //       image: 'https://picsum.photos/seed/459/600',
-                //       name: 'Name Massage',
-                //       detail:
-                //           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                //       type: 'Back',
-                //       time: 5,
-                //     ),
-                //     MassageCard(
-                //       image: 'https://picsum.photos/seed/459/600',
-                //       name: 'Name Massage',
-                //       detail:
-                //           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                //       type: 'Back',
-                //       time: 5,
-                //     ),
-                //   ],
-                // )
                 Column(
                   children: massages.isNotEmpty
                       ? massages.take(4).map((massage) {
                           return MassageCard(
                             mt_id: massage['mt_id'],
-                            image: massage['mt_image_name'] ??
-                                'https://via.placeholder.com/100',
+                            image: 'https://picsum.photos/seed/picsum/200/300',
                             name: massage['mt_name'] ?? 'Unknown Massage',
                             detail: massage['mt_detail'] ??
                                 'No description available.',
@@ -363,22 +400,22 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     );
   }
 
-  Widget _buildFilterButton(String type) {
-    // Normalize both selectedType and type to lowercase for a case-insensitive comparison
-    bool isSelected = selectedType.toLowerCase() == type.toLowerCase();
+  Widget _buildFilterButton(String thaiType) {
+    String engType = getEnglishType(thaiType);
+    bool isSelected = selectedType == engType;
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedType =
-              type.toLowerCase(); // Ensure selectedType is stored in lowercase
+          selectedType = engType;
+          print('Selected type: $selectedType'); // Debug print
         });
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            type,
+            thaiType,
             style: TextStyle(
               fontSize: 14,
               fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
@@ -388,8 +425,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
           if (isSelected)
             Container(
               margin: const EdgeInsets.only(top: 2),
-              width: 5, // Width of the dot
-              height: 5, // Height of the dot
+              width: 5,
+              height: 5,
               decoration: BoxDecoration(
                 color: Color(0xFFC0A172),
                 shape: BoxShape.circle,
@@ -404,10 +441,9 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     return MassageCardLarge(
       name: 'Name Massage',
       type: 'Shoulder',
-      score: '4.8 / 5.0', // Add the required argument 'score'
-      image:
-          'https://picsum.photos/seed/picsum/200/300', // Add the required argument 'image'
-      isSet: false, // Set to false since it's a single image
+      score: '4.8 / 5.0',
+      image: 'https://picsum.photos/seed/picsum/200/300',
+      isSet: false,
     );
   }
 }

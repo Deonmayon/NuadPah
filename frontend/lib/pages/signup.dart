@@ -7,6 +7,7 @@ import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -21,9 +22,16 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
+  bool _isObscured = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
 
   Future<void> _signup() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
 
     try {
       final response = await apiService.signUp(
@@ -35,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (response.statusCode == 201) {
         // pull token from response and set token (like localStorage)
-        final token = response.data['token'];
+        final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
@@ -43,7 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  HomepageWidget(email: _emailController.text)),
+                  HomepageWidget()),
         );
       } else {
         setState(() {
@@ -151,6 +159,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         PasswordField(
                           controller: _passwordController,
                           hintText: 'รหัสผ่าน',
+                          isObscured: _isObscured,
+                          onToggle: _togglePasswordVisibility,
                         ),
                         SizedBox(height: 20),
 
@@ -169,51 +179,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           onPress: _signup,
                           showArrow: true,
                         ),
-
-                        SizedBox(height: 30),
-
-                        // Or Sign In With Text
-                        Center(
-                          child: Text(
-                            'หรือลงทะเบียนด้วย',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // Google Sign In Button
-                        Center(
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'G',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: Color(0xFFBFAB93),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
                         SizedBox(height: 30),
 
                         // Create Account Link

@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         '/reset': (context) => const ResetPage(
               email: '',
             ),
-        '/home': (context) => const HomepageWidget(email: ''),
+        '/home': (context) => const HomepageWidget(),
         '/profile': (context) => const ProfilePage(),
         '/accountdetails': (context) => const AccountdetailsPage(),
         '/singledetail': (context) => const SingleMassageDetailPage(),

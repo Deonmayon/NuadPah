@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/api/auth.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardSet.dart';
 import '../../api/massage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Favouritepage extends StatefulWidget {
   const Favouritepage({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class Favouritepage extends StatefulWidget {
 }
 
 class _FavouritePageState extends State<Favouritepage> {
-  int _selectedTab = 0; // 0: Single Massage, 1: Set of Massage
+  int _selectedTab = 0;
 
   List<dynamic> favSingleMassages = [];
   List<dynamic> favSetMassages = [];
@@ -31,12 +31,17 @@ class _FavouritePageState extends State<Favouritepage> {
   @override
   void initState() {
     super.initState();
-    Future.wait([fetchSingleMassages()]);
-    Future.wait([fetchSetMassages()]);
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    await getUserEmail();
+    await fetchSingleMassages();
+    await fetchSetMassages();
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -63,7 +68,7 @@ class _FavouritePageState extends State<Favouritepage> {
   }
 
   Future<void> fetchSingleMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
 
     try {
       final response = await apiService.getFavSingle(userData['email']);
@@ -82,7 +87,7 @@ class _FavouritePageState extends State<Favouritepage> {
   }
 
   Future<void> fetchSetMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
 
     try {
       final response = await apiService.getFavSet(userData['email']);
@@ -93,7 +98,8 @@ class _FavouritePageState extends State<Favouritepage> {
     } catch (e) {
       setState(() {
         print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
+            "Error fetching massages: ${e.toString()}");
+        print(userData); // Only prints error message
       });
     }
   }
@@ -208,8 +214,9 @@ class SingleMassageTab extends StatelessWidget {
         final massage = massages[index];
         return MassageCard(
           mt_id: massage['mt_id'] ?? 0,
-          image: massage['mt_image_name'] ??
-              'https://picsum.photos/seed/picsum/200/300',
+          // image: massage['mt_image_name'] ??
+          //     'https://picsum.photos/seed/picsum/200/300',
+          image: 'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
@@ -256,15 +263,18 @@ class SetOfMassageTab extends StatelessWidget {
               (massage['ms_detail'] ?? 'No description available.') as String,
           types: (massage['ms_types'] as List<dynamic>? ?? []).cast<String>(),
           duration: (massage['ms_time'] ?? 0) as int,
-          imageUrl1: imageNames.isNotEmpty
-              ? imageNames[0] as String
-              : 'https://picsum.photos/seed/default1/200/300',
-          imageUrl2: imageNames.length > 1
-              ? imageNames[1] as String
-              : 'https://picsum.photos/seed/default2/200/300',
-          imageUrl3: imageNames.length > 2
-              ? imageNames[2] as String
-              : 'https://picsum.photos/seed/default3/200/300',
+          // imageUrl1: imageNames.isNotEmpty
+          //     ? imageNames[0] as String
+          //     : 'https://picsum.photos/seed/default1/200/300',
+          // imageUrl2: imageNames.length > 1
+          //     ? imageNames[1] as String
+          //     : 'https://picsum.photos/seed/default2/200/300',
+          // imageUrl3: imageNames.length > 2
+          //     ? imageNames[2] as String
+          //     : 'https://picsum.photos/seed/default3/200/300',
+          imageUrl1: 'https://picsum.photos/seed/default1/200/300',
+          imageUrl2: 'https://picsum.photos/seed/default2/200/300',
+          imageUrl3: 'https://picsum.photos/seed/default3/200/300',
           onFavoriteChanged: (isFavorite) {
             // Replace with a logging framework or remove in production
           },

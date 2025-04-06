@@ -72,9 +72,7 @@ class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => HomepageWidget(
-                            email: '',
-                          )),
+                      builder: (context) => HomepageWidget()),
                 );
 
                 widget.onTap(index);

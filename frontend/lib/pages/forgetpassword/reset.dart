@@ -118,6 +118,13 @@ class _ResetPageState extends State<ResetPage> {
                         PasswordField(
                           controller: _newPasswordController,
                           hintText: 'New Password',
+                          isObscured: true,
+                          onToggle: () {
+                            setState(() {
+                              _newPasswordController.text =
+                                  _newPasswordController.text;
+                            });
+                          },
                         ),
                         SizedBox(height: 20),
 
@@ -125,6 +132,13 @@ class _ResetPageState extends State<ResetPage> {
                         PasswordField(
                           controller: _confirmPasswordController,
                           hintText: 'Confirm Password',
+                          isObscured: true,
+                          onToggle: () {
+                            setState(() {
+                              _confirmPasswordController.text =
+                                  _confirmPasswordController.text;
+                            });
+                          },
                         ),
                         SizedBox(height: 40),
 

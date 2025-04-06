@@ -3,8 +3,15 @@ import 'package:flutter/material.dart';
 class PasswordField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
+  final bool isObscured;
+  final VoidCallback onToggle;
 
-  PasswordField({required this.controller, this.hintText = 'Password'});
+  const PasswordField({
+    required this.controller,
+    required this.hintText,
+    required this.isObscured,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +29,18 @@ class PasswordField extends StatelessWidget {
       ),
       child: TextField(
         controller: controller,
-        obscureText: true,
+        obscureText: isObscured,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 20),
-          suffixIcon: Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: Icon(Icons.visibility_off, color: Colors.grey),
+          suffixIcon: IconButton(
+            icon: Icon(
+              isObscured ? Icons.visibility_off : Icons.visibility,
+              color: Colors.grey,
+            ),
+            onPressed: onToggle,
           ),
         ),
       ),
