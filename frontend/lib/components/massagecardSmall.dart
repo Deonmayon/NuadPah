@@ -43,7 +43,12 @@ class _MassageCardState extends State<MassageCard> {
   @override
   void initState() {
     super.initState();
-    fetchMassages();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    await getUserEmail();
+    await fetchMassages();
   }
 
   Future<void> getUserEmail() async {
@@ -79,7 +84,7 @@ class _MassageCardState extends State<MassageCard> {
 
       setState(() {
         favmassages = (response.data as List)
-            .map((item) => item['mt_id'] as int)
+            .map((item) => Map<String, dynamic>.from(item)['mt_id'] as int)
             .toList();
         isFavorite = favmassages.contains(widget.mt_id);
       });

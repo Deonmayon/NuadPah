@@ -23,7 +23,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   String selectedType = 'all massages';
 
-  Map<String, dynamic> userData = {
+  late Map<String, dynamic> userData = {
     'email': '',
     'first_name': '',
     'last_name': '',
@@ -34,9 +34,13 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   @override
   void initState() {
     super.initState();
-    Future.wait([getUserEmail()]);
-    Future.wait([fetchRecMassages()]);
-    Future.wait([fetchMassages()]);
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    await getUserEmail();
+    await fetchRecMassages();
+    await fetchMassages();
   }
 
   Future<void> getUserEmail() async {
@@ -53,13 +57,17 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     try {
       final response = await apiService.getUserData(token);
 
+      if (response.data == null || response.data['email'] == null) {
+        throw Exception('Invalid user data received');
+      }
+
       setState(() {
         userData = response.data;
       });
     } catch (e) {
       setState(() {
         print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
+            "Error fetching user: ${e.toString()}"); // Only prints error message
       });
     }
   }
@@ -67,18 +75,22 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   Future<void> fetchRecMassages() async {
     final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
 
+    final userEmail = userData['email'].toString();
+
     try {
-      final response = await apiService.getReccomendMassages(userData['email']);
+      final response = await apiService.getReccomendMassages(userEmail);
+
+      List<Map<String, dynamic>> mappedMassage = (response.data as List)
+          .map<Map<String, dynamic>>((item) => Map<String, dynamic>.from(item))
+          .toList();
 
       setState(() {
-        recmassages = (response.data as List)
-            .map((item) => item.map((key, value) => MapEntry(key, value)))
-            .toList();
+        recmassages = mappedMassage;
       });
     } catch (e) {
       setState(() {
         print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
+            "Error fetching recommend massages: ${e.toString()}"); // Only prints error message
       });
     }
   }
@@ -95,7 +107,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     } catch (e) {
       setState(() {
         print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
+            "Error fetching all massages: ${e.toString()}"); // Only prints error message
       });
     }
   }
@@ -316,7 +328,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       ? massages.take(4).map((massage) {
                           return MassageCard(
                             mt_id: massage['mt_id'],
-                            image: massage['mt_image_name'] ?? 'https://via.placeholder.com/100',
+                            image: massage['mt_image_name'] ??
+                                'https://via.placeholder.com/100',
                             name: massage['mt_name'] ?? 'Unknown Massage',
                             detail: massage['mt_detail'] ??
                                 'No description available.',

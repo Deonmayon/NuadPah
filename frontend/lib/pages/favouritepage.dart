@@ -49,6 +49,8 @@ class _FavouritePageState extends State<Favouritepage> {
     try {
       final response = await apiService.getUserData(token);
 
+      print("User data: ${response.data}"); // Debugging line
+
       setState(() {
         userData = response.data;
       });

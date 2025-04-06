@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class MassageApiService {
   final String baseUrl;
@@ -59,11 +60,11 @@ class MassageApiService {
             'email': email,
           },
           options: Options(headers: {'Content-Type': 'application/json'}));
-
+      print(response.runtimeType);
       return response;
     } on DioException catch (e) {
       throw Exception(
-          'Failed to add massage: ${e.response?.data ?? e.message}');
+          'Failed to fetch massage: ${e.response?.data ?? e.message}');
     }
   }
 
@@ -79,7 +80,7 @@ class MassageApiService {
       return response;
     } on DioException catch (e) {
       throw Exception(
-          'Failed to add massage: ${e.response?.data ?? e.message}');
+          'Failed to get fav single massage: ${e.response?.data ?? e.message}');
     }
   }
 
@@ -96,7 +97,7 @@ class MassageApiService {
       return response;
     } on DioException catch (e) {
       throw Exception(
-          'Failed to add massage: ${e.response?.data ?? e.message}');
+          'Failed to fav single massage: ${e.response?.data ?? e.message}');
     }
   }
 
@@ -113,7 +114,7 @@ class MassageApiService {
       return response;
     } on DioException catch (e) {
       throw Exception(
-          'Failed to add massage: ${e.response?.data ?? e.message}');
+          'Failed to unfav single massage: ${e.response?.data ?? e.message}');
     }
   }
 
@@ -129,7 +130,7 @@ class MassageApiService {
       return response;
     } on DioException catch (e) {
       throw Exception(
-          'Failed to add massage: ${e.response?.data ?? e.message}');
+          'Failed to get fav set massage: ${e.response?.data ?? e.message}');
     }
   }
 
@@ -146,7 +147,7 @@ class MassageApiService {
       return response;
     } on DioException catch (e) {
       throw Exception(
-          'Failed to add massage: ${e.response?.data ?? e.message}');
+          'Failed to fav set massage: ${e.response?.data ?? e.message}');
     }
   }
 
@@ -163,7 +164,7 @@ class MassageApiService {
       return response;
     } on DioException catch (e) {
       throw Exception(
-          'Failed to add massage: ${e.response?.data ?? e.message}');
+          'Failed to unfav set massage: ${e.response?.data ?? e.message}');
     }
   }
 }
