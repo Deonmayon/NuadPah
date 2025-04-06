@@ -8,8 +8,6 @@ import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
-import '../user_provider.dart';
-import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});

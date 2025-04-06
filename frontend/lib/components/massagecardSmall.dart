@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
-import '../user_provider.dart';
+import 'package:frontend/api/auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../api/massage.dart';
 
 class MassageCard extends StatefulWidget {
@@ -32,19 +32,50 @@ class _MassageCardState extends State<MassageCard> {
   bool isFavorite = false;
   List<dynamic> favmassages = [];
 
+  Map<String, dynamic> userData = {
+    'email': '',
+    'first_name': '',
+    'last_name': '',
+    'image_name': '',
+    'role': '',
+  };
+
   @override
   void initState() {
     super.initState();
     fetchMassages();
   }
 
-  Future<void> fetchMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
-    final email =
-        Provider.of<UserProvider>(context, listen: false).email; // Get email
+  Future<void> getUserEmail() async {
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      print("Token is null, user not logged in.");
+      return;
+    }
 
     try {
-      final response = await apiService.getFavSingle(email);
+      final response = await apiService.getUserData(token);
+
+      setState(() {
+        userData = response.data;
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchMassages() async {
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    try {
+      final response = await apiService.getFavSingle(userData['email']);
 
       setState(() {
         favmassages = (response.data as List)
@@ -59,13 +90,12 @@ class _MassageCardState extends State<MassageCard> {
 
   Future<void> toggleFavorite() async {
     final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
-    final email = Provider.of<UserProvider>(context, listen: false).email;
 
     try {
       if (!isFavorite) {
-        await apiService.favSingle(email, widget.mt_id);
+        await apiService.favSingle(userData['email'], widget.mt_id);
       } else {
-        await apiService.unfavSingle(email, widget.mt_id);
+        await apiService.unfavSingle(userData['email'], widget.mt_id);
       }
       setState(() {
         isFavorite = !isFavorite;
@@ -194,7 +224,9 @@ class _MassageCardState extends State<MassageCard> {
                   icon: FaIcon(
                     FontAwesomeIcons.solidBookmark,
                     size: 15,
-                    color: isFavorite ? const Color.fromARGB(255, 255, 200, 0) : Colors.white,
+                    color: isFavorite
+                        ? const Color.fromARGB(255, 255, 200, 0)
+                        : Colors.white,
                   ),
                   onPressed: toggleFavorite,
                 ),

@@ -5,8 +5,6 @@ import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardSet.dart';
 import '../../api/massage.dart';
-import 'package:provider/provider.dart';
-import '../../user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Favouritepage extends StatefulWidget {
@@ -22,53 +20,6 @@ class _FavouritePageState extends State<Favouritepage> {
   List<dynamic> favSingleMassages = [];
   List<dynamic> favSetMassages = [];
 
-  @override
-  void initState() {
-    super.initState();
-    Future.wait([fetchSingleMassages()]);
-    Future.wait([fetchSetMassages()]);
-  }
-
-  Future<void> fetchSingleMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
-    final email =
-        Provider.of<UserProvider>(context, listen: false).email; // Get email
-
-    try {
-      final response = await apiService.getFavSingle(email);
-
-      setState(() {
-        favSingleMassages = (response.data as List)
-            .map((item) => item.map((key, value) => MapEntry(key, value)))
-            .toList();
-      });
-    } catch (e) {
-      setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
-      });
-    }
-  }
-
-  Future<void> fetchSetMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
-    final email =
-        Provider.of<UserProvider>(context, listen: false).email; // Get email
-
-    try {
-      final response = await apiService.getFavSet(email);
-
-      setState(() {
-        favSetMassages = response.data as List;
-      });
-    } catch (e) {
-      setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
-      });
-    }
-  }
-
   Map<String, dynamic> userData = {
     'email': '',
     'first_name': '',
@@ -76,6 +27,13 @@ class _FavouritePageState extends State<Favouritepage> {
     'image_name': '',
     'role': '',
   };
+
+  @override
+  void initState() {
+    super.initState();
+    Future.wait([fetchSingleMassages()]);
+    Future.wait([fetchSetMassages()]);
+  }
 
   Future<void> getUserEmail() async {
     final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
@@ -93,6 +51,42 @@ class _FavouritePageState extends State<Favouritepage> {
 
       setState(() {
         userData = response.data;
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchSingleMassages() async {
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    try {
+      final response = await apiService.getFavSingle(userData['email']);
+
+      setState(() {
+        favSingleMassages = (response.data as List)
+            .map((item) => item.map((key, value) => MapEntry(key, value)))
+            .toList();
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchSetMassages() async {
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    try {
+      final response = await apiService.getFavSet(userData['email']);
+
+      setState(() {
+        favSetMassages = response.data as List;
       });
     } catch (e) {
       setState(() {
