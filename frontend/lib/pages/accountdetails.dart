@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/api/auth.dart';
 import 'package:frontend/components/profileFunctionBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountdetailsPage extends StatefulWidget {
   const AccountdetailsPage({Key? key}) : super(key: key);
@@ -10,6 +12,39 @@ class AccountdetailsPage extends StatefulWidget {
 }
 
 class _AccountdetailsPageState extends State<AccountdetailsPage> {
+  Map<String, dynamic> userData = {
+    'email': '',
+    'first_name': '',
+    'last_name': '',
+    'image_name': '',
+    'role': '',
+  };
+
+  Future<void> getUserEmail() async {
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      print("Token is null, user not logged in.");
+      return;
+    }
+
+    try {
+      final response = await apiService.getUserData(token);
+
+      setState(() {
+        userData = response.data;
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,9 +63,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
             ),
             const Text(
               'รายละเอียดบัญชี',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(width: 30),
           ],
@@ -65,7 +98,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
             SizedBox(height: 40),
             const ProfileFunctionBar(
               icon: Icons.person,
-              title: 'แก้ไขรูปภาพโปรไฟล์', 
+              title: 'แก้ไขรูปภาพโปรไฟล์',
             ),
           ],
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/api/auth.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Favouritepage extends StatefulWidget {
   const Favouritepage({Key? key}) : super(key: key);
@@ -16,6 +18,39 @@ class _FavouritePageState extends State<Favouritepage> {
     SingleMassageTab(),
     SetOfMassageTab(),
   ];
+
+  Map<String, dynamic> userData = {
+    'email': '',
+    'first_name': '',
+    'last_name': '',
+    'image_name': '',
+    'role': '',
+  };
+
+  Future<void> getUserEmail() async {
+    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      print("Token is null, user not logged in.");
+      return;
+    }
+
+    try {
+      final response = await apiService.getUserData(token);
+
+      setState(() {
+        userData = response.data;
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +143,8 @@ class SingleMassageTab extends StatelessWidget {
       itemBuilder: (context, index) {
         return MassageCard(
           title: 'Name Massage',
-          description: 'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
+          description:
+              'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
           type: 'Type: Back',
           duration: '≈ 5 minutes',
           imageUrl: 'assets/images/Massage_Image11.png',
@@ -127,7 +163,8 @@ class SetOfMassageTab extends StatelessWidget {
       itemBuilder: (context, index) {
         return MassageCardSet(
           title: 'Name Set of Massage',
-          description: 'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
+          description:
+              'Lorem ipsum dolor sit amet,fdfgdfgfgg fgfconsectetur adipiscing elit, sed ghg cvdffgvbd dfdsfsfnf fgfgdgdhd...',
           type: 'Type: Back, Shoulder, Neck',
           duration: '≈ 15 minutes',
           imageUrl1: 'assets/images/Massage_Image01.png',
@@ -284,7 +321,6 @@ class MassageCard extends StatelessWidget {
   }
 }
 
-
 class MassageCardSet extends StatelessWidget {
   final String title;
   final String description;
@@ -325,43 +361,43 @@ class MassageCardSet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              width: 130,
-              height: 160,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                width: 130,
+                height: 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                          ),
+                          child: Image.asset(
+                            imageUrl1,
+                            width: 65,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        child: Image.asset(
-                          imageUrl1,
-                          width: 65,
-                          height: 80,
-                          fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(10),
+                          ),
+                          child: Image.asset(
+                            imageUrl2,
+                            width: 65,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(10),
-                        ),
-                        child: Image.asset(
-                          imageUrl2,
-                          width: 65,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                     ClipRRect(
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(10),
@@ -374,12 +410,9 @@ class MassageCardSet extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                ],
-              ),
-            )
-          ),
-          
-        
+                  ],
+                ),
+              )),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -403,7 +436,6 @@ class MassageCardSet extends StatelessWidget {
                       fontSize: 12,
                     ),
                   ),
-                  
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [

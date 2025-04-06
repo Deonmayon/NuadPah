@@ -22,7 +22,14 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   List<dynamic> massages = [];
 
   String selectedType = 'all massages';
-  String userEmail = '';
+
+  Map<String, dynamic> userData = {
+    'email': '',
+    'first_name': '',
+    'last_name': '',
+    'image_name': '',
+    'role': '',
+  };
 
   @override
   void initState() {
@@ -47,7 +54,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       final response = await apiService.getUserData(token);
 
       setState(() {
-        userEmail = response.data['email'];
+        userData = response.data;
       });
     } catch (e) {
       setState(() {
@@ -61,7 +68,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
 
     try {
-      final response = await apiService.getReccomendMassages(userEmail);
+      final response = await apiService.getReccomendMassages(userData['email']);
 
       setState(() {
         recmassages = (response.data as List)
