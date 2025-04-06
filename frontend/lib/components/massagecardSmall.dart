@@ -39,7 +39,7 @@ class _MassageCardState extends State<MassageCard> {
   }
 
   Future<void> fetchMassages() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
     final email =
         Provider.of<UserProvider>(context, listen: false).email; // Get email
 
@@ -58,7 +58,7 @@ class _MassageCardState extends State<MassageCard> {
   }
 
   Future<void> toggleFavorite() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
     final email = Provider.of<UserProvider>(context, listen: false).email;
 
     try {

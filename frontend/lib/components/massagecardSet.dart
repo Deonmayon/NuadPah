@@ -5,6 +5,7 @@ import '../user_provider.dart';
 import '../api/massage.dart';
 
 class MassageCardSet extends StatefulWidget {
+  final int ms_id;
   final String title;
   final String description;
   final List<String> types;
@@ -12,11 +13,11 @@ class MassageCardSet extends StatefulWidget {
   final String imageUrl1;
   final String imageUrl2;
   final String imageUrl3;
-  final int ms_id;
   final Function(bool) onFavoriteChanged;
 
   const MassageCardSet({
     Key? key,
+    required this.ms_id,
     required this.title,
     required this.description,
     required this.types,
@@ -24,7 +25,6 @@ class MassageCardSet extends StatefulWidget {
     required this.imageUrl1,
     required this.imageUrl2,
     required this.imageUrl3,
-    required this.ms_id,
     required this.onFavoriteChanged,
   }) : super(key: key);
 
@@ -43,7 +43,7 @@ class _MassageCardSetState extends State<MassageCardSet> {
   }
 
   Future<void> fetchMassages() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
     final email = Provider.of<UserProvider>(context, listen: false).email;
 
     try {
@@ -60,7 +60,7 @@ class _MassageCardSetState extends State<MassageCardSet> {
   }
 
   Future<void> toggleFavorite() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
     final email = Provider.of<UserProvider>(context, listen: false).email;
 
     try {
@@ -243,7 +243,9 @@ class _MassageCardSetState extends State<MassageCardSet> {
                   icon: FaIcon(
                     FontAwesomeIcons.solidBookmark,
                     size: 15,
-                    color: isFavorite ? const Color.fromARGB(255, 255, 200, 0) : Colors.white,
+                    color: isFavorite
+                        ? const Color.fromARGB(255, 255, 200, 0)
+                        : Colors.white,
                   ),
                   onPressed: toggleFavorite,
                 ),
