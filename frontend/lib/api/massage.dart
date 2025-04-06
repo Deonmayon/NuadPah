@@ -4,7 +4,22 @@ import '../config/env.dart';
 class MassageApiService {
   final Dio _dio;
 
-  MassageApiService() : _dio = Dio(BaseOptions(baseUrl: Env.apiBaseUrl));
+  MassageApiService()
+      : _dio = Dio(BaseOptions(
+          baseUrl: Env.apiBaseUrl,
+          connectTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 3),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        )) {
+    _dio.interceptors.add(LogInterceptor(
+      requestBody: true,
+      responseBody: true,
+      error: true,
+    ));
+  }
 
   // Get all massages
   Future<Response> getAllMassages() async {
