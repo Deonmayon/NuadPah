@@ -30,7 +30,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> _signin() async {
-    final apiService = AuthApiService(baseUrl: "10.0.2.2:3001");
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.signIn(

@@ -73,7 +73,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = AuthApiService();
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -102,7 +102,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Future<void> fetchRecMassages() async {
-    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = MassageApiService();
 
     final userEmail = userData['email'].toString();
 
@@ -125,7 +125,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Future<void> fetchMassages() async {
-    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = MassageApiService();
 
     try {
       final response = await apiService.getAllMassages();

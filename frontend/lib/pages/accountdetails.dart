@@ -41,7 +41,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService();
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -76,7 +76,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
       isSaving = true;
     });
 
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService();
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -128,7 +128,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
     });
 
     try {
-      final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+      final apiService = AuthApiService();
       debugPrint('Attempting to upload image from path: ${image.path}');
       
       final response = await apiService.sendImageToSupabase(image.path);

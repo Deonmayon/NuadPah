@@ -36,7 +36,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
   }
 
   Future<void> _fetchMassageData() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService();
     try {
       final response = await apiService
           .getAllMassages(); // Assuming you have a MassageApi class with getMassages method
@@ -614,7 +614,7 @@ class _SingleMassageManagePageState extends State<SingleMassageManagePage> {
       return;
     }
 
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = MassageApiService();
     try {
       final response = await apiService.addMassage(
         nameMassage,

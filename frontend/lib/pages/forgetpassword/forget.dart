@@ -16,7 +16,7 @@ class _ForgetPageState extends State<ForgetPage> {
   String _errorMessage = '';
 
   Future<void> _sendotp() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.sendOTP(

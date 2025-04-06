@@ -41,7 +41,7 @@ class _FavouritePageState extends State<Favouritepage> {
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = AuthApiService();
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -68,7 +68,7 @@ class _FavouritePageState extends State<Favouritepage> {
   }
 
   Future<void> fetchSingleMassages() async {
-    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = MassageApiService();
 
     try {
       final response = await apiService.getFavSingle(userData['email']);
@@ -87,7 +87,7 @@ class _FavouritePageState extends State<Favouritepage> {
   }
 
   Future<void> fetchSetMassages() async {
-    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = MassageApiService();
 
     try {
       final response = await apiService.getFavSet(userData['email']);

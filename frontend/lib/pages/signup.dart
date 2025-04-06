@@ -31,7 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _signup() async {
-    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.signUp(

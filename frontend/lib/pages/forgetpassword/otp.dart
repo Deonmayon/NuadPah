@@ -83,7 +83,7 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   Future<void> _verifyotp() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.verifyOTP(
@@ -120,7 +120,7 @@ class _OTPPageState extends State<OTPPage> {
 
 
   Future<void> _resendotp() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.sendOTP(

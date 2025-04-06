@@ -42,7 +42,7 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = AuthApiService();
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -69,7 +69,7 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Future<void> _sendReport() async {
-    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = AuthApiService();
     try {
       await apiService.sendReport(
         userData['email'],

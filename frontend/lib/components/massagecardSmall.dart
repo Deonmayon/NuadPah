@@ -52,7 +52,7 @@ class _MassageCardState extends State<MassageCard> {
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = AuthApiService();
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -77,7 +77,7 @@ class _MassageCardState extends State<MassageCard> {
   }
 
   Future<void> fetchMassages() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService();
 
     try {
       final response = await apiService.getFavSingle(userData['email']);
@@ -94,7 +94,7 @@ class _MassageCardState extends State<MassageCard> {
   }
 
   Future<void> toggleFavorite() async {
-    final apiService = MassageApiService(baseUrl: 'http://10.0.2.2:3001');
+    final apiService = MassageApiService();
 
     try {
       if (!isFavorite) {

@@ -49,7 +49,7 @@ class _LearnState extends State<LearnPage> {
   }
 
   Future<void> fetchSingleMassages() async {
-    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = MassageApiService();
 
     try {
       final response = await apiService.getAllMassages();
@@ -67,7 +67,7 @@ class _LearnState extends State<LearnPage> {
   }
 
   Future<void> fetchSetMassages() async {
-    final apiService = MassageApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = MassageApiService();
 
     try {
       final response = await apiService.getAllSetMassages();

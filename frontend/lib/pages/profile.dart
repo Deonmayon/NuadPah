@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+    final apiService = AuthApiService();
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

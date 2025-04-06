@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
+import '../config/env.dart';
 
 class MassageApiService {
-  final String baseUrl;
   final Dio _dio;
 
-  MassageApiService({required this.baseUrl})
-      : _dio = Dio(BaseOptions(baseUrl: baseUrl));
+  MassageApiService() : _dio = Dio(BaseOptions(baseUrl: Env.apiBaseUrl));
 
   // Get all massages
   Future<Response> getAllMassages() async {

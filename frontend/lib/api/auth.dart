@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
+import '../config/env.dart';
 
 class AuthApiService {
-  final String baseUrl;
   final Dio _dio;
 
-  AuthApiService({required this.baseUrl})
-      : _dio = Dio(BaseOptions(baseUrl: baseUrl));
+  AuthApiService() : _dio = Dio(BaseOptions(baseUrl: Env.apiBaseUrl));
 
   // Sign up
   Future<Response> signUp(
@@ -148,13 +147,8 @@ class AuthApiService {
   }
 
   // Update user data
-  Future<Response> updateUserData(
-      int id,
-      String email,
-      String newpw,
-      String firstname,
-      String lastname,
-      String imageName) async {
+  Future<Response> updateUserData(int id, String email, String newpw,
+      String firstname, String lastname, String imageName) async {
     try {
       final response = await _dio.put(
         '/admin/edit-user/$id',
@@ -221,5 +215,4 @@ class AuthApiService {
           'Failed to send report: ${e.response?.data ?? e.message}');
     }
   }
-
 }
