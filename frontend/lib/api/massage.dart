@@ -179,4 +179,38 @@ class MassageApiService {
           'Failed to unfav set massage: ${e.response?.data ?? e.message}');
     }
   }
+
+  // Get massages by page
+  Future<Response> getMassagesByPage(int page, int pageSize) async {
+    try {
+      final response = await _dio.get(
+        '/massage/single-list',
+        queryParameters: {
+          'page': page,
+          'pageSize': pageSize
+        }
+      );
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to get massages by page: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Get set massages by page
+  Future<Response> getSetMassagesByPage(int page, int pageSize) async {
+    try {
+      final response = await _dio.get(
+        '/massage/set-list',
+        queryParameters: {
+          'page': page,
+          'pageSize': pageSize
+        }
+      );
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to get set massages by page: ${e.response?.data ?? e.message}');
+    }
+  }
 }

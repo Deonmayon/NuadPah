@@ -18,7 +18,8 @@ class _ResetPageState extends State<ResetPage> {
       TextEditingController();
   String _errorMessage = '';
 
-  bool _isObscured = true;
+  bool _isNewPasswordObscured = true;
+  bool _isConfirmPasswordObscured = true;
 
   void initState() {
     super.initState();
@@ -31,7 +32,7 @@ class _ResetPageState extends State<ResetPage> {
       // Check password and confirm password match
       if (_newPasswordController.text != _confirmPasswordController.text) {
         setState(() {
-          _errorMessage = 'Passwords do not match';
+          _errorMessage = 'รหัสผ่านไม่ตรงกัน';
         });
       } else {
         final response = await apiService.resetPassword(
@@ -59,9 +60,15 @@ class _ResetPageState extends State<ResetPage> {
     }
   }
 
-  void _togglePasswordVisibility() {
+  void _toggleNewPasswordVisibility() {
     setState(() {
-      _isObscured = !_isObscured;
+      _isNewPasswordObscured = !_isNewPasswordObscured;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordObscured = !_isConfirmPasswordObscured;
     });
   }
 
@@ -81,7 +88,7 @@ class _ResetPageState extends State<ResetPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Reset Your Password',
+                    'รีเซ็ตรหัสผ่าน',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -125,8 +132,8 @@ class _ResetPageState extends State<ResetPage> {
                         PasswordField(
                           controller: _newPasswordController,
                           hintText: 'New Password',
-                          isObscured: true,
-                          onToggle: _togglePasswordVisibility
+                          isObscured: _isNewPasswordObscured,
+                          onToggle: _toggleNewPasswordVisibility,
                         ),
                         SizedBox(height: 20),
 
@@ -134,13 +141,8 @@ class _ResetPageState extends State<ResetPage> {
                         PasswordField(
                           controller: _confirmPasswordController,
                           hintText: 'Confirm Password',
-                          isObscured: true,
-                          onToggle: () {
-                            setState(() {
-                              _confirmPasswordController.text =
-                                  _confirmPasswordController.text;
-                            });
-                          },
+                          isObscured: _isConfirmPasswordObscured,
+                          onToggle: _toggleConfirmPasswordVisibility,
                         ),
                         SizedBox(height: 40),
 

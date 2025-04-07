@@ -285,7 +285,7 @@ class _OTPPageState extends State<OTPPage> {
                         TextButton(
                           onPressed: _resendotp,
                           child: const Text(
-                            'Resend Code',
+                            'ส่ง OTP ใหม่อีกครั้ง',
                             style: TextStyle(
                               color: Color(0xFFC0A172),
                               fontSize: 16,
@@ -294,7 +294,7 @@ class _OTPPageState extends State<OTPPage> {
                         )
                       else
                         Text(
-                          'Your otp will expire in $_countdownSeconds seconds',
+                          'OTP จะหมดอายุใน $_countdownSeconds วินาที',
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 16,

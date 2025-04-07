@@ -7,9 +7,10 @@ environment:
   sdk: ">=2.17.0 <4.0.0"
 
 dependencies:
-  shared_preferences: ^2.2.2 
   flutter:
     sdk: flutter
+  cached_network_image: ^3.3.0
+  shared_preferences: ^2.2.2 
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.7
   font_awesome_flutter: ^10.3.0
@@ -73,3 +74,4 @@ flutter:
     - assets/images/Massage_Image11.png
     - assets/images/profilePicture.jpg
     - assets/images/reviewer.png
+    - assets/images/mail.png

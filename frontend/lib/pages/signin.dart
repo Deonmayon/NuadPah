@@ -43,16 +43,18 @@ class _SignInPageState extends State<SignInPage> {
         final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+        
+        // Store user email in shared preferences for immediate access
+        await prefs.setString('userEmail', _emailController.text);
 
-        Navigator.push(
+        // Replace current screen with homepage
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  HomepageWidget()),
+          MaterialPageRoute(builder: (context) => HomepageWidget()),
         );
       } else {
         setState(() {
-          _errorMessage = 'Sign Up failed';
+          _errorMessage = 'Sign In failed';
         });
       }
     } catch (e) {

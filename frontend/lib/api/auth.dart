@@ -89,7 +89,7 @@ class AuthApiService {
 
       return response;
     } on DioError catch (e) {
-      throw Exception('Failed to send OTP: ${e.response?.data ?? e.message}');
+      throw "ไม่พบอีเมลนี้ในระบบ";
     }
   }
 
@@ -133,7 +133,7 @@ class AuthApiService {
 
       return response;
     } on DioError catch (e) {
-      throw Exception('Failed to verify OTP: ${e.response?.data ?? e.message}');
+      throw "OTP ไม่ถูกต้อง";
     }
   }
 

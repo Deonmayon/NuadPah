@@ -5,6 +5,7 @@ import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardSet.dart';
 import '../../api/massage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/favorite_manager.dart';
 
 class Favouritepage extends StatefulWidget {
   const Favouritepage({Key? key}) : super(key: key);
@@ -39,9 +40,14 @@ class _FavouritePageState extends State<Favouritepage> {
 
   Future<void> loadData() async {
     try {
+      // First get user email (needed for subsequent queries)
       await getUserEmail();
-      await fetchSingleMassages();
-      await fetchSetMassages();
+      
+      // Then fetch both single and set massages in parallel instead of sequentially
+      await Future.wait([
+        fetchSingleMassages(),
+        fetchSetMassages(),
+      ]);
     } finally {
       setState(() {
         isLoading = false;
@@ -55,23 +61,15 @@ class _FavouritePageState extends State<Favouritepage> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
-    if (token == null) {
-      print("Token is null, user not logged in.");
-      return;
-    }
-
     try {
+      if (token == null) throw Exception('Token not found');
       final response = await apiService.getUserData(token);
-
-      print("User data: ${response.data}"); // Debugging line
-
       setState(() {
         userData = response.data;
       });
     } catch (e) {
       setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
+        "Error fetching user data: ${e.toString()}";
       });
     }
   }
@@ -89,8 +87,7 @@ class _FavouritePageState extends State<Favouritepage> {
       });
     } catch (e) {
       setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
+        "Error fetching single massages: ${e.toString()}";
       });
     }
   }
@@ -106,9 +103,7 @@ class _FavouritePageState extends State<Favouritepage> {
       });
     } catch (e) {
       setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}");
-        print(userData); // Only prints error message
+        "Error fetching set massages: ${e.toString()}";
       });
     }
   }
@@ -135,54 +130,85 @@ class _FavouritePageState extends State<Favouritepage> {
         toolbarHeight: 70,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              child: Column(
                 children: [
-                  _buildTabButton('ท่านวดเดี่ยว', 0),
-                  _buildTabButton('เซ็ตท่านวด', 1),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        _buildTabButton('ท่านวดเดี่ยว', 0),
+                        _buildTabButton('เซ็ตท่านวด', 1),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: _selectedTab == 0
+                        ? isLoading
+                            ? _buildLoadingWidget()
+                            : SingleMassageTab(
+                                massages: favSingleMassages,
+                                onFavoriteChanged: _handleSingleFavoriteChanged,
+                              )
+                        : isLoading
+                            ? _buildLoadingWidget()
+                            : SetOfMassageTab(
+                                massages: favSetMassages,
+                                onFavoriteChanged: _handleSetFavoriteChanged,
+                              ),
+                  ),
                 ],
               ),
             ),
-            if (isLoading)
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'กำลังโหลดข้อมูล...',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFF676767),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
-              Expanded(
-                child: _selectedTab == 0
-                    ? SingleMassageTab(massages: favSingleMassages)
-                    : SetOfMassageTab(massages: favSetMassages),
-              ),
-          ],
-        ),
-      ),
       bottomNavigationBar: HomeBottomNavigationBar(
-        initialIndex: 3, // หน้าแรกเริ่มที่ Home
+        initialIndex: 3,
         onTap: (index) {},
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: Colors.red,
+            size: 60,
+          ),
+          SizedBox(height: 16),
+          Text(
+            'เกิดข้อผิดพลาด กรุณาลองใหม่',
+            style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 60,
+            height: 60,
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'กำลังโหลดข้อมูล...',
+            style: TextStyle(
+              fontSize: 18,
+              color: Color(0xFF676767),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -221,12 +247,66 @@ class _FavouritePageState extends State<Favouritepage> {
       ),
     );
   }
+
+  Future<void> _handleSingleFavoriteChanged(bool isFavorite, int massageId) async {
+    final apiService = MassageApiService();
+    
+    try {
+      if (!isFavorite) {
+        // Update FavoriteManager first for immediate UI change across the app
+        FavoriteManager.instance.updateSingleFavorite(massageId, false);
+        
+        // Remove from local state
+        setState(() {
+          favSingleMassages.removeWhere((massage) => massage['mt_id'] == massageId);
+        });
+        
+        // Then perform API call
+        await apiService.unfavSingle(userData['email'], massageId);
+      }
+    } catch (e) {
+      // Revert changes if API call fails
+      FavoriteManager.instance.updateSingleFavorite(massageId, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('การอัปเดตรายการโปรดล้มเหลว กรุณาลองใหม่')),
+      );
+    }
+  }
+
+  Future<void> _handleSetFavoriteChanged(bool isFavorite, int massageId) async {
+    final apiService = MassageApiService();
+    
+    try {
+      if (!isFavorite) {
+        // Update FavoriteManager first for immediate UI change across the app
+        FavoriteManager.instance.updateSetFavorite(massageId, false);
+        
+        // Remove from local state
+        setState(() {
+          favSetMassages.removeWhere((massage) => massage['ms_id'] == massageId);
+        });
+        
+        // Then perform API call
+        await apiService.unfavSet(userData['email'], massageId);
+      }
+    } catch (e) {
+      // Revert changes if API call fails
+      FavoriteManager.instance.updateSetFavorite(massageId, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('การอัปเดตรายการโปรดล้มเหลว กรุณาลองใหม่')),
+      );
+    }
+  }
 }
 
 class SingleMassageTab extends StatelessWidget {
   final List<dynamic> massages;
+  final Function(bool, int) onFavoriteChanged;
 
-  const SingleMassageTab({required this.massages});
+  const SingleMassageTab({
+    required this.massages,
+    required this.onFavoriteChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -251,13 +331,12 @@ class SingleMassageTab extends StatelessWidget {
           mt_id: massage['mt_id'] ?? 0,
           image: massage['mt_image_name'] ??
               'https://picsum.photos/seed/picsum/200/300',
-          // image: 'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
           onFavoriteChanged: (isFavorite) {
-            print('Massage favorited: $isFavorite');
+            onFavoriteChanged(isFavorite, massage['mt_id']);
           },
         );
       },
@@ -267,8 +346,12 @@ class SingleMassageTab extends StatelessWidget {
 
 class SetOfMassageTab extends StatelessWidget {
   final List<dynamic> massages;
+  final Function(bool, int) onFavoriteChanged;
 
-  const SetOfMassageTab({required this.massages});
+  const SetOfMassageTab({
+    required this.massages,
+    required this.onFavoriteChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -307,11 +390,8 @@ class SetOfMassageTab extends StatelessWidget {
           imageUrl3: imageNames.length > 2
               ? imageNames[2] as String
               : 'https://picsum.photos/seed/default3/200/300',
-          // imageUrl1: 'https://picsum.photos/seed/default1/200/300',
-          // imageUrl2: 'https://picsum.photos/seed/default2/200/300',
-          // imageUrl3: 'https://picsum.photos/seed/default3/200/300',
           onFavoriteChanged: (isFavorite) {
-            // Replace with a logging framework or remove in production
+            onFavoriteChanged(isFavorite, massage['ms_id']);
           },
         );
       },

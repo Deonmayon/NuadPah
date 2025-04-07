@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/profileFunctionBar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../api/auth.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,8 +14,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
   bool isLoading = true;
+  final AuthApiService _apiService = AuthApiService(); // Create once
 
   late Map<String, dynamic> userData = {
     'email': '',
@@ -27,24 +28,28 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    loadData();
+    // Load user data on next frame to avoid blocking initial render
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadData();
+    });
   }
 
   Future<void> loadData() async {
+    if (!mounted) return;
+
     setState(() {
-      isLoading = true; // Set loading state to true before fetching
+      isLoading = true;
     });
 
     await getUserEmail();
 
+    if (!mounted) return;
     setState(() {
-      isLoading = false; // Set loading state to false after all data is fetched
+      isLoading = false;
     });
   }
 
   Future<void> getUserEmail() async {
-    final apiService = AuthApiService();
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -54,20 +59,19 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     try {
-      final response = await apiService.getUserData(token);
+      final response = await _apiService.getUserData(token);
 
       if (response.data == null || response.data['email'] == null) {
         throw Exception('Invalid user data received');
       }
 
+      if (!mounted) return;
       setState(() {
         userData = response.data;
       });
     } catch (e) {
-      setState(() {
-        debugPrint(
-            "Error fetching user: ${e.toString()}"); // Only prints error message
-      });
+      if (!mounted) return;
+      debugPrint("Error fetching user: ${e.toString()}");
     }
   }
 
@@ -84,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: const FaIcon(FontAwesomeIcons.arrowLeft,
                   color: Colors.black, size: 25),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushNamed(context, '/home');
               },
             ),
             const Text(
@@ -115,11 +119,15 @@ class _ProfilePageState extends State<ProfilePage> {
               )
             else
               Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: 20),
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage('${userData['image_name']}'),
-                  // backgroundImage: NetworkImage('https://picsum.photos/seed/picsum/200/300'),
+                  backgroundImage: userData['image_name']?.isNotEmpty == true
+                      ? CachedNetworkImageProvider(userData['image_name'])
+                      : null,
+                  child: userData['image_name']?.isEmpty == true
+                      ? const Icon(Icons.person, size: 50)
+                      : null,
                 ),
               ),
             if (isLoading)

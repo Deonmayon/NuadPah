@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:frontend/pages/profile.dart';
-import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/pages/forgetpassword/reset.dart';
 import 'package:frontend/pages/forgetpassword/forget.dart';
 import 'package:frontend/pages/forgetpassword/otp.dart';
@@ -18,6 +17,7 @@ import 'package:frontend/pages/accountdetails.dart';
 import 'package:frontend/pages/report.dart';
 import 'package:frontend/pages/help.dart';
 import 'package:frontend/pages/setMassageDetail.dart';
+import 'utils/favorite_manager.dart';
 
 late List<CameraDescription> cameras;
 
@@ -39,6 +39,9 @@ Future<void> main() async {
     print(
         "Flutter Error: ${details.exceptionAsString()}"); // Only print error message
   };
+
+  // Initialize the favorite manager at app startup
+  await FavoriteManager.instance.init();
 
   runApp(const MyApp());
 }
@@ -75,7 +78,6 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/login',
       routes: {
-        '/': (context) => const WelcomePage(),
         '/login': (context) => const SignInPage(),
         '/register': (context) => const SignUpPage(),
         '/forget': (context) => const ForgetPage(),

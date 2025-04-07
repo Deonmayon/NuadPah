@@ -4,6 +4,8 @@ import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardSet.dart';
 import '../../api/massage.dart';
+import 'dart:async';
+import 'package:dio/dio.dart';
 
 class LearnPage extends StatefulWidget {
   const LearnPage({Key? key}) : super(key: key);
@@ -17,12 +19,30 @@ class _LearnState extends State<LearnPage> {
   final FocusNode textFieldFocusNode = FocusNode();
   int _selectedTab = 0;
 
+  // Cache data
+  static List<dynamic> _cachedSingleMassages = [];
+  static List<dynamic> _cachedSetMassages = [];
+  
+  // Data for current view
   List<dynamic> singleMassages = [];
   List<dynamic> setMassages = [];
   List<dynamic> filteredSingleMassages = [];
   List<dynamic> filteredSetMassages = [];
+  
+  // Pagination parameters
+  final int _pageSize = 10;
+  int _currentSinglePage = 1;
+  int _currentSetPage = 1;
+  bool _hasMoreSingleData = true;
+  bool _hasMoreSetData = true;
+  bool _isLoadingMore = false;
+  
+  // UI state
   bool isLoading = true;
+  bool isInitialLoad = true;
+  final ScrollController _scrollController = ScrollController();
 
+  // Search and filter state
   String selectedTime = "Please select";
   final List<String> timeOptions = [
     "5 minutes",
@@ -42,15 +62,16 @@ class _LearnState extends State<LearnPage> {
     "ขา", 
   ];
   
-  // Add method to reset filters
+  // Debounce for search
+  Timer? _debounce;
+  
   void _resetFilters() {
     setState(() {
       selectedTime = "Please select";
       selectedType = "Please select";
       
-      // Reset to original lists
-      filteredSingleMassages = singleMassages;
-      filteredSetMassages = setMassages;
+      // Apply search filter only
+      _applySearchFilter();
       
       Navigator.pop(context);
     });
@@ -59,19 +80,62 @@ class _LearnState extends State<LearnPage> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      isLoading = true;
-    });
+    
+    _scrollController.addListener(_scrollListener);
+    textController.addListener(_onSearchChanged);
+    
+    // Initial data load
     loadData();
-    textController.addListener(_handleSearch);
+  }
+  
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoadingMore) {
+      _loadMoreData();
+    }
+  }
+  
+  void _loadMoreData() {
+    if (_selectedTab == 0 && _hasMoreSingleData) {
+      _loadMoreSingleMassages();
+    } else if (_selectedTab == 1 && _hasMoreSetData) {
+      _loadMoreSetMassages();
+    }
   }
 
   Future<void> loadData() async {
+    if (isInitialLoad) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    
     try {
-      await Future.wait([fetchSingleMassages(), fetchSetMassages()]);
+      if (_selectedTab == 0) {
+        if (_cachedSingleMassages.isEmpty) {
+          await fetchSingleMassages();
+        } else {
+          // Use cached data
+          setState(() {
+            singleMassages = List.from(_cachedSingleMassages);
+            _applyFiltersToData();
+          });
+        }
+      } else {
+        if (_cachedSetMassages.isEmpty) {
+          await fetchSetMassages();
+        } else {
+          // Use cached data
+          setState(() {
+            setMassages = List.from(_cachedSetMassages);
+            _applyFiltersToData();
+          });
+        }
+      }
     } finally {
       setState(() {
         isLoading = false;
+        isInitialLoad = false;
       });
     }
   }
@@ -80,56 +144,233 @@ class _LearnState extends State<LearnPage> {
     final apiService = MassageApiService();
 
     try {
-      final response = await apiService.getAllMassages();
-
+      // Try to use pagination API if available
+      Response response;
+      try {
+        response = await apiService.getMassagesByPage(_currentSinglePage, _pageSize);
+      } on Exception catch (_) {
+        // Fallback to getting all massages if pagination not supported
+        print("Pagination API not available, falling back to getAllMassages");
+        response = await apiService.getAllMassages();
+      }
+      
+      final List<dynamic> allData = response.data as List;
+      
+      // Simulate pagination on client-side if server doesn't support it
+      final bool isPaginationSupported = response.headers.map['x-pagination-supported'] != null;
+      
+      List<dynamic> newData;
+      if (!isPaginationSupported) {
+        // Manual pagination
+        final int startIndex = (_currentSinglePage - 1) * _pageSize;
+        final int endIndex = startIndex + _pageSize > allData.length ? allData.length : startIndex + _pageSize;
+        
+        if (startIndex >= allData.length) {
+          newData = [];
+        } else {
+          newData = allData.sublist(startIndex, endIndex);
+        }
+      } else {
+        newData = allData;
+      }
+      
       setState(() {
-        singleMassages = response.data as List;
-        filteredSingleMassages = singleMassages;
+        if (_currentSinglePage == 1) {
+          singleMassages = newData;
+        } else {
+          singleMassages.addAll(newData);
+        }
+        
+        // Update cache
+        if (_currentSinglePage == 1) {
+          _cachedSingleMassages = List.from(newData);
+        } else {
+          _cachedSingleMassages.addAll(newData);
+        }
+        
+        _hasMoreSingleData = newData.length == _pageSize;
+        _currentSinglePage++;
+        
+        _applyFiltersToData();
       });
     } catch (e) {
-      setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
-      });
+      print("Error fetching massages: ${e.toString()}");
     }
+  }
+
+  Future<void> _loadMoreSingleMassages() async {
+    if (!_hasMoreSingleData || _isLoadingMore) return;
+    
+    setState(() {
+      _isLoadingMore = true;
+    });
+    
+    await fetchSingleMassages();
+    
+    setState(() {
+      _isLoadingMore = false;
+    });
   }
 
   Future<void> fetchSetMassages() async {
     final apiService = MassageApiService();
 
     try {
-      final response = await apiService.getAllSetMassages();
-
+      // Try to use pagination API if available
+      Response response;
+      try {
+        response = await apiService.getSetMassagesByPage(_currentSetPage, _pageSize);
+      } on Exception catch (_) {
+        // Fallback to getting all massages if pagination not supported
+        print("Pagination API not available, falling back to getAllSetMassages");
+        response = await apiService.getAllSetMassages();
+      }
+      
+      final List<dynamic> allData = response.data as List;
+      
+      // Simulate pagination on client-side if server doesn't support it
+      final bool isPaginationSupported = response.headers.map['x-pagination-supported'] != null;
+      
+      List<dynamic> newData;
+      if (!isPaginationSupported) {
+        // Manual pagination
+        final int startIndex = (_currentSetPage - 1) * _pageSize;
+        final int endIndex = startIndex + _pageSize > allData.length ? allData.length : startIndex + _pageSize;
+        
+        if (startIndex >= allData.length) {
+          newData = [];
+        } else {
+          newData = allData.sublist(startIndex, endIndex);
+        }
+      } else {
+        newData = allData;
+      }
+      
       setState(() {
-        setMassages = response.data as List;
-        filteredSetMassages = setMassages;
+        if (_currentSetPage == 1) {
+          setMassages = newData;
+        } else {
+          setMassages.addAll(newData);
+        }
+        
+        // Update cache
+        if (_currentSetPage == 1) {
+          _cachedSetMassages = List.from(newData);
+        } else {
+          _cachedSetMassages.addAll(newData);
+        }
+        
+        _hasMoreSetData = newData.length == _pageSize;
+        _currentSetPage++;
+        
+        _applyFiltersToData();
       });
     } catch (e) {
-      setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}"); // Only prints error message
-      });
+      print("Error fetching set massages: ${e.toString()}");
     }
   }
 
-  void _handleSearch() {
-    final query = textController.text.toLowerCase();
+  Future<void> _loadMoreSetMassages() async {
+    if (!_hasMoreSetData || _isLoadingMore) return;
+    
     setState(() {
-      if (_selectedTab == 0) {
-        filteredSingleMassages = singleMassages.where((massage) {
-          final name = (massage['mt_name'] ?? '').toString().toLowerCase();
-          final type = (massage['mt_type'] ?? '').toString().toLowerCase();
-          return name.contains(query) || type.contains(query);
-        }).toList();
-      } else {
-        filteredSetMassages = setMassages.where((massage) {
-          final name = (massage['ms_name'] ?? '').toString().toLowerCase();
-          final types =
-              (massage['ms_types'] as List<dynamic>? ?? []).join(' ').toLowerCase();
-          return name.contains(query) || types.contains(query);
-        }).toList();
-      }
+      _isLoadingMore = true;
     });
+    
+    await fetchSetMassages();
+    
+    setState(() {
+      _isLoadingMore = false;
+    });
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _applySearchFilter();
+    });
+  }
+  
+  void _applySearchFilter() {
+    final query = textController.text.toLowerCase();
+    
+    if (_selectedTab == 0) {
+      // Filter single massages based on search query
+      _filterSingleMassages(query);
+    } else {
+      // Filter set massages based on search query
+      _filterSetMassages(query);
+    }
+  }
+  
+  void _filterSingleMassages(String query) {
+    setState(() {
+      filteredSingleMassages = singleMassages.where((massage) {
+        // Apply search
+        final name = (massage['mt_name'] ?? '').toString().toLowerCase();
+        final type = (massage['mt_type'] ?? '').toString().toLowerCase();
+        final matchesSearch = name.contains(query) || type.contains(query);
+        
+        // Apply time filter
+        bool matchesTime = true;
+        if (selectedTime != "Please select") {
+          int selectedMinutes = _extractMinutes(selectedTime);
+          int massageTime = massage['mt_time'] ?? 0;
+          matchesTime = selectedMinutes == massageTime;
+        }
+        
+        // Apply type filter
+        bool matchesType = selectedType == "Please select" || 
+                          massage['mt_type'] == selectedType;
+        
+        return matchesSearch && matchesTime && matchesType;
+      }).toList();
+    });
+  }
+  
+  void _filterSetMassages(String query) {
+    setState(() {
+      filteredSetMassages = setMassages.where((massage) {
+        // Apply search
+        final name = (massage['ms_name'] ?? '').toString().toLowerCase();
+        final types =
+            (massage['ms_types'] as List<dynamic>? ?? []).join(' ').toLowerCase();
+        final matchesSearch = name.contains(query) || types.contains(query);
+        
+        // Apply time filter
+        bool matchesTime = true;
+        if (selectedTime != "Please select") {
+          int selectedMinutes = _extractMinutes(selectedTime);
+          int massageTime = massage['ms_time'] ?? 0;
+          matchesTime = selectedMinutes == massageTime;
+        }
+        
+        // Apply type filter
+        bool matchesType = selectedType == "Please select" || 
+                          (massage['ms_types'] as List<dynamic>).contains(selectedType);
+        
+        return matchesSearch && matchesTime && matchesType;
+      }).toList();
+    });
+  }
+
+  void _applyFiltersToData() {
+    _applySearchFilter();
+  }
+
+  // Helper method to extract minutes from time string
+  int _extractMinutes(String timeString) {
+    if (timeString.contains("hour")) {
+      return 60; // Convert "1 hour" to 60 minutes
+    }
+    
+    // Extract numeric part
+    RegExp regExp = RegExp(r'(\d+)');
+    Match? match = regExp.firstMatch(timeString);
+    if (match != null && match.groupCount >= 1) {
+      return int.parse(match.group(1)!);
+    }
+    return 0;
   }
 
   Future<String?> _showTimePicker() async {
@@ -153,11 +394,9 @@ class _LearnState extends State<LearnPage> {
                             Text(option, style: const TextStyle(fontSize: 14)),
                         onTap: () {
                           setModalState(() {
-                            selectedTime = option; // ✅ อัปเดตค่าใน Modal
+                            selectedTime = option;
                           });
-
-                          Navigator.pop(
-                              context, option); // ✅ ปิด Modal พร้อมส่งค่ากลับ
+                          Navigator.pop(context, option);
                         },
                       ),
                       Divider(height: 1, color: Color(0xFFB1B1B1)),
@@ -193,11 +432,9 @@ class _LearnState extends State<LearnPage> {
                             Text(option, style: const TextStyle(fontSize: 14)),
                         onTap: () {
                           setModalState(() {
-                            selectedType = option; // ✅ อัปเดตค่าใน Modal
+                            selectedType = option;
                           });
-
-                          Navigator.pop(
-                              context, option); // ✅ ปิด Modal พร้อมส่งค่ากลับ
+                          Navigator.pop(context, option);
                         },
                       ),
                       Divider(height: 1, color: Color(0xFFB1B1B1)),
@@ -214,56 +451,9 @@ class _LearnState extends State<LearnPage> {
 
   void _applyFilters() {
     setState(() {
-      if (_selectedTab == 0) {
-        // Filter single massages
-        filteredSingleMassages = singleMassages.where((massage) {
-          bool matchesTime = true;
-          if (selectedTime != "Please select") {
-            // Extract just the numeric part from the time string
-            int selectedMinutes = _extractMinutes(selectedTime);
-            int massageTime = massage['mt_time'] ?? 0;
-            matchesTime = selectedMinutes == massageTime;
-          }
-
-          bool matchesType = selectedType == "Please select" || 
-                             massage['mt_type'] == selectedType;
-          
-          return matchesTime && matchesType;
-        }).toList();
-      } else {
-        // Filter set massages
-        filteredSetMassages = setMassages.where((massage) {
-          bool matchesTime = true;
-          if (selectedTime != "Please select") {
-            // Extract just the numeric part from the time string
-            int selectedMinutes = _extractMinutes(selectedTime);
-            int massageTime = massage['ms_time'] ?? 0;
-            matchesTime = selectedMinutes == massageTime;
-          }
-
-          bool matchesType = selectedType == "Please select" || 
-                            (massage['ms_types'] as List<dynamic>).contains(selectedType);
-          
-          return matchesTime && matchesType;
-        }).toList();
-      }
+      _applyFiltersToData();
       Navigator.pop(context);
     });
-  }
-
-  // Helper method to extract minutes from time string
-  int _extractMinutes(String timeString) {
-    if (timeString.contains("hour")) {
-      return 60; // Convert "1 hour" to 60 minutes
-    }
-    
-    // Extract numeric part
-    RegExp regExp = RegExp(r'(\d+)');
-    Match? match = regExp.firstMatch(timeString);
-    if (match != null && match.groupCount >= 1) {
-      return int.parse(match.group(1)!);
-    }
-    return 0;
   }
 
   void showFilterPopup() {
@@ -324,8 +514,8 @@ class _LearnState extends State<LearnPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 10),
+                    // Time selector
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Container(
@@ -349,7 +539,7 @@ class _LearnState extends State<LearnPage> {
                               String? time = await _showTimePicker();
                               if (time != null) {
                                 setModalState(() {
-                                  selectedTime = time; // ✅ อัปเดตค่าให้ Modal
+                                  selectedTime = time;
                                 });
                               }
                             },
@@ -392,6 +582,7 @@ class _LearnState extends State<LearnPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    // Type selector
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Container(
@@ -415,7 +606,7 @@ class _LearnState extends State<LearnPage> {
                               String? type = await _showTypePicker();
                               if (type != null) {
                                 setModalState(() {
-                                  selectedType = type; // ✅ อัปเดตค่าให้ Modal
+                                  selectedType = type;
                                 });
                               }
                             },
@@ -587,8 +778,7 @@ class _LearnState extends State<LearnPage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap:
-                          showFilterPopup, // ฟังก์ชันที่ต้องการให้ทำงานเมื่อกด
+                      onTap: showFilterPopup,
                       child: Container(
                         width: 45,
                         height: 45,
@@ -608,45 +798,56 @@ class _LearnState extends State<LearnPage> {
               ),
             ),
             const SizedBox(height: 20),
-            // แสดง loading indicator หรือข้อมูลตามสถานะ
-            if (isLoading)
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'กำลังโหลดข้อมูล...',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFF676767),
-                        ),
-                      ),
-                    ],
+            
+            // Use FutureBuilder for better loading handling
+            Expanded(
+              child: isInitialLoad ? 
+                _buildLoadingIndicator() :
+                _selectedTab == 0 ? 
+                  SingleMassageTab(
+                    massages: filteredSingleMassages,
+                    scrollController: _scrollController,
+                    isLoadingMore: _isLoadingMore,
+                    hasMore: _hasMoreSingleData
+                  ) : 
+                  SetOfMassageTab(
+                    massages: filteredSetMassages,
+                    scrollController: _scrollController,
+                    isLoadingMore: _isLoadingMore,
+                    hasMore: _hasMoreSetData
                   ),
-                ),
-              )
-            else
-              // แสดงผลตามแท็บที่เลือก
-              Expanded(
-                child: _selectedTab == 0
-                    ? SingleMassageTab(massages: filteredSingleMassages)
-                    : SetOfMassageTab(massages: filteredSetMassages),
-              ),
+            ),
           ],
         ),
       ),
       bottomNavigationBar: HomeBottomNavigationBar(
-        initialIndex: 1, // หน้าแรกเริ่มที่ Home
+        initialIndex: 1,
         onTap: (index) {},
+      ),
+    );
+  }
+  
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 60,
+            height: 60,
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'กำลังโหลดข้อมูล...',
+            style: TextStyle(
+              fontSize: 18,
+              color: Color(0xFF676767),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -656,9 +857,17 @@ class _LearnState extends State<LearnPage> {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          setState(() {
-            _selectedTab = index;
-          });
+          if (_selectedTab != index) {
+            setState(() {
+              _selectedTab = index;
+              // Reset initial loading if we're switching tabs for the first time
+              if ((index == 0 && singleMassages.isEmpty) || 
+                  (index == 1 && setMassages.isEmpty)) {
+                isInitialLoad = true;
+              }
+            });
+            loadData();
+          }
         },
         child: Container(
           width: 186,
@@ -688,17 +897,28 @@ class _LearnState extends State<LearnPage> {
 
   @override
   void dispose() {
-    textController.removeListener(_handleSearch);
+    _debounce?.cancel();
+    textController.removeListener(_onSearchChanged);
     textController.dispose();
     textFieldFocusNode.dispose();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     super.dispose();
   }
 }
 
 class SingleMassageTab extends StatelessWidget {
   final List<dynamic> massages;
+  final ScrollController scrollController;
+  final bool isLoadingMore;
+  final bool hasMore;
 
-  const SingleMassageTab({required this.massages});
+  const SingleMassageTab({
+    required this.massages, 
+    required this.scrollController,
+    required this.isLoadingMore,
+    required this.hasMore
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -716,15 +936,28 @@ class SingleMassageTab extends StatelessWidget {
     }
 
     return ListView.builder(
+      controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 20),
-      itemCount: massages.length,
+      itemCount: massages.length + (isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index >= massages.length) {
+          return hasMore ? 
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0),
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                ),
+              ),
+            ) : 
+            const SizedBox.shrink();
+        }
+        
         final massage = massages[index];
         return MassageCard(
           mt_id: massage['mt_id'] ?? 0,
           image: massage['mt_image_name'] ??
               'https://picsum.photos/seed/picsum/200/300',
-          // image: 'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
@@ -740,8 +973,16 @@ class SingleMassageTab extends StatelessWidget {
 
 class SetOfMassageTab extends StatelessWidget {
   final List<dynamic> massages;
+  final ScrollController scrollController;
+  final bool isLoadingMore;
+  final bool hasMore;
 
-  const SetOfMassageTab({required this.massages});
+  const SetOfMassageTab({
+    required this.massages, 
+    required this.scrollController,
+    required this.isLoadingMore,
+    required this.hasMore
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -759,9 +1000,23 @@ class SetOfMassageTab extends StatelessWidget {
     }
 
     return ListView.builder(
+      controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 20),
-      itemCount: massages.length,
+      itemCount: massages.length + (isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index >= massages.length) {
+          return hasMore ? 
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0),
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                ),
+              ),
+            ) : 
+            const SizedBox.shrink();
+        }
+        
         final massage = massages[index];
         final imageNames = massage['ms_image_names'] as List<dynamic>? ?? [];
 
@@ -781,11 +1036,8 @@ class SetOfMassageTab extends StatelessWidget {
           imageUrl3: imageNames.length > 2
               ? imageNames[2] as String
               : 'https://picsum.photos/seed/default3/200/300',
-          // imageUrl1: 'https://picsum.photos/seed/picsum/200/300',
-          // imageUrl2: 'https://picsum.photos/seed/picsum/200/300',
-          // imageUrl3: 'https://picsum.photos/seed/picsum/200/300',
           onFavoriteChanged: (isFavorite) {
-            // Replace with a logging framework or remove in production
+            // Handle favorite changed
           },
         );
       },

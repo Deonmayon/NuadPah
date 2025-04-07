@@ -29,9 +29,13 @@ class _ForgetPageState extends State<ForgetPage> {
           MaterialPageRoute(
               builder: (context) => OTPPage(email: _emailController.text)),
         );
+      } else if (response.statusCode == 404) {
+        setState(() {
+          _errorMessage = 'ไม่พบอีเมลนี้ในระบบ';
+        });
       } else {
         setState(() {
-          _errorMessage = 'Registration failed';
+          _errorMessage = 'การส่งรหัส OTP ล้มเหลว';
         });
       }
     } catch (e) {
@@ -57,7 +61,7 @@ class _ForgetPageState extends State<ForgetPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Forget Password ?',
+                    'ลืมรหัสผ่าน?',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -113,6 +117,17 @@ class _ForgetPageState extends State<ForgetPage> {
                           controller: _emailController,
                           hintText: 'อีเมล',
                         ),
+                        if (_errorMessage.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              _errorMessage,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
                         SizedBox(height: 40),
 
                         // Sign In Button
