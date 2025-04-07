@@ -118,8 +118,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: EdgeInsets.only(top: 20),
                 child: CircleAvatar(
                   radius: 50,
-                  // backgroundImage: NetworkImage('${userData['image_name']}'),
-                  backgroundImage: NetworkImage('https://picsum.photos/seed/picsum/200/300'),
+                  backgroundImage: NetworkImage('${userData['image_name']}'),
+                  // backgroundImage: NetworkImage('https://picsum.photos/seed/picsum/200/300'),
                 ),
               ),
             if (isLoading)
