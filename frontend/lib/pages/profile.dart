@@ -93,9 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const Text(
               'โปรไฟล์',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(width: 30),
           ],
@@ -113,7 +111,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: CircleAvatar(
                   radius: 50,
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
                   ),
                 ),
               )
@@ -137,7 +136,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: 100,
                   child: LinearProgressIndicator(
                     backgroundColor: Colors.grey,
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
                   ),
                 ),
               )
@@ -147,8 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Text(
                   '${userData['firstname']} ${userData['lastname']}',
                   style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500),
+                      fontSize: 20, fontWeight: FontWeight.w500),
                 ),
               ),
             const Padding(

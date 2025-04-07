@@ -955,13 +955,14 @@ class SingleMassageTab extends StatelessWidget {
         
         final massage = massages[index];
         return MassageCard(
-          mt_id: massage['mt_id'] ?? 0,
+          mtID: massage['mt_id'] ?? 0,
           image: massage['mt_image_name'] ??
               'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
+          rating: massage['avg_rating'] ?? '0',
           onFavoriteChanged: (isFavorite) {
             print('Massage favorited: $isFavorite');
           },
@@ -986,7 +987,7 @@ class SetOfMassageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (massages.isEmpty) {
+    if (massages.length < 1) {
       return const Center(
         child: Text(
           'ไม่พบเซ็ตท่านวดที่คุณค้นหา',
@@ -1018,7 +1019,6 @@ class SetOfMassageTab extends StatelessWidget {
         }
         
         final massage = massages[index];
-        final imageNames = massage['ms_image_names'] as List<dynamic>? ?? [];
 
         return MassageCardSet(
           ms_id: (massage['ms_id'] ?? 0) as int,
@@ -1027,15 +1027,10 @@ class SetOfMassageTab extends StatelessWidget {
               (massage['ms_detail'] ?? 'No description available.') as String,
           types: (massage['ms_types'] as List<dynamic>? ?? []).cast<String>(),
           duration: (massage['ms_time'] ?? 0) as int,
-          imageUrl1: imageNames.isNotEmpty
-              ? imageNames[0] as String
-              : 'https://picsum.photos/seed/default1/200/300',
-          imageUrl2: imageNames.length > 1
-              ? imageNames[1] as String
-              : 'https://picsum.photos/seed/default2/200/300',
-          imageUrl3: imageNames.length > 2
-              ? imageNames[2] as String
-              : 'https://picsum.photos/seed/default3/200/300',
+          images: (massage['ms_image_names'] != null &&
+                  massage['ms_image_names'].length > 0
+              ? massage['ms_image_names'][0]
+              : 'https://picsum.photos/seed/picsum/200/300'),
           onFavoriteChanged: (isFavorite) {
             // Handle favorite changed
           },
