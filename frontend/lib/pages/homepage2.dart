@@ -5,7 +5,6 @@ import 'package:frontend/components/massagecardLarge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../api/auth.dart';
 import '../../api/massage.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomepageWidget extends StatefulWidget {
 
@@ -207,22 +206,41 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 onTap: () {
                   Navigator.pushNamed(context, '/profile');
                 },
-                child: ClipOval(
-                  child: Image.network(
-                    'https://picsum.photos/seed/picsum/200/300',
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        'assets/images/default_profile.png',
+                child: isLoading
+                    ? Container(
                         width: 50,
                         height: 50,
-                        fit: BoxFit.cover,
-                      );
-                    },
-                  ),
-                ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                            ),
+                          ),
+                        ),
+                      )
+                    : ClipOval(
+                        child: Image.network(
+                          '${userData['image_name']}',
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/images/default_profile.png',
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
+                      ),
               ),
             ],
           ),
@@ -276,54 +294,46 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ),
                 SizedBox(
                   height: 280,
-                  child: filteredMassages.isEmpty
+                  child: isLoading 
                       ? Center(
-                          child: Text(
-                            'ไม่พบท่านวดในหมวดหมู่นี้',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
                           ),
                         )
-                      : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: filteredMassages.length,
-                          itemBuilder: (context, index) {
-                            final massage = filteredMassages[index];
-                            return MassageCardLarge(
-                              name: massage['name'] ?? 'Unknown Name',
-                              score: massage['avg_rating'] != null
-                                  ? '${massage['avg_rating']} / 5'
-                                  : 'N/A',
-                              type: (massage['mt_type'] ??
-                                      (massage['ms_types']?.join(', ') ?? '')) ??
-                                  'Unknown',
-                              image: 'https://picsum.photos/seed/picsum/200/300',
-                              isSet: massage['class'] == 'set',
-                            );
-                          },
-                        ),
+                      : (filteredMassages.isEmpty
+                          ? Center(
+                              child: Text(
+                                'ไม่พบท่านวดในหมวดหมู่นี้',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: filteredMassages.length,
+                              itemBuilder: (context, index) {
+                                final massage = filteredMassages[index];
+                                return MassageCardLarge(
+                                  name: massage['name'] ?? 'Unknown Name',
+                                  score: massage['avg_rating'] != null
+                                      ? '${massage['avg_rating']} / 5'
+                                      : 'N/A',
+                                  type: (massage['mt_type'] ??
+                                          (massage['ms_types']?.join(', ') ?? '')) ??
+                                      'Unknown',
+                                  image: massage['class'] == 'single' 
+                                      ? massage['mt_image_name'] ?? 'https://picsum.photos/seed/picsum/200/300'
+                                      : (massage['ms_image_names'] != null && massage['ms_image_names'].isNotEmpty
+                                          ? massage['ms_image_names'][0]
+                                          : 'https://picsum.photos/seed/picsum/200/300'),
+                                  isSet: massage['class'] == 'set',
+                                );
+                              },
+                            )),
                 ),
-                // const Padding(
-                //   padding: EdgeInsets.only(left: 20),
-                //   child: Text(
-                //     'เพิ่งดูไปล่าสุด',
-                //     style: TextStyle(
-                //       color: Colors.black,
-                //       fontSize: 32,
-                //       fontWeight: FontWeight.w600,
-                //     ),
-                //   ),
-                // ),
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child: Row(
-                //     children:
-                //         List.generate(5, (index) => _buildRecentlyViewedCard()),
-                //   ),
-                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -362,31 +372,41 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                   ],
                 ),
                 Column(
-                  children: massages.isNotEmpty
-                      ? massages.take(4).map((massage) {
-                          return MassageCard(
-                            mt_id: massage['mt_id'],
-                            image: 'https://picsum.photos/seed/picsum/200/300',
-                            name: massage['mt_name'] ?? 'Unknown Massage',
-                            detail: massage['mt_detail'] ??
-                                'No description available.',
-                            type: massage['mt_type'] ?? 'Unknown Type',
-                            time: massage['mt_time'] ?? 0,
-                            onFavoriteChanged: (isFavorite) {
-                              print('Massage favorited: $isFavorite');
-                            },
-                          );
-                        }).toList()
-                      : [
-                          const Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text(
-                              'No massages available.',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.grey),
+                  children: isLoading
+                      ? [
+                          Container(
+                            height: 200,
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
                             ),
                           ),
-                        ],
+                        ]
+                      : (massages.isNotEmpty
+                          ? massages.take(4).map((massage) {
+                              return MassageCard(
+                                mt_id: massage['mt_id'],
+                                image: massage['mt_image_name'],
+                                name: massage['mt_name'] ?? 'Unknown Massage',
+                                detail: massage['mt_detail'] ??
+                                    'No description available.',
+                                type: massage['mt_type'] ?? 'Unknown Type',
+                                time: massage['mt_time'] ?? 0,
+                                onFavoriteChanged: (isFavorite) {
+                                  print('Massage favorited: $isFavorite');
+                                },
+                              );
+                            }).toList()
+                          : [
+                              const Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: Text(
+                                  'No massages available.',
+                                  style:
+                                      TextStyle(fontSize: 16, color: Colors.grey),
+                                ),
+                              ),
+                            ]),
                 ),
               ],
             ),

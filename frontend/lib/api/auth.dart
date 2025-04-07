@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import '../config/env.dart';
 
 class AuthApiService {
   final Dio _dio;
