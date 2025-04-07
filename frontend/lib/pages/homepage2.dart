@@ -21,7 +21,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   List<dynamic> massages = [];
   bool isLoading = true;
 
-  String selectedType = 'all';  // Keep English internally
+  String selectedType = 'ท่านวดทั้งหมด';  // Changed to use Thai directly
 
   late Map<String, dynamic> userData = {
     'email': '',
@@ -31,25 +31,16 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     'role': '',
   };
 
-  // Update mapping to use lowercase types as in API
-  Map<String, String> typeMapping = {
-    'all': 'ท่านวดทั้งหมด',
-    'back': 'หลัง',
-    'arm': 'แขน',
-    'shoulder': 'ไหล่',
-    'neck': 'คอ',
+  // Thai type mapping to API types (lowercase)
+  Map<String, String> thaiToApiTypeMapping = {
+    'ท่านวดทั้งหมด': 'all',
+    'หลัง': 'back',
+    'บ่า ไหล่': 'shoulder',
+    'ไหล่': 'shoulder',
+    'แขน': 'arm',
+    'ขา': 'leg',
+    'คอ': 'neck',
   };
-
-  String getThaiType(String englishType) {
-    return typeMapping[englishType] ?? englishType;
-  }
-
-  String getEnglishType(String thaiType) {
-    return typeMapping.entries
-        .firstWhere((entry) => entry.value == thaiType,
-            orElse: () => MapEntry(thaiType, thaiType))
-        .key;
-  }
 
   @override
   void initState() {
@@ -146,16 +137,26 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     print('UserData: $userData');
     print('Current selected type: $selectedType'); // Debug print
     
-    final filteredMassages = selectedType == 'all'
+    final String apiType = thaiToApiTypeMapping[selectedType] ?? 'all';
+    
+    final filteredMassages = selectedType == 'ท่านวดทั้งหมด'
         ? recmassages
         : recmassages.where((massage) {
             // For single massage types
-            if (massage['mt_type'] != null) {
-              return massage['mt_type'].toLowerCase() == selectedType.toLowerCase();
+            if (massage['class'] == 'single' && massage['mt_type'] != null) {
+              return massage['mt_type'] == selectedType || 
+                     (selectedType == 'ไหล่' && massage['mt_type'] == 'บ่า ไหล่');
             }
             // For massage sets
-            if (massage['ms_types'] != null) {
-              return massage['ms_types'].contains(selectedType.toLowerCase());
+            if (massage['class'] == 'set' && massage['ms_types'] != null) {
+              List<dynamic> types = massage['ms_types'];
+              for (var type in types) {
+                if (type == selectedType || 
+                    (selectedType == 'ไหล่' && type == 'บ่า ไหล่')) {
+                  return true;
+                }
+              }
+              return false;
             }
             return false;
           }).toList();
@@ -276,6 +277,10 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       SizedBox(
                         width: 20,
                       ),
+                      _buildFilterButton('ขา'),
+                      SizedBox(
+                        width: 20,
+                      ),
                       _buildFilterButton('หลัง'),
                       SizedBox(
                         width: 20,
@@ -322,7 +327,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                                       ? '${massage['avg_rating']} / 5'
                                       : 'N/A',
                                   type: (massage['mt_type'] ??
-                                          (massage['ms_types']?.join(', ') ?? '')) ??
+                                          (massage['ms_types']?.join(', ') ?? '')) ?? 
                                       'Unknown',
                                   image: massage['class'] == 'single' 
                                       ? massage['mt_image_name'] ?? 'https://picsum.photos/seed/picsum/200/300'
@@ -421,14 +426,12 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   }
 
   Widget _buildFilterButton(String thaiType) {
-    String engType = getEnglishType(thaiType);
-    bool isSelected = selectedType == engType;
+    bool isSelected = selectedType == thaiType;
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedType = engType;
-          print('Selected type: $selectedType'); // Debug print
+          selectedType = thaiType;
         });
       },
       child: Column(
