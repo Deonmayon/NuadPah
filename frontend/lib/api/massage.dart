@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import '../config/env.dart';
 
 class MassageApiService {
   final Dio _dio;
