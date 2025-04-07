@@ -21,6 +21,7 @@ class _LearnState extends State<LearnPage> {
   List<dynamic> setMassages = [];
   List<dynamic> filteredSingleMassages = [];
   List<dynamic> filteredSetMassages = [];
+  bool isLoading = true;
 
   String selectedTime = "Please select";
   final List<String> timeOptions = [
@@ -42,9 +43,21 @@ class _LearnState extends State<LearnPage> {
   @override
   void initState() {
     super.initState();
-    Future.wait([fetchSingleMassages()]);
-    Future.wait([fetchSetMassages()]);
+    setState(() {
+      isLoading = true;
+    });
+    loadData();
     textController.addListener(_handleSearch);
+  }
+
+  Future<void> loadData() async {
+    try {
+      await Future.wait([fetchSingleMassages(), fetchSetMassages()]);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> fetchSingleMassages() async {
@@ -537,12 +550,39 @@ class _LearnState extends State<LearnPage> {
               ),
             ),
             const SizedBox(height: 20),
-            // แสดงผลตามแท็บที่เลือก
-            Expanded(
-              child: _selectedTab == 0
-                  ? SingleMassageTab(massages: filteredSingleMassages)
-                  : SetOfMassageTab(massages: filteredSetMassages),
-            ),
+            // แสดง loading indicator หรือข้อมูลตามสถานะ
+            if (isLoading)
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'กำลังโหลดข้อมูล...',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF676767),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              // แสดงผลตามแท็บที่เลือก
+              Expanded(
+                child: _selectedTab == 0
+                    ? SingleMassageTab(massages: filteredSingleMassages)
+                    : SetOfMassageTab(massages: filteredSetMassages),
+              ),
           ],
         ),
       ),

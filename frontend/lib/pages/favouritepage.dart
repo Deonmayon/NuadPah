@@ -15,6 +15,7 @@ class Favouritepage extends StatefulWidget {
 
 class _FavouritePageState extends State<Favouritepage> {
   int _selectedTab = 0;
+  bool isLoading = true;
 
   List<dynamic> favSingleMassages = [];
   List<dynamic> favSetMassages = [];
@@ -30,13 +31,22 @@ class _FavouritePageState extends State<Favouritepage> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      isLoading = true;
+    });
     loadData();
   }
 
   Future<void> loadData() async {
-    await getUserEmail();
-    await fetchSingleMassages();
-    await fetchSetMassages();
+    try {
+      await getUserEmail();
+      await fetchSingleMassages();
+      await fetchSetMassages();
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> getUserEmail() async {
@@ -136,11 +146,37 @@ class _FavouritePageState extends State<Favouritepage> {
                 ],
               ),
             ),
-            Expanded(
-              child: _selectedTab == 0
-                  ? SingleMassageTab(massages: favSingleMassages)
-                  : SetOfMassageTab(massages: favSetMassages),
-            ),
+            if (isLoading)
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'กำลังโหลดข้อมูล...',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF676767),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: _selectedTab == 0
+                    ? SingleMassageTab(massages: favSingleMassages)
+                    : SetOfMassageTab(massages: favSetMassages),
+              ),
           ],
         ),
       ),
