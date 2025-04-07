@@ -78,7 +78,6 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/signin',
       routes: {
-        '/': (context) => const WelcomePage(),
         '/signin': (context) => const SignInPage(),
         '/signup': (context) => const SignUpPage(),
         '/forget': (context) => const ForgetPage(),
@@ -96,7 +95,8 @@ class MyApp extends StatelessWidget {
               rating: '0',
             ),
         '/setdetail': (context) => const SetMassageDetailPage(
-              massageID: 0, rating: '',
+              massageID: 0,
+              rating: '0',
             ),
         '/report': (context) => const ReportPage(),
         '/help': (context) => const HelpPage(),

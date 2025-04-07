@@ -42,7 +42,7 @@ class _FavouritePageState extends State<Favouritepage> {
     try {
       // First get user email (needed for subsequent queries)
       await getUserEmail();
-      
+
       // Then fetch both single and set massages in parallel instead of sequentially
       await Future.wait([
         fetchSingleMassages(),
@@ -130,35 +130,35 @@ class _FavouritePageState extends State<Favouritepage> {
         toolbarHeight: 70,
       ),
       body: SafeArea(
-              child: Column(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        _buildTabButton('ท่านวดเดี่ยว', 0),
-                        _buildTabButton('เซ็ตท่านวด', 1),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: _selectedTab == 0
-                        ? isLoading
-                            ? _buildLoadingWidget()
-                            : SingleMassageTab(
-                                massages: favSingleMassages,
-                                onFavoriteChanged: _handleSingleFavoriteChanged,
-                              )
-                        : isLoading
-                            ? _buildLoadingWidget()
-                            : SetOfMassageTab(
-                                massages: favSetMassages,
-                                onFavoriteChanged: _handleSetFavoriteChanged,
-                              ),
-                  ),
+                  _buildTabButton('ท่านวดเดี่ยว', 0),
+                  _buildTabButton('เซ็ตท่านวด', 1),
                 ],
               ),
             ),
+            Expanded(
+              child: _selectedTab == 0
+                  ? isLoading
+                      ? _buildLoadingWidget()
+                      : SingleMassageTab(
+                          massages: favSingleMassages,
+                          onFavoriteChanged: _handleSingleFavoriteChanged,
+                        )
+                  : isLoading
+                      ? _buildLoadingWidget()
+                      : SetOfMassageTab(
+                          massages: favSetMassages,
+                          onFavoriteChanged: _handleSetFavoriteChanged,
+                        ),
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: HomeBottomNavigationBar(
         initialIndex: 3,
         onTap: (index) {},
@@ -248,19 +248,21 @@ class _FavouritePageState extends State<Favouritepage> {
     );
   }
 
-  Future<void> _handleSingleFavoriteChanged(bool isFavorite, int massageId) async {
+  Future<void> _handleSingleFavoriteChanged(
+      bool isFavorite, int massageId) async {
     final apiService = MassageApiService();
-    
+
     try {
       if (!isFavorite) {
         // Update FavoriteManager first for immediate UI change across the app
         FavoriteManager.instance.updateSingleFavorite(massageId, false);
-        
+
         // Remove from local state
         setState(() {
-          favSingleMassages.removeWhere((massage) => massage['mt_id'] == massageId);
+          favSingleMassages
+              .removeWhere((massage) => massage['mt_id'] == massageId);
         });
-        
+
         // Then perform API call
         await apiService.unfavSingle(userData['email'], massageId);
       }
@@ -275,17 +277,18 @@ class _FavouritePageState extends State<Favouritepage> {
 
   Future<void> _handleSetFavoriteChanged(bool isFavorite, int massageId) async {
     final apiService = MassageApiService();
-    
+
     try {
       if (!isFavorite) {
         // Update FavoriteManager first for immediate UI change across the app
         FavoriteManager.instance.updateSetFavorite(massageId, false);
-        
+
         // Remove from local state
         setState(() {
-          favSetMassages.removeWhere((massage) => massage['ms_id'] == massageId);
+          favSetMassages
+              .removeWhere((massage) => massage['ms_id'] == massageId);
         });
-        
+
         // Then perform API call
         await apiService.unfavSet(userData['email'], massageId);
       }
@@ -328,14 +331,14 @@ class SingleMassageTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final massage = massages[index];
         return MassageCard(
-          mtID: massage['mt_id'] ?? 0,
+          mtID: massage['mt_id'].toInt() ?? 0,
           image: massage['mt_image_name'] ??
               'https://picsum.photos/seed/picsum/200/300',
           name: massage['mt_name'] ?? 'Unknown Massage',
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
-          rating: massage['avg_rating'] ?? '0',
+          rating: massage['avg_rating']?.toString(),
           isSet: false,
           onFavoriteChanged: (isFavorite) {
             onFavoriteChanged(isFavorite, massage['mt_id']);
@@ -357,7 +360,7 @@ class SetOfMassageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (massages.length < 1) {
+    if (massages.isEmpty) {
       return Center(
         child: Text(
           'ไม่มีเซ็ตท่านวดที่บันทึกไว้',
@@ -376,16 +379,18 @@ class SetOfMassageTab extends StatelessWidget {
         final massage = massages[index];
 
         return MassageCardSet(
-          ms_id: (massage['ms_id'] ?? 0) as int,
+          msID: (massage['ms_id'] ?? 0) as int,
           title: (massage['ms_name'] ?? 'Unknown Title') as String,
           description:
               (massage['ms_detail'] ?? 'No description available.') as String,
           types: (massage['ms_types'] as List<dynamic>? ?? []).cast<String>(),
           duration: (massage['ms_time'] ?? 0) as int,
-          images: (massage['ms_image_names'] != null &&
-                  massage['ms_image_names'].length > 0
-              ? massage['ms_image_names'][0]
-              : 'https://picsum.photos/seed/picsum/200/300'),
+          images:
+              ((massage['ms_image_names'] as List<dynamic>? ?? []).isNotEmpty &&
+                      massage['ms_image_names'].length > 0
+                  ? massage['ms_image_names']
+                  : 'https://picsum.photos/seed/picsum/200/300'),
+          rating: massage['avg_rating']?.toString(),
           onFavoriteChanged: (isFavorite) {
             onFavoriteChanged(isFavorite, massage['ms_id']);
           },

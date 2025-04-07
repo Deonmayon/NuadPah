@@ -5,11 +5,14 @@ import 'package:frontend/api/massage.dart';
 import 'package:frontend/components/reviewCard.dart';
 
 class SetMassageDetailPage extends StatefulWidget {
-  final int massageID;
-  final String rating;
+  final int? massageID; // Make nullable
+  final String? rating;
 
-  const SetMassageDetailPage(
-      {super.key, required this.massageID, required this.rating});
+  const SetMassageDetailPage({
+    Key? key,
+    this.massageID, // Remove required
+    this.rating,
+  }) : super(key: key);
 
   @override
   State<SetMassageDetailPage> createState() => _SetMassageDetailPageState();
@@ -21,8 +24,7 @@ class _SetMassageDetailPageState extends State<SetMassageDetailPage> {
 
   bool isLoading = true;
 
-  int get massageId => widget.massageID;
-  String get rating => widget.rating;
+  int get massageId => widget.massageID ?? 0;
 
   late Map<String, dynamic> detail = {
     'ms_id': 0,
@@ -33,6 +35,7 @@ class _SetMassageDetailPageState extends State<SetMassageDetailPage> {
     'ms_detail': '',
     'ms_image_names': <String>[],
     'massageTechniqueDetails': <Map<String, dynamic>>[],
+    'avg_rating': '0.0',
   };
 
   late List<Map<String, dynamic>> reviews = [
@@ -212,7 +215,7 @@ class _SetMassageDetailPageState extends State<SetMassageDetailPage> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '$rating / 5',
+                                    '${detail['avg_rating']?.toString()} / 5',
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w400,
@@ -501,75 +504,3 @@ class _ExpandableCardState extends State<ExpandableCard> {
     );
   }
 }
-
-// class ReviewCard extends StatelessWidget {
-//   const ReviewCard({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: const EdgeInsets.all(16),
-//       decoration: BoxDecoration(
-//         color: Theme.of(context).colorScheme.surface,
-//         borderRadius: BorderRadius.circular(15),
-//         boxShadow: const [
-//           BoxShadow(
-//             color: Colors.black26,
-//             blurRadius: 8,
-//             offset: Offset(0, 4),
-//           ),
-//         ],
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           const Row(
-//             children: [
-//               CircleAvatar(
-//                 radius: 15,
-//                 backgroundImage: AssetImage('assets/images/profilePicture.jpg'),
-//               ),
-//               SizedBox(width: 8),
-//               Text(
-//                 'Cameron Williamson',
-//                 style: TextStyle(
-//                   fontWeight: FontWeight.w500,
-//                   fontSize: 14,
-//                   color: Color.fromRGBO(103, 103, 103, 1),
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 10),
-//           Row(
-//             children: List.generate(
-//               5,
-//               (index) => Padding(
-//                 padding:
-//                     const EdgeInsets.only(right: 5.0), // ระยะห่างระหว่างไอคอน
-//                 child: Icon(
-//                   index < 4
-//                       ? FontAwesomeIcons.solidStar
-//                       : FontAwesomeIcons.star,
-//                   color: index < 4
-//                       ? const Color.fromRGBO(192, 161, 114, 1)
-//                       : Colors.grey,
-//                   size: 15,
-//                 ),
-//               ),
-//             ),
-//           ),
-//           const SizedBox(height: 10),
-//           const Text(
-//             'Lorem ipsum dolor sit amet,  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-//             style: TextStyle(
-//               fontWeight: FontWeight.w400,
-//               fontSize: 12,
-//               color: Color.fromRGBO(103, 103, 103, 1),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

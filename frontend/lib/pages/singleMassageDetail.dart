@@ -4,11 +4,13 @@ import 'package:frontend/api/massage.dart';
 import 'package:frontend/components/reviewCard.dart';
 
 class SingleMassageDetailPage extends StatefulWidget {
-  final int massageID;
-  final String rating;
+  final int? massageID; // Make nullable
 
-  const SingleMassageDetailPage(
-      {super.key, required this.massageID, required this.rating});
+  const SingleMassageDetailPage({
+    Key? key,
+    this.massageID,
+    required String rating, // Remove required
+  }) : super(key: key);
 
   @override
   State<SingleMassageDetailPage> createState() =>
@@ -20,8 +22,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
 
   bool isLoading = true;
 
-  int get massageId => widget.massageID;
-  String get rating => widget.rating;
+  int get massageId => widget.massageID ?? 0;
 
   late Map<String, dynamic> detail = {
     'mt_id': 0,
@@ -31,6 +32,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
     'mt_time': 0,
     'mt_detail': '',
     'mt_image_name': '',
+    'avg_rating': '0.0',
   };
 
   late List<Map<String, dynamic>> reviews = [
@@ -211,7 +213,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                             ),
                             SizedBox(width: 4),
                             Text(
-                              rating,
+                              '${detail['avg_rating']?.toString()} / 5',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w400,

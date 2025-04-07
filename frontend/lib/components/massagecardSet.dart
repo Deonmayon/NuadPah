@@ -7,22 +7,24 @@ import '../api/massage.dart';
 import '../utils/favorite_manager.dart'; // Add this import
 
 class MassageCardSet extends StatefulWidget {
-  final int ms_id;
+  final int msID;
   final String title;
   final String description;
   final List<String> types;
   final int duration;
-  final List<String> images;
+  final List<dynamic> images;
+  final String? rating;
   final Function(bool) onFavoriteChanged;
 
   const MassageCardSet({
     Key? key,
-    required this.ms_id,
+    required this.msID,
     required this.title,
     required this.description,
     required this.types,
     required this.duration,
     required this.images,
+    required this.rating,
     required this.onFavoriteChanged,
   }) : super(key: key);
 
@@ -53,7 +55,7 @@ class _MassageCardSetState extends State<MassageCardSet> {
 
   void _checkFavoriteStatus() {
     // Get favorite status from FavoriteManager - immediate synchronous operation
-    final favoriteStatus = FavoriteManager.instance.isSetFavorite(widget.ms_id);
+    final favoriteStatus = FavoriteManager.instance.isSetFavorite(widget.msID);
     if (favoriteStatus != null && favoriteStatus != isFavorite) {
       setState(() {
         isFavorite = favoriteStatus;
@@ -65,11 +67,11 @@ class _MassageCardSetState extends State<MassageCardSet> {
   Future<void> _checkCachedFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final cachedFavorites = prefs.getStringList('cachedSetFavorites') ?? [];
-    
+
     if (cachedFavorites.isNotEmpty) {
       setState(() {
         favmassages = cachedFavorites.map((id) => int.parse(id)).toList();
-        isFavorite = favmassages.contains(widget.ms_id);
+        isFavorite = favmassages.contains(widget.msID);
       });
     }
   }
@@ -77,13 +79,13 @@ class _MassageCardSetState extends State<MassageCardSet> {
   Future<void> loadData() async {
     // Start both operations in parallel
     final emailFuture = getUserEmail();
-    
+
     // Check cached favorites while waiting for email
     await _checkCachedFavorites();
-    
+
     // Wait for email to be retrieved
     await emailFuture;
-    
+
     // Only proceed if we have a valid email
     if (userData['email'].isNotEmpty) {
       // Fetch favorites data in background
@@ -127,12 +129,12 @@ class _MassageCardSetState extends State<MassageCardSet> {
 
   Future<void> fetchMassages() async {
     if (userData['email'].isEmpty) return;
-    
+
     final apiService = MassageApiService();
 
     try {
       final response = await apiService.getFavSet(userData['email']);
-      
+
       if (mounted) {
         final List<int> newFavMassages = (response.data as List)
             .map((item) => item['ms_id'] as int)
@@ -143,12 +145,12 @@ class _MassageCardSetState extends State<MassageCardSet> {
 
         // Cache favorites for faster future loads
         final prefs = await SharedPreferences.getInstance();
-        prefs.setStringList('cachedSetFavorites', 
+        prefs.setStringList('cachedSetFavorites',
             newFavMassages.map((id) => id.toString()).toList());
-            
+
         setState(() {
           favmassages = newFavMassages;
-          isFavorite = favmassages.contains(widget.ms_id);
+          isFavorite = favmassages.contains(widget.msID);
         });
       }
     } catch (e) {
@@ -165,35 +167,34 @@ class _MassageCardSetState extends State<MassageCardSet> {
         isFavorite = !isFavorite;
       });
       widget.onFavoriteChanged(isFavorite);
-      
+
       // Update the global favorite state
-      FavoriteManager.instance.updateSetFavorite(widget.ms_id, isFavorite);
-      
+      FavoriteManager.instance.updateSetFavorite(widget.msID, isFavorite);
+
       // Then perform the API call
       if (isFavorite) {
-        await apiService.favSet(userData['email'], widget.ms_id);
+        await apiService.favSet(userData['email'], widget.msID);
       } else {
-        await apiService.unfavSet(userData['email'], widget.ms_id);
+        await apiService.unfavSet(userData['email'], widget.msID);
       }
 
       // Update cached favorites
-      if (isFavorite && !favmassages.contains(widget.ms_id)) {
-        favmassages.add(widget.ms_id);
+      if (isFavorite && !favmassages.contains(widget.msID)) {
+        favmassages.add(widget.msID);
       } else if (!isFavorite) {
-        favmassages.remove(widget.ms_id);
+        favmassages.remove(widget.msID);
       }
-      
+
       final prefs = await SharedPreferences.getInstance();
-      prefs.setStringList('cachedSetFavorites', 
+      prefs.setStringList('cachedSetFavorites',
           favmassages.map((id) => id.toString()).toList());
-          
     } catch (e) {
       // Revert UI change if API call fails
       setState(() {
         isFavorite = !isFavorite;
       });
       // Also revert global state
-      FavoriteManager.instance.updateSetFavorite(widget.ms_id, !isFavorite);
+      FavoriteManager.instance.updateSetFavorite(widget.msID, !isFavorite);
       widget.onFavoriteChanged(isFavorite);
       print("Error toggling favorite: ${e.toString()}");
     }
@@ -207,9 +208,9 @@ class _MassageCardSetState extends State<MassageCardSet> {
           context,
           MaterialPageRoute(
             builder: (context) => SetMassageDetailPage(
-              massageID: widget.ms_id,
-              rating: "0", // You may want to add rating as a property if needed
-            ),
+                massageID: widget
+                    .msID // You may want to add rating as a property if needed
+                ),
           ),
         );
       },

@@ -67,7 +67,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
         isLoading = true;
       });
     }
-    
+
     // Clear any existing cache to ensure fresh data after sign-in
     _lastCacheTime = null;
     _cachedRecMassages = null;
@@ -78,12 +78,12 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     final userEmail = prefs.getString('userEmail') ?? '';
-    
+
     // Set email in userData immediately to ensure it's available for API calls
     setState(() {
       userData['email'] = userEmail;
     });
-    
+
     final cachedUserString = prefs.getString('userData');
 
     if (cachedUserString != null) {
@@ -410,11 +410,11 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                                 itemCount: _filteredMassages.length,
                                 itemBuilder: (context, index) {
                                   final massage = _filteredMassages[index];
+
                                   return MassageCardLarge(
                                     name: massage['name'] ?? 'Unknown Name',
-                                    score: massage['avg_rating'] != null
-                                        ? '${massage['avg_rating']} / 5'
-                                        : 'N/A',
+                                    rating: massage['avg_rating']?.toString() ??
+                                        'N/A',
                                     type: (massage['mt_type'] ??
                                             (massage['ms_types']?.join(', ') ??
                                                 '')) ??
@@ -428,6 +428,9 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                                             ? massage['ms_image_names'][0]
                                             : 'https://picsum.photos/seed/picsum/200/300'),
                                     isSet: massage['class'] == 'set',
+                                    massageID: massage['class'] == 'single'
+                                        ? massage['mt_id']?.toInt()
+                                        : massage['ms_id']?.toInt(),
                                   );
                                 },
                               )),
@@ -484,13 +487,15 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                         : (massages.isNotEmpty
                             ? massages.take(4).map((massage) {
                                 return MassageCard(
-                                  mt_id: massage['mt_id'],
+                                  mtID: massage['mt_id'],
                                   image: massage['mt_image_name'],
                                   name: massage['mt_name'] ?? 'Unknown Massage',
                                   detail: massage['mt_detail'] ??
                                       'No description available.',
                                   type: massage['mt_type'] ?? 'Unknown Type',
                                   time: massage['mt_time'] ?? 0,
+                                  rating: massage['avg_rating']?.toString() ??
+                                      'N/A',
                                   onFavoriteChanged: (isFavorite) {
                                     print('Massage favorited: $isFavorite');
                                   },

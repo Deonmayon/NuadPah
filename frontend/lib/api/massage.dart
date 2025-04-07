@@ -211,13 +211,8 @@ class MassageApiService {
   // Get massages by page
   Future<Response> getMassagesByPage(int page, int pageSize) async {
     try {
-      final response = await _dio.get(
-        '/massage/single-list',
-        queryParameters: {
-          'page': page,
-          'pageSize': pageSize
-        }
-      );
+      final response = await _dio.get('/massage/single-list',
+          queryParameters: {'page': page, 'pageSize': pageSize});
       return response;
     } on DioException catch (e) {
       throw Exception(
@@ -228,17 +223,44 @@ class MassageApiService {
   // Get set massages by page
   Future<Response> getSetMassagesByPage(int page, int pageSize) async {
     try {
-      final response = await _dio.get(
-        '/massage/set-list',
-        queryParameters: {
-          'page': page,
-          'pageSize': pageSize
-        }
-      );
+      final response = await _dio.get('/massage/set-list',
+          queryParameters: {'page': page, 'pageSize': pageSize});
       return response;
     } on DioException catch (e) {
       throw Exception(
           'Failed to get set massages by page: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Fetch Single Massage's Reviews
+  Future<Response> getSingleMassageReviews(int mtID) async {
+    try {
+      final response = await _dio.post('/massage/single-reviews',
+          data: {
+            'mt_id': mtID,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to fetch Single Massage Reviews: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Fetch Set Massage's Reviews
+  Future<Response> getSetMassageReviews(int mtID) async {
+    try {
+      final response = await _dio.post('/massage/set-reviews',
+          data: {
+            'ms_id': mtID,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to fetch Set Massage Reviews: ${e.response?.data ?? e.message}');
     }
   }
 }

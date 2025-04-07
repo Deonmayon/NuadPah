@@ -14,7 +14,7 @@ class MassageCard extends StatefulWidget {
   final String type;
   final int time;
   final int mtID;
-  final String rating;
+  final String? rating;
   final bool isSet;
   final VoidCallback? onTap;
   final Function(bool) onFavoriteChanged;
@@ -32,6 +32,8 @@ class MassageCard extends StatefulWidget {
     this.onTap,
     required this.onFavoriteChanged,
   }) : super(key: key);
+
+  String get ratingText => '${rating.toString()} / 5';
 
   @override
   State<MassageCard> createState() => _MassageCardState();
@@ -60,7 +62,8 @@ class _MassageCardState extends State<MassageCard> {
 
   void _checkFavoriteStatus() {
     // Get favorite status from FavoriteManager - immediate synchronous operation
-    final favoriteStatus = FavoriteManager.instance.isSingleFavorite(widget.mt_id);
+    final favoriteStatus =
+        FavoriteManager.instance.isSingleFavorite(widget.mtID);
     if (favoriteStatus != null && favoriteStatus != isFavorite) {
       setState(() {
         isFavorite = favoriteStatus;
@@ -71,11 +74,11 @@ class _MassageCardState extends State<MassageCard> {
   Future<void> _checkCachedFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final cachedFavorites = prefs.getStringList('cachedFavorites') ?? [];
-    
+
     if (cachedFavorites.isNotEmpty) {
       setState(() {
         favmassages = cachedFavorites.map((id) => int.parse(id)).toList();
-        isFavorite = favmassages.contains(widget.mt_id);
+        isFavorite = favmassages.contains(widget.mtID);
       });
     }
   }
@@ -83,13 +86,13 @@ class _MassageCardState extends State<MassageCard> {
   Future<void> loadData() async {
     // Start both operations in parallel
     final emailFuture = getUserEmail();
-    
+
     // Check cached favorites while waiting for email
     await _checkCachedFavorites();
-    
+
     // Wait for email to be retrieved
     await emailFuture;
-    
+
     // Only proceed if we have a valid email
     if (userData['email'].isNotEmpty) {
       // Fetch favorites data in background
@@ -132,12 +135,12 @@ class _MassageCardState extends State<MassageCard> {
 
   Future<void> fetchMassages() async {
     if (userData['email'].isEmpty) return;
-    
+
     final apiService = MassageApiService();
 
     try {
       final response = await apiService.getFavSingle(userData['email']);
-      
+
       if (mounted) {
         final List<int> newFavMassages = (response.data as List)
             .map((item) => Map<String, dynamic>.from(item)['mt_id'] as int)
@@ -148,12 +151,12 @@ class _MassageCardState extends State<MassageCard> {
 
         // Cache favorites for faster future loads
         final prefs = await SharedPreferences.getInstance();
-        prefs.setStringList('cachedFavorites', 
+        prefs.setStringList('cachedFavorites',
             newFavMassages.map((id) => id.toString()).toList());
-            
+
         setState(() {
           favmassages = newFavMassages;
-          isFavorite = favmassages.contains(widget.mt_id);
+          isFavorite = favmassages.contains(widget.mtID);
         });
       }
     } catch (e) {
@@ -170,35 +173,34 @@ class _MassageCardState extends State<MassageCard> {
         isFavorite = !isFavorite;
       });
       widget.onFavoriteChanged(isFavorite);
-      
+
       // Update the global favorite state
-      FavoriteManager.instance.updateSingleFavorite(widget.mt_id, isFavorite);
-      
+      FavoriteManager.instance.updateSingleFavorite(widget.mtID, isFavorite);
+
       // Then perform the API call
       if (isFavorite) {
-        await apiService.favSingle(userData['email'], widget.mt_id);
+        await apiService.favSingle(userData['email'], widget.mtID);
       } else {
-        await apiService.unfavSingle(userData['email'], widget.mt_id);
+        await apiService.unfavSingle(userData['email'], widget.mtID);
       }
 
       // Update cached favorites
-      if (isFavorite && !favmassages.contains(widget.mt_id)) {
-        favmassages.add(widget.mt_id);
+      if (isFavorite && !favmassages.contains(widget.mtID)) {
+        favmassages.add(widget.mtID);
       } else if (!isFavorite) {
-        favmassages.remove(widget.mt_id);
+        favmassages.remove(widget.mtID);
       }
-      
+
       final prefs = await SharedPreferences.getInstance();
-      prefs.setStringList('cachedFavorites', 
-          favmassages.map((id) => id.toString()).toList());
-          
+      prefs.setStringList(
+          'cachedFavorites', favmassages.map((id) => id.toString()).toList());
     } catch (e) {
       // Revert UI change if API call fails
       setState(() {
         isFavorite = !isFavorite;
       });
       // Also revert global state
-      FavoriteManager.instance.updateSingleFavorite(widget.mt_id, !isFavorite);
+      FavoriteManager.instance.updateSingleFavorite(widget.mtID, !isFavorite);
       widget.onFavoriteChanged(isFavorite);
       print("Error toggling favorite: ${e.toString()}");
     }
@@ -214,7 +216,7 @@ class _MassageCardState extends State<MassageCard> {
             MaterialPageRoute(
               builder: (context) => SetMassageDetailPage(
                 massageID: widget.mtID,
-                rating: widget.rating,
+                rating: widget.ratingText,
               ),
             ),
           );
@@ -224,7 +226,7 @@ class _MassageCardState extends State<MassageCard> {
             MaterialPageRoute(
               builder: (context) => SingleMassageDetailPage(
                 massageID: widget.mtID,
-                rating: widget.rating,
+                rating: widget.ratingText,
               ),
             ),
           );
@@ -296,7 +298,7 @@ class _MassageCardState extends State<MassageCard> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
-                            "Type : ${widget.type}",
+                            "บริเวณ : ${widget.type}",
                             style: const TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 12,
@@ -314,7 +316,7 @@ class _MassageCardState extends State<MassageCard> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
-                            "${widget.time} minutes",
+                            "${widget.time} นาที",
                             style: const TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 12,

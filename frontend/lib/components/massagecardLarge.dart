@@ -4,7 +4,7 @@ import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:frontend/pages/setMassageDetail.dart';
 
 class MassageCardLarge extends StatelessWidget {
-  final int massageID;
+  final int? massageID; // Make massageID nullable
   final String name;
   final String rating;
   final String type;
@@ -23,20 +23,24 @@ class MassageCardLarge extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
 
-  String get ratingValue => rating;
-  String get ratingText => '${ratingValue.toString()} / 5';
+  String get ratingText => '${rating.toString()} / 5';
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (massageID == null) {
+          print('Warning: massageID is null');
+          return;
+        }
+
         if (isSet) {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => SetMassageDetailPage(
-                massageID: massageID,
-                rating: rating,
+                massageID: massageID!, // Use null check operator
+                rating: ratingText,
               ),
             ),
           );
@@ -45,8 +49,8 @@ class MassageCardLarge extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => SingleMassageDetailPage(
-                massageID: massageID,
-                rating: rating,
+                massageID: massageID!, // Use null check operator
+                rating: ratingText,
               ),
             ),
           );
