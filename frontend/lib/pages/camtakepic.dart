@@ -58,7 +58,6 @@ class _CamtakepicPage extends State<CamtakepicPage> {
       }
     });
   }
-
   @override
   void dispose() {
     _controller.dispose();
@@ -77,7 +76,7 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                   Align(
                       alignment: Alignment.topLeft,
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 20, left: 20),
+                        padding: const EdgeInsets.only(top: 40, left: 20),
                         child: CircleAvatar(
                           backgroundColor: Color(0xB3C0A172),
                           child: IconButton(
@@ -86,6 +85,27 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                           ),
                         ),
                       )),
+                  Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: Container(
+                            width: 150,
+                            height: 35,
+                            decoration: BoxDecoration(
+                              color: Color(0xB3C0A172),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text("ถ่ายจุดนวด",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500)),
+                            ),
+                          ),
+                        ),
+                      ),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Padding(
@@ -97,14 +117,47 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                                 _controller.value.isTakingPicture) return;
 
                             final image = await _controller.takePicture();
+
+                            // ✅ แสดง Popup Loading
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => Center(
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text("กำลังประมวลผล...",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFFC0A172),
+                                            decoration: TextDecoration.none,
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+
                             var uri = Uri.parse(
                                 'http://nuadpah.phraya.net/predict-file');
-
                             var request = http.MultipartRequest('POST', uri);
                             request.files.add(await http.MultipartFile.fromPath(
                                 'file', image.path));
 
                             var response = await request.send();
+
+                            // ✅ ปิด popup loading ก่อนเปลี่ยนหน้า
+                            Navigator.pop(context);
 
                             if (response.statusCode == 200) {
                               var responseBody =
@@ -121,9 +174,18 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                               );
                             } else {
                               print('API error: ${response.statusCode}');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text("เกิดข้อผิดพลาดจาก API")),
+                              );
                             }
                           } catch (e) {
                             print('Error capturing photo: $e');
+                            Navigator.pop(context); // ปิด loading ถ้า error
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text("เกิดข้อผิดพลาดในการถ่ายภาพ")),
+                            );
                           }
                         },
                         child: Container(
