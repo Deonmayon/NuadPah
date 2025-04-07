@@ -95,8 +95,9 @@ class _LearnState extends State<LearnPage> {
       } else {
         filteredSetMassages = setMassages.where((massage) {
           final name = (massage['ms_name'] ?? '').toString().toLowerCase();
-          final types =
-              (massage['ms_types'] as List<dynamic>? ?? []).join(' ').toLowerCase();
+          final types = (massage['ms_types'] as List<dynamic>? ?? [])
+              .join(' ')
+              .toLowerCase();
           return name.contains(query) || types.contains(query);
         }).toList();
       }
@@ -187,10 +188,10 @@ class _LearnState extends State<LearnPage> {
     setState(() {
       if (_selectedTab == 0) {
         filteredSingleMassages = singleMassages.where((massage) {
-          bool matchesTime =
-              selectedTime == "Please select" || massage['mt_time'] == selectedTime;
-          bool matchesType =
-              selectedType == "Please select" || massage['mt_type'] == selectedType;
+          bool matchesTime = selectedTime == "Please select" ||
+              massage['mt_time'] == selectedTime;
+          bool matchesType = selectedType == "Please select" ||
+              massage['mt_type'] == selectedType;
           return matchesTime && matchesType;
         }).toList();
       } else {
@@ -623,7 +624,7 @@ class SingleMassageTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final massage = massages[index];
         return MassageCard(
-          mt_id: massage['mt_id'] ?? 0,
+          mtID: massage['mt_id'] ?? 0,
           image: massage['mt_image_name'] ??
               'https://picsum.photos/seed/picsum/200/300',
           // image: 'https://picsum.photos/seed/picsum/200/300',
@@ -631,6 +632,7 @@ class SingleMassageTab extends StatelessWidget {
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
+          rating: massage['avg_rating'] ?? '0',
           onFavoriteChanged: (isFavorite) {
             print('Massage favorited: $isFavorite');
           },
@@ -647,7 +649,7 @@ class SetOfMassageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (massages.isEmpty) {
+    if (massages.length < 1) {
       return const Center(
         child: Text(
           'ไม่พบเซ็ตท่านวดที่คุณค้นหา',
@@ -665,7 +667,6 @@ class SetOfMassageTab extends StatelessWidget {
       itemCount: massages.length,
       itemBuilder: (context, index) {
         final massage = massages[index];
-        final imageNames = massage['ms_image_names'] as List<dynamic>? ?? [];
 
         return MassageCardSet(
           ms_id: (massage['ms_id'] ?? 0) as int,
@@ -674,18 +675,10 @@ class SetOfMassageTab extends StatelessWidget {
               (massage['ms_detail'] ?? 'No description available.') as String,
           types: (massage['ms_types'] as List<dynamic>? ?? []).cast<String>(),
           duration: (massage['ms_time'] ?? 0) as int,
-          imageUrl1: imageNames.isNotEmpty
-              ? imageNames[0] as String
-              : 'https://picsum.photos/seed/default1/200/300',
-          imageUrl2: imageNames.length > 1
-              ? imageNames[1] as String
-              : 'https://picsum.photos/seed/default2/200/300',
-          imageUrl3: imageNames.length > 2
-              ? imageNames[2] as String
-              : 'https://picsum.photos/seed/default3/200/300',
-          // imageUrl1: 'https://picsum.photos/seed/picsum/200/300',
-          // imageUrl2: 'https://picsum.photos/seed/picsum/200/300',
-          // imageUrl3: 'https://picsum.photos/seed/picsum/200/300',
+          images: (massage['ms_image_names'] != null &&
+                  massage['ms_image_names'].length > 0
+              ? massage['ms_image_names'][0]
+              : 'https://picsum.photos/seed/picsum/200/300'),
           onFavoriteChanged: (isFavorite) {
             // Replace with a logging framework or remove in production
           },

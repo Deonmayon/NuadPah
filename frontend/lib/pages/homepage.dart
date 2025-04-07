@@ -7,7 +7,6 @@ import '../../api/auth.dart';
 import '../../api/massage.dart';
 
 class HomepageWidget extends StatefulWidget {
-
   const HomepageWidget({Key? key}) : super(key: key);
 
   @override
@@ -21,7 +20,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   List<dynamic> massages = [];
   bool isLoading = true;
 
-  String selectedType = 'all';  // Keep English internally
+  String selectedType = 'all'; // Keep English internally
 
   late Map<String, dynamic> userData = {
     'email': '',
@@ -142,16 +141,13 @@ class _HomepageWidgetState extends State<HomepageWidget> {
 
   @override
   Widget build(BuildContext context) {
-
-    print('UserData: $userData');
-    print('Current selected type: $selectedType'); // Debug print
-    
     final filteredMassages = selectedType == 'all'
         ? recmassages
         : recmassages.where((massage) {
             // For single massage types
             if (massage['mt_type'] != null) {
-              return massage['mt_type'].toLowerCase() == selectedType.toLowerCase();
+              return massage['mt_type'].toLowerCase() ==
+                  selectedType.toLowerCase();
             }
             // For massage sets
             if (massage['ms_types'] != null) {
@@ -177,22 +173,23 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (isLoading)
-                  const SizedBox(
-                    width: 100,
-                    child: LinearProgressIndicator(
-                      backgroundColor: Colors.grey,
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                    const SizedBox(
+                      width: 100,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Colors.grey,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                      ),
+                    )
+                  else
+                    Text(
+                      'สวัสดี, ${userData['firstname'] ?? 'ผู้ใช้'}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  )
-                else
-                  Text(
-                    'สวัสดี, ${userData['firstname'] ?? 'ผู้ใช้'}',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
                   Text(
                     'ยินดีต้อนรับเข้าสู่ NuadPah',
                     style: TextStyle(
@@ -220,14 +217,17 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                             height: 30,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(0xFFC0A172)),
                             ),
                           ),
                         ),
                       )
                     : ClipOval(
                         child: Image.network(
-                          '${userData['image_name']}',
+                          userData['image_name']?.isNotEmpty == true
+                              ? userData['image_name']
+                              : 'https://dxaytybkoraatubbincp.supabase.co/storage/v1/object/public/nuadpahstorage//user_icon.png',
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
@@ -284,7 +284,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                       SizedBox(
                         width: 20,
                       ),
-                      _buildFilterButton('ไหล่'),
+                      _buildFilterButton('บ่า ไหล่'),
                       SizedBox(
                         width: 20,
                       ),
@@ -294,10 +294,11 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                 ),
                 SizedBox(
                   height: 280,
-                  child: isLoading 
+                  child: isLoading
                       ? Center(
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFC0A172)),
                           ),
                         )
                       : (filteredMassages.isEmpty
@@ -317,16 +318,19 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                               itemBuilder: (context, index) {
                                 final massage = filteredMassages[index];
                                 return MassageCardLarge(
+                                  massageID: massage['id'],
                                   name: massage['name'] ?? 'Unknown Name',
-                                  score: massage['avg_rating'] != null
-                                      ? '${massage['avg_rating']} / 5'
-                                      : 'N/A',
+                                  rating: massage['avg_rating'] ?? '0.0',
                                   type: (massage['mt_type'] ??
-                                          (massage['ms_types']?.join(', ') ?? '')) ??
+                                          (massage['ms_types']?.join(', ') ??
+                                              '')) ??
                                       'Unknown',
-                                  image: massage['class'] == 'single' 
-                                      ? massage['mt_image_name'] ?? 'https://picsum.photos/seed/picsum/200/300'
-                                      : (massage['ms_image_names'] != null && massage['ms_image_names'].isNotEmpty
+                                  image: massage['class'] == 'single'
+                                      ? massage['mt_image_name'] ??
+                                          'https://picsum.photos/seed/picsum/200/300'
+                                      : (massage['ms_image_names'] != null &&
+                                              massage['ms_image_names']
+                                                  .isNotEmpty
                                           ? massage['ms_image_names'][0]
                                           : 'https://picsum.photos/seed/picsum/200/300'),
                                   isSet: massage['class'] == 'set',
@@ -378,20 +382,23 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                             height: 200,
                             alignment: Alignment.center,
                             child: const CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(0xFFC0A172)),
                             ),
                           ),
                         ]
                       : (massages.isNotEmpty
                           ? massages.take(4).map((massage) {
                               return MassageCard(
-                                mt_id: massage['mt_id'],
+                                mtID: massage['mt_id'],
                                 image: massage['mt_image_name'],
                                 name: massage['mt_name'] ?? 'Unknown Massage',
                                 detail: massage['mt_detail'] ??
                                     'No description available.',
                                 type: massage['mt_type'] ?? 'Unknown Type',
                                 time: massage['mt_time'] ?? 0,
+                                rating: massage['avg_rating'] ?? '0.0',
+                                isSet: massage['class'] == 'set',
                                 onFavoriteChanged: (isFavorite) {
                                   print('Massage favorited: $isFavorite');
                                 },
@@ -402,8 +409,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                                 padding: EdgeInsets.all(20.0),
                                 child: Text(
                                   'No massages available.',
-                                  style:
-                                      TextStyle(fontSize: 16, color: Colors.grey),
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey),
                                 ),
                               ),
                             ]),
@@ -428,7 +435,6 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       onTap: () {
         setState(() {
           selectedType = engType;
-          print('Selected type: $selectedType'); // Debug print
         });
       },
       child: Column(
@@ -457,13 +463,14 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     );
   }
 
-  Widget _buildRecentlyViewedCard() {
-    return MassageCardLarge(
-      name: 'Name Massage',
-      type: 'Shoulder',
-      score: '4.8 / 5.0',
-      image: 'https://picsum.photos/seed/picsum/200/300',
-      isSet: false,
-    );
-  }
+  // Widget _buildRecentlyViewedCard() {
+  //   return MassageCardLarge(
+  //     massageID: 1,
+  //     name: 'Name Massage',
+  //     type: 'Shoulder',
+  //     score: '4.8 / 5.0',
+  //     image: 'https://picsum.photos/seed/picsum/200/300',
+  //     isSet: false,
+  //   );
+  // }
 }

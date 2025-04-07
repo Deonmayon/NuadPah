@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:frontend/pages/favouritepage.dart';
-import 'package:frontend/pages/homepage2.dart';
+import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/learnpage.dart';
 import 'package:frontend/pages/mappage.dart';
 

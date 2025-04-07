@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/api/massage.dart';
+import 'package:frontend/components/reviewCard.dart';
 
 class SetMassageDetailPage extends StatefulWidget {
-  const SetMassageDetailPage({super.key});
+  final int massageID;
+  final String rating;
+
+  const SetMassageDetailPage(
+      {super.key, required this.massageID, required this.rating});
 
   @override
   State<SetMassageDetailPage> createState() => _SetMassageDetailPageState();
@@ -12,6 +18,90 @@ class SetMassageDetailPage extends StatefulWidget {
 class _SetMassageDetailPageState extends State<SetMassageDetailPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final PageController _controller = PageController();
+
+  bool isLoading = true;
+
+  int get massageId => widget.massageID;
+  String get rating => widget.rating;
+
+  late Map<String, dynamic> detail = {
+    'ms_id': 0,
+    'mt_ids': <int>[],
+    'ms_name': '',
+    'ms_types': <String>[],
+    'ms_time': 0,
+    'ms_detail': '',
+    'ms_image_names': <String>[],
+    'massageTechniqueDetails': <Map<String, dynamic>>[],
+  };
+
+  late List<Map<String, dynamic>> reviews = [
+    {
+      'rsm_id': 0,
+      'image_name': '',
+      'firstname': '',
+      'lastname': '',
+      'rating': 0,
+      'detail': '',
+      'datetime': '',
+    }
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await fetchSetMassageDetail();
+    await fetchSetMassageReviews();
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> fetchSetMassageDetail() async {
+    final apiService = MassageApiService();
+
+    try {
+      final response = await apiService.getSetMassageDetail(massageId);
+
+      setState(() {
+        detail = Map<String, dynamic>.from(response.data);
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching recommend massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchSetMassageReviews() async {
+    final apiService = MassageApiService();
+
+    try {
+      final response = await apiService.getSetMassageReviews(massageId);
+
+      setState(() {
+        // Convert the response data and ensure rating is an integer
+        reviews = (response.data as List).map<Map<String, dynamic>>((item) {
+          var review = Map<String, dynamic>.from(item);
+          // Ensure rating is an integer
+          review['rating'] = int.parse(review['rating'].toString());
+          return review;
+        }).toList();
+      });
+    } catch (e) {
+      print("Error fetching reviews: ${e.toString()}");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,430 +113,250 @@ class _SetMassageDetailPageState extends State<SetMassageDetailPage> {
         key: scaffoldKey,
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: Column(
-            children: [
-              // Header with image and buttons
-              SizedBox(
-                width: double.infinity,
-                height: 225,
-                child: PageView(
-                  controller: _controller,
-                  scrollDirection: Axis.horizontal,
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
                   children: [
-                    Stack(
-                      children: [
-                        Image.asset(
-                          'assets/images/Massage_Image01.png',
-                          width: double.infinity,
-                          height: 210,
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: IconButton(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.arrowLeft,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
+                    // Header with image and buttons
+                    SizedBox(
+                      width: double.infinity,
+                      height: 225,
+                      child: Stack(
+                        children: [
+                          PageView(
+                            controller: _controller,
+                            scrollDirection: Axis.horizontal,
+                            children: detail['ms_image_names']
+                                .map<Widget>((imageName) {
+                              return Image.network(
+                                imageName,
+                                width: double.infinity,
+                                height: 210,
+                                fit: BoxFit.cover,
+                              );
+                            }).toList(),
                           ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: IconButton(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.solidBookmark,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              debugPrint('Bookmark pressed');
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 20,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color.fromRGBO(192, 161, 114, 1),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 12.5,
-                                  backgroundImage: AssetImage(
-                                      'assets/images/Massage_Image01.png'),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Type: Shoulder',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                FaIcon(
-                                  FontAwesomeIcons.solidClock,
-                                  color: Colors.white,
-                                  size: 15,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '\u2248 5 mins',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                FaIcon(
-                                  FontAwesomeIcons.solidStar,
-                                  color: Colors.white,
-                                  size: 15,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '4.5/5.0',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
+                          Positioned(
+                            top: 10,
+                            left: 10,
+                            child: IconButton(
+                              icon: const FaIcon(
+                                FontAwesomeIcons.arrowLeft,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
                             ),
                           ),
-                        ),
-                      ],
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: IconButton(
+                              icon: const FaIcon(
+                                FontAwesomeIcons.solidBookmark,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                debugPrint('Bookmark pressed');
+                              },
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 20,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(192, 161, 114, 1),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (detail['ms_image_names'].isNotEmpty)
+                                    CircleAvatar(
+                                      radius: 12.5,
+                                      backgroundImage: NetworkImage(
+                                          detail['ms_image_names'][0]),
+                                    ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'บริเวณ: ${detail['ms_types'].join(", ")}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  const FaIcon(
+                                    FontAwesomeIcons.solidClock,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '\u2248 ${detail['ms_time']} นาที',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  const FaIcon(
+                                    FontAwesomeIcons.solidStar,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '$rating / 5',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    // หน้าที่สอง
-                    Stack(
-                      children: [
-                        Image.asset(
-                          'assets/images/Massage_Image03.png',
-                          width: double.infinity,
-                          height: 210,
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: IconButton(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.arrowLeft,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: IconButton(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.solidBookmark,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              debugPrint('Bookmark pressed');
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 20,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color.fromRGBO(192, 161, 114, 1),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 12.5,
-                                  backgroundImage: AssetImage(
-                                      'assets/images/Massage_Image01.png'),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Type: Shoulder',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                FaIcon(
-                                  FontAwesomeIcons.solidClock,
-                                  color: Colors.white,
-                                  size: 15,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '\u2248 5 mins',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                FaIcon(
-                                  FontAwesomeIcons.solidStar,
-                                  color: Colors.white,
-                                  size: 15,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '4.5/5.0',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Stack(
-                      children: [
-                        Image.asset(
-                          'assets/images/Massage_Image11.png',
-                          width: double.infinity,
-                          height: 210,
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: IconButton(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.arrowLeft,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: IconButton(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.solidBookmark,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              debugPrint('Bookmark pressed');
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 20,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color.fromRGBO(192, 161, 114, 1),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 12.5,
-                                  backgroundImage: AssetImage(
-                                      'assets/images/Massage_Image01.png'),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Type: Shoulder',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                FaIcon(
-                                  FontAwesomeIcons.solidClock,
-                                  color: Colors.white,
-                                  size: 15,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '\u2248 5 mins',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                FaIcon(
-                                  FontAwesomeIcons.solidStar,
-                                  color: Colors.white,
-                                  size: 15,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '4.5/5.0',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
 
-              // Content Section
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Name Massage',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20,
-                          color: Colors.black),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center, // จัดให้อยู่กลางในแนวนอน
-                      children: [
-                        SizedBox(
-                          width: 372,
-                          height: 40,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromRGBO(192, 161, 114, 1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: () {
-                              debugPrint('Learn with AI pressed');
-                            },
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'เรียนรู้ด้วย AI',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                    color: Colors.white,
+                    // Content Section
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            detail['ms_name'],
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                                color: Colors.black),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment
+                                .center, // จัดให้อยู่กลางในแนวนอน
+                            children: [
+                              SizedBox(
+                                width: 372,
+                                height: 40,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromRGBO(192, 161, 114, 1),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    debugPrint('Learn with AI pressed');
+                                  },
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'เรียนรู้ด้วย AI',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      FaIcon(
+                                        FontAwesomeIcons.vrCardboard,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                SizedBox(width: 8),
-                                FaIcon(
-                                  FontAwesomeIcons.vrCardboard,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-              // ⬇️ ส่วนนี้เลื่อนได้
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: ExpandableCard(
-                          title: "Name Massage",
-                          imagePath: "assets/images/Massage_Image01.png",
-                          type: "Back",
-                          duration: "≈ 5 minutes",
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: ExpandableCard(
-                          title: "Name Massage",
-                          imagePath: "assets/images/Massage_Image01.png",
-                          type: "Back",
-                          duration: "≈ 5 minutes",
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: ExpandableCard(
-                          title: "Name Massage",
-                          imagePath: "assets/images/Massage_Image01.png",
-                          type: "Back",
-                          duration: "≈ 5 minutes",
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(20.0),
+
+                    // Scrollable section
+                    Expanded(
+                      child: SingleChildScrollView(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'คะแนนและรีวิว',
-                              style: TextStyle(
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
-                                color: Colors.black,
-                                letterSpacing: 0.0,
+                            ...detail['massageTechniqueDetails']
+                                .map(
+                                  (technique) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    child: ExpandableCard(
+                                      title: technique['mt_name'],
+                                      imagePath: technique['mt_image_name'],
+                                      type: technique['mt_type'],
+                                      duration:
+                                          "≈ ${technique['mt_time']} นาที",
+                                      detail: technique['mt_detail'],
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('คะแนนและรีวิว',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                        letterSpacing: 0.0,
+                                      )),
+                                  SizedBox(height: 10),
+                                  // Review Card
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                              0.3,
+                                    ),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: reviews.map((review) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10),
+                                            child: ReviewCard(
+                                              reviewID: review['rssm_id'],
+                                              imageName: review['image_name'],
+                                              firstname: review['firstname'],
+                                              lastname: review['lastname'],
+                                              rating: int.parse(
+                                                  review['rating'].toString()),
+                                              detail: review['detail'],
+                                              datetime: review['datetime'],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 10),
-                            ReviewCard(),
-                            SizedBox(height: 10),
-                            ReviewCard(),
-                            SizedBox(height: 10),
-                            ReviewCard(),
-                            SizedBox(height: 10),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ), // Review Sectio
-            ],
-          ),
         ),
       ),
     );
@@ -458,12 +368,14 @@ class ExpandableCard extends StatefulWidget {
   final String imagePath;
   final String type;
   final String duration;
+  final String detail;
 
   ExpandableCard({
     required this.title,
     required this.imagePath,
     required this.type,
     required this.duration,
+    required this.detail,
   });
 
   @override
@@ -472,6 +384,12 @@ class ExpandableCard extends StatefulWidget {
 
 class _ExpandableCardState extends State<ExpandableCard> {
   bool isExpanded = false;
+
+  String get title => widget.title;
+  String get imagePath => widget.imagePath;
+  String get type => widget.type;
+  String get duration => widget.duration;
+  String get detail => widget.detail;
 
   @override
   Widget build(BuildContext context) {
@@ -489,8 +407,8 @@ class _ExpandableCardState extends State<ExpandableCard> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      widget.imagePath,
+                    child: Image.network(
+                      imagePath,
                       width: 70,
                       height: 70,
                       fit: BoxFit.cover,
@@ -504,7 +422,7 @@ class _ExpandableCardState extends State<ExpandableCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.title,
+                            title,
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
@@ -522,7 +440,7 @@ class _ExpandableCardState extends State<ExpandableCard> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Text(
-                                  "Type : ${widget.type}",
+                                  "บริเวณ : ${type}",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 12,
@@ -540,7 +458,7 @@ class _ExpandableCardState extends State<ExpandableCard> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Text(
-                                  widget.duration,
+                                  duration,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 12,
@@ -571,8 +489,8 @@ class _ExpandableCardState extends State<ExpandableCard> {
               ),
               if (isExpanded) ...[
                 const SizedBox(height: 8),
-                const Text(
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud quip.",
+                Text(
+                  detail,
                   style: TextStyle(color: Colors.black),
                 ),
               ]
@@ -584,74 +502,74 @@ class _ExpandableCardState extends State<ExpandableCard> {
   }
 }
 
-class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key});
+// class ReviewCard extends StatelessWidget {
+//   const ReviewCard({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              CircleAvatar(
-                radius: 15,
-                backgroundImage: AssetImage('assets/images/profilePicture.jpg'),
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Cameron Williamson',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: Color.fromRGBO(103, 103, 103, 1),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: List.generate(
-              5,
-              (index) => Padding(
-                padding:
-                    const EdgeInsets.only(right: 5.0), // ระยะห่างระหว่างไอคอน
-                child: Icon(
-                  index < 4
-                      ? FontAwesomeIcons.solidStar
-                      : FontAwesomeIcons.star,
-                  color: index < 4
-                      ? const Color.fromRGBO(192, 161, 114, 1)
-                      : Colors.grey,
-                  size: 15,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Lorem ipsum dolor sit amet,  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              color: Color.fromRGBO(103, 103, 103, 1),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.all(16),
+//       decoration: BoxDecoration(
+//         color: Theme.of(context).colorScheme.surface,
+//         borderRadius: BorderRadius.circular(15),
+//         boxShadow: const [
+//           BoxShadow(
+//             color: Colors.black26,
+//             blurRadius: 8,
+//             offset: Offset(0, 4),
+//           ),
+//         ],
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Row(
+//             children: [
+//               CircleAvatar(
+//                 radius: 15,
+//                 backgroundImage: AssetImage('assets/images/profilePicture.jpg'),
+//               ),
+//               SizedBox(width: 8),
+//               Text(
+//                 'Cameron Williamson',
+//                 style: TextStyle(
+//                   fontWeight: FontWeight.w500,
+//                   fontSize: 14,
+//                   color: Color.fromRGBO(103, 103, 103, 1),
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 10),
+//           Row(
+//             children: List.generate(
+//               5,
+//               (index) => Padding(
+//                 padding:
+//                     const EdgeInsets.only(right: 5.0), // ระยะห่างระหว่างไอคอน
+//                 child: Icon(
+//                   index < 4
+//                       ? FontAwesomeIcons.solidStar
+//                       : FontAwesomeIcons.star,
+//                   color: index < 4
+//                       ? const Color.fromRGBO(192, 161, 114, 1)
+//                       : Colors.grey,
+//                   size: 15,
+//                 ),
+//               ),
+//             ),
+//           ),
+//           const SizedBox(height: 10),
+//           const Text(
+//             'Lorem ipsum dolor sit amet,  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+//             style: TextStyle(
+//               fontWeight: FontWeight.w400,
+//               fontSize: 12,
+//               color: Color.fromRGBO(103, 103, 103, 1),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

@@ -42,6 +42,34 @@ class MassageApiService {
     }
   }
 
+  // Get Single Massage's Detail
+  Future<Response> getSingleMassageDetail(int mtID) async {
+    try {
+      final response = await _dio.post('/massage/single-detail',
+          data: {'mt_id': mtID},
+          options: Options(headers: {'Content-Type': 'application/json'}));
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to get all massages: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Get Set Massage's Detail
+  Future<Response> getSetMassageDetail(int msID) async {
+    try {
+      final response = await _dio.post('/massage/set-detail',
+          data: {
+            'ms_id': msID,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to get all Set massages: ${e.response?.data ?? e.message}');
+    }
+  }
+
   // Add massage
   Future<Response> addMassage(String name, String type, int round, int time,
       String detail, String image) async {
@@ -177,6 +205,38 @@ class MassageApiService {
     } on DioException catch (e) {
       throw Exception(
           'Failed to unfav set massage: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Fetch Single Massage's Reviews
+  Future<Response> getSingleMassageReviews(int mtID) async {
+    try {
+      final response = await _dio.post('/massage/single-reviews',
+          data: {
+            'mt_id': mtID,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to fetch Single Massage Reviews: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Fetch Set Massage's Reviews
+  Future<Response> getSetMassageReviews(int mtID) async {
+    try {
+      final response = await _dio.post('/massage/set-reviews',
+          data: {
+            'ms_id': mtID,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to fetch Set Massage Reviews: ${e.response?.data ?? e.message}');
     }
   }
 }

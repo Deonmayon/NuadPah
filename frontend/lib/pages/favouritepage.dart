@@ -96,8 +96,7 @@ class _FavouritePageState extends State<Favouritepage> {
       });
     } catch (e) {
       setState(() {
-        print(
-            "Error fetching massages: ${e.toString()}");
+        print("Error fetching massages: ${e.toString()}");
         print(userData); // Only prints error message
       });
     }
@@ -212,7 +211,7 @@ class SingleMassageTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final massage = massages[index];
         return MassageCard(
-          mt_id: massage['mt_id'] ?? 0,
+          mtID: massage['mt_id'] ?? 0,
           image: massage['mt_image_name'] ??
               'https://picsum.photos/seed/picsum/200/300',
           // image: 'https://picsum.photos/seed/picsum/200/300',
@@ -220,6 +219,8 @@ class SingleMassageTab extends StatelessWidget {
           detail: massage['mt_detail'] ?? 'No description available.',
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
+          rating: massage['avg_rating'] ?? '0',
+          isSet: false,
           onFavoriteChanged: (isFavorite) {
             print('Massage favorited: $isFavorite');
           },
@@ -236,7 +237,7 @@ class SetOfMassageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (massages.isEmpty) {
+    if (massages.length < 1) {
       return Center(
         child: Text(
           'ไม่มีเซ็ตท่านวดที่บันทึกไว้',
@@ -253,7 +254,6 @@ class SetOfMassageTab extends StatelessWidget {
       itemCount: massages.length,
       itemBuilder: (context, index) {
         final massage = massages[index];
-        final imageNames = massage['ms_image_names'] as List<dynamic>? ?? [];
 
         return MassageCardSet(
           ms_id: (massage['ms_id'] ?? 0) as int,
@@ -262,18 +262,10 @@ class SetOfMassageTab extends StatelessWidget {
               (massage['ms_detail'] ?? 'No description available.') as String,
           types: (massage['ms_types'] as List<dynamic>? ?? []).cast<String>(),
           duration: (massage['ms_time'] ?? 0) as int,
-          imageUrl1: imageNames.isNotEmpty
-              ? imageNames[0] as String
-              : 'https://picsum.photos/seed/default1/200/300',
-          imageUrl2: imageNames.length > 1
-              ? imageNames[1] as String
-              : 'https://picsum.photos/seed/default2/200/300',
-          imageUrl3: imageNames.length > 2
-              ? imageNames[2] as String
-              : 'https://picsum.photos/seed/default3/200/300',
-          // imageUrl1: 'https://picsum.photos/seed/default1/200/300',
-          // imageUrl2: 'https://picsum.photos/seed/default2/200/300',
-          // imageUrl3: 'https://picsum.photos/seed/default3/200/300',
+          images: (massage['ms_image_names'] != null &&
+                  massage['ms_image_names'].length > 0
+              ? massage['ms_image_names'][0]
+              : 'https://picsum.photos/seed/picsum/200/300'),
           onFavoriteChanged: (isFavorite) {
             // Replace with a logging framework or remove in production
           },

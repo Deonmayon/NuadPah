@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:frontend/pages/homepage2.dart';
+import 'package:frontend/pages/homepage.dart';
 import 'signin.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';

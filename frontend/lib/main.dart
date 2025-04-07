@@ -9,7 +9,7 @@ import 'package:frontend/pages/forgetpassword/forget.dart';
 import 'package:frontend/pages/forgetpassword/otp.dart';
 import 'package:frontend/pages/signup.dart';
 import 'package:frontend/pages/signin.dart';
-import 'package:frontend/pages/homepage2.dart';
+import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/favouritepage.dart';
 import 'package:frontend/pages/learnpage.dart';
 import 'package:frontend/pages/mappage.dart';
@@ -73,11 +73,11 @@ class MyApp extends StatelessWidget {
           headlineLarge: TextStyle(fontWeight: FontWeight.w900), // Black
         ),
       ),
-      initialRoute: '/login',
+      initialRoute: '/signin',
       routes: {
         '/': (context) => const WelcomePage(),
-        '/login': (context) => const SignInPage(),
-        '/register': (context) => const SignUpPage(),
+        '/signin': (context) => const SignInPage(),
+        '/signup': (context) => const SignUpPage(),
         '/forget': (context) => const ForgetPage(),
         '/otp': (context) => const OTPPage(
               email: '',
@@ -88,8 +88,13 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomepageWidget(),
         '/profile': (context) => const ProfilePage(),
         '/accountdetails': (context) => const AccountdetailsPage(),
-        '/singledetail': (context) => const SingleMassageDetailPage(),
-        '/setdetail': (context) => const SetMassageDetailPage(),
+        '/singledetail': (context) => const SingleMassageDetailPage(
+              massageID: 0,
+              rating: '0',
+            ),
+        '/setdetail': (context) => const SetMassageDetailPage(
+              massageID: 0, rating: '',
+            ),
         '/report': (context) => const ReportPage(),
         '/help': (context) => const HelpPage(),
         '/favourite': (context) => const Favouritepage(),
