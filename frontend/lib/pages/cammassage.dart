@@ -202,7 +202,7 @@ class _LandscapePageState extends State<LandscapePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("พร้อมที่จะเริ่มใหม่หรือยัง?"),
-          content: Text("แตะที่ปุ่ม 'เริ่มใหม่' เพื่อเริ่มเกมใหม่"),
+          content: Text("แตะที่ปุ่ม 'เริ่มใหม่' เพื่อเริ่มใหม่"),
           actions: <Widget>[
             TextButton(
               child: Text('ไม่'),
