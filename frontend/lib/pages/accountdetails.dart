@@ -211,8 +211,8 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
                           radius: 50,
                           backgroundImage: _temporaryImage != null
                               ? FileImage(File(_temporaryImage!.path))
-                              // : NetworkImage('${userData['image_name']}') as ImageProvider,
-                              : NetworkImage('https://picsum.photos/seed/picsum/200/300') as ImageProvider,
+                              : NetworkImage('${userData['image_name']}') as ImageProvider,
+                              // : NetworkImage('https://picsum.photos/seed/picsum/200/300') as ImageProvider,
                         ),
                       ),
                       SizedBox(height: 40),

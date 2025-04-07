@@ -28,17 +28,33 @@ class _LearnState extends State<LearnPage> {
     "5 minutes",
     "10 minutes",
     "15 minutes",
+    "20 minutes",
     "30 minutes",
-    "1 hour"
+    "1 hour",
   ];
 
   String selectedType = "Please select";
   final List<String> typeOptions = [
-    "back",
-    "neck",
-    "shoulder",
-    "arms",
+    "คอ", 
+    "บ่า ไหล่", 
+    "หลัง", 
+    "แขน", 
+    "ขา", 
   ];
+  
+  // Add method to reset filters
+  void _resetFilters() {
+    setState(() {
+      selectedTime = "Please select";
+      selectedType = "Please select";
+      
+      // Reset to original lists
+      filteredSingleMassages = singleMassages;
+      filteredSetMassages = setMassages;
+      
+      Navigator.pop(context);
+    });
+  }
 
   @override
   void initState() {
@@ -199,24 +215,55 @@ class _LearnState extends State<LearnPage> {
   void _applyFilters() {
     setState(() {
       if (_selectedTab == 0) {
+        // Filter single massages
         filteredSingleMassages = singleMassages.where((massage) {
-          bool matchesTime =
-              selectedTime == "Please select" || massage['mt_time'] == selectedTime;
-          bool matchesType =
-              selectedType == "Please select" || massage['mt_type'] == selectedType;
+          bool matchesTime = true;
+          if (selectedTime != "Please select") {
+            // Extract just the numeric part from the time string
+            int selectedMinutes = _extractMinutes(selectedTime);
+            int massageTime = massage['mt_time'] ?? 0;
+            matchesTime = selectedMinutes == massageTime;
+          }
+
+          bool matchesType = selectedType == "Please select" || 
+                             massage['mt_type'] == selectedType;
+          
           return matchesTime && matchesType;
         }).toList();
       } else {
+        // Filter set massages
         filteredSetMassages = setMassages.where((massage) {
-          bool matchesTime = selectedTime == "Please select" ||
-              massage['ms_time'].toString() == selectedTime;
-          bool matchesType = selectedType == "Please select" ||
-              (massage['ms_types'] as List<dynamic>).contains(selectedType);
+          bool matchesTime = true;
+          if (selectedTime != "Please select") {
+            // Extract just the numeric part from the time string
+            int selectedMinutes = _extractMinutes(selectedTime);
+            int massageTime = massage['ms_time'] ?? 0;
+            matchesTime = selectedMinutes == massageTime;
+          }
+
+          bool matchesType = selectedType == "Please select" || 
+                            (massage['ms_types'] as List<dynamic>).contains(selectedType);
+          
           return matchesTime && matchesType;
         }).toList();
       }
       Navigator.pop(context);
     });
+  }
+
+  // Helper method to extract minutes from time string
+  int _extractMinutes(String timeString) {
+    if (timeString.contains("hour")) {
+      return 60; // Convert "1 hour" to 60 minutes
+    }
+    
+    // Extract numeric part
+    RegExp regExp = RegExp(r'(\d+)');
+    Match? match = regExp.firstMatch(timeString);
+    if (match != null && match.groupCount >= 1) {
+      return int.parse(match.group(1)!);
+    }
+    return 0;
   }
 
   void showFilterPopup() {
@@ -249,7 +296,18 @@ class _LearnState extends State<LearnPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const SizedBox(width: 20),
+                            GestureDetector(
+                              onTap: _resetFilters,
+                              child: const Text(
+                                'ล้าง',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Roboto',
+                                  color: Color.fromARGB(255, 255, 0, 0),
+                                ),
+                              ),
+                            ),
                             const Text(
                               'กรองการค้นหา',
                               style: TextStyle(

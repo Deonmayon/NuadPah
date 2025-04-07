@@ -47,12 +47,47 @@ class _SignUpPageState extends State<SignUpPage> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  HomepageWidget()),
-        );
+        // Validate registration by making an explicit call to fetch user data
+        try {
+          // Increase delay to give backend more time to complete registration
+          await Future.delayed(Duration(milliseconds: 1500));
+          
+          // Try to fetch user data multiple times with increasing delays
+          bool userDataFetched = false;
+          Exception? lastError;
+          
+          for (int attempt = 1; attempt <= 3 && !userDataFetched; attempt++) {
+            try {
+              final userDataResponse = await apiService.getUserData(token);
+              if (userDataResponse.statusCode == 200) {
+                userDataFetched = true;
+              } else {
+                await Future.delayed(Duration(milliseconds: 500 * attempt));
+              }
+            } catch (e) {
+              lastError = e is Exception ? e : Exception(e.toString());
+              await Future.delayed(Duration(milliseconds: 500 * attempt));
+            }
+          }
+          
+          if (userDataFetched) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomepageWidget()),
+            );
+          } else {
+            throw lastError ?? Exception('Could not validate user data after multiple attempts');
+          }
+        } catch (e) {
+          setState(() {
+            _errorMessage = 'Account created but login required: ${e.toString()}';
+          });
+          // Force user to login manually if automatic login fails
+          Navigator.pushReplacement(
+            context, 
+            MaterialPageRoute(builder: (context) => SignInPage()),
+          );
+        }
       } else {
         setState(() {
           _errorMessage = 'Registration failed';

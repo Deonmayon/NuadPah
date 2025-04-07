@@ -3,7 +3,6 @@ import '/pages/signin.dart';
 import '/components/submitbox.dart';
 import '/components/passwordfield.dart';
 import '../../api/auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ResetPage extends StatefulWidget {
   final String email;
@@ -18,6 +17,8 @@ class _ResetPageState extends State<ResetPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   String _errorMessage = '';
+
+  bool _isObscured = true;
 
   void initState() {
     super.initState();
@@ -56,6 +57,12 @@ class _ResetPageState extends State<ResetPage> {
         _errorMessage = e.toString();
       });
     }
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
   }
 
   @override
@@ -119,12 +126,7 @@ class _ResetPageState extends State<ResetPage> {
                           controller: _newPasswordController,
                           hintText: 'New Password',
                           isObscured: true,
-                          onToggle: () {
-                            setState(() {
-                              _newPasswordController.text =
-                                  _newPasswordController.text;
-                            });
-                          },
+                          onToggle: _togglePasswordVisibility
                         ),
                         SizedBox(height: 20),
 
