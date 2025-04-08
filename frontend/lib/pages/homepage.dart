@@ -316,15 +316,15 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                                   ),
                                 ),
                                 errorWidget: (context, url, error) =>
-                                    Image.asset(
-                                  'assets/images/default_profile.png',
+                                    Image.network(
+                                  'https://dxaytybkoraatubbincp.supabase.co/storage/v1/object/public/nuadpahstorage//user_icon.png',
                                   width: 50,
                                   height: 50,
                                   fit: BoxFit.cover,
                                 ),
                               )
-                            : Image.asset(
-                                'assets/images/default_profile.png',
+                            : Image.network(
+                                'https://dxaytybkoraatubbincp.supabase.co/storage/v1/object/public/nuadpahstorage//user_icon.png',
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,

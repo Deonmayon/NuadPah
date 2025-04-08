@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../api/auth.dart';
 
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -121,12 +120,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: const EdgeInsets.only(top: 20),
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: userData['image_name']?.isNotEmpty == true
-                      ? CachedNetworkImageProvider(userData['image_name'])
-                      : null,
-                  child: userData['image_name']?.isEmpty == true
-                      ? const Icon(Icons.person, size: 50)
-                      : null,
+                  backgroundImage: CachedNetworkImageProvider(
+                    userData['image_name']?.isNotEmpty == true
+                        ? userData['image_name']
+                        : 'https://dxaytybkoraatubbincp.supabase.co/storage/v1/object/public/nuadpahstorage//user_icon.png',
+                  ),
                 ),
               ),
             if (isLoading)
