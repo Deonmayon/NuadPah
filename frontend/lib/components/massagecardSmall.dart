@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:frontend/api/auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:frontend/pages/setMassageDetail.dart';
-import '../api/massage.dart';
-import '../utils/favorite_manager.dart'; // New import
 
 class MassageCard extends StatefulWidget {
   final String image;
@@ -16,6 +12,7 @@ class MassageCard extends StatefulWidget {
   final int mtID;
   final String? rating;
   final bool isSet;
+  final bool isFavorite; // Add this property
   final VoidCallback? onTap;
   final Function(bool) onFavoriteChanged;
 
@@ -29,6 +26,7 @@ class MassageCard extends StatefulWidget {
     required this.mtID,
     required this.rating,
     this.isSet = false,
+    this.isFavorite = false, // Add default value
     this.onTap,
     required this.onFavoriteChanged,
   }) : super(key: key);
@@ -40,170 +38,34 @@ class MassageCard extends StatefulWidget {
 }
 
 class _MassageCardState extends State<MassageCard> {
-  bool isFavorite = false;
-  List<dynamic> favmassages = [];
-
-  Map<String, dynamic> userData = {
-    'email': '',
-    'first_name': '',
-    'last_name': '',
-    'image_name': '',
-    'role': '',
-  };
+  late bool isFavorite;
 
   @override
   void initState() {
     super.initState();
-    // Check favorite status from global cache immediately
-    _checkFavoriteStatus();
-    // Then load complete data
-    loadData();
+    // Initialize from prop
+    isFavorite = widget.isFavorite;
   }
 
-  void _checkFavoriteStatus() {
-    // Get favorite status from FavoriteManager - immediate synchronous operation
-    final favoriteStatus =
-        FavoriteManager.instance.isSingleFavorite(widget.mtID);
-    if (favoriteStatus != null && favoriteStatus != isFavorite) {
+  @override
+  void didUpdateWidget(MassageCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update state when prop changes
+    if (oldWidget.isFavorite != widget.isFavorite) {
       setState(() {
-        isFavorite = favoriteStatus;
+        isFavorite = widget.isFavorite;
       });
-    }
-  }
-
-  Future<void> _checkCachedFavorites() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cachedFavorites = prefs.getStringList('cachedFavorites') ?? [];
-
-    if (cachedFavorites.isNotEmpty) {
-      setState(() {
-        favmassages = cachedFavorites.map((id) => int.parse(id)).toList();
-        isFavorite = favmassages.contains(widget.mtID);
-      });
-    }
-  }
-
-  Future<void> loadData() async {
-    // Start both operations in parallel
-    final emailFuture = getUserEmail();
-
-    // Check cached favorites while waiting for email
-    await _checkCachedFavorites();
-
-    // Wait for email to be retrieved
-    await emailFuture;
-
-    // Only proceed if we have a valid email
-    if (userData['email'].isNotEmpty) {
-      // Fetch favorites data in background
-      fetchMassages();
-    }
-  }
-
-  Future<void> getUserEmail() async {
-    final apiService = AuthApiService();
-
-    // Try to load from local storage first for immediate response
-    final prefs = await SharedPreferences.getInstance();
-    final cachedEmail = prefs.getString('userEmail');
-    final token = prefs.getString('token');
-
-    if (cachedEmail != null && cachedEmail.isNotEmpty) {
-      setState(() {
-        userData['email'] = cachedEmail;
-      });
-    }
-
-    if (token == null) {
-      print("Token is null, user not logged in.");
-      return;
-    }
-
-    try {
-      final response = await apiService.getUserData(token);
-      if (mounted) {
-        setState(() {
-          userData = response.data;
-        });
-        // Cache email for faster future loads
-        prefs.setString('userEmail', userData['email']);
-      }
-    } catch (e) {
-      print("Error fetching user data: ${e.toString()}");
-    }
-  }
-
-  Future<void> fetchMassages() async {
-    if (userData['email'].isEmpty) return;
-
-    final apiService = MassageApiService();
-
-    try {
-      final response = await apiService.getFavSingle(userData['email']);
-
-      if (mounted) {
-        final List<int> newFavMassages = (response.data as List)
-            .map((item) => Map<String, dynamic>.from(item)['mt_id'] as int)
-            .toList();
-
-        // Update global favorite manager
-        FavoriteManager.instance.setSingleFavorites(newFavMassages);
-
-        // Cache favorites for faster future loads
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setStringList('cachedFavorites',
-            newFavMassages.map((id) => id.toString()).toList());
-
-        setState(() {
-          favmassages = newFavMassages;
-          isFavorite = favmassages.contains(widget.mtID);
-        });
-      }
-    } catch (e) {
-      print("Error fetching massages: ${e.toString()}");
     }
   }
 
   Future<void> toggleFavorite() async {
-    final apiService = MassageApiService();
+    // Update UI immediately for responsiveness
+    setState(() {
+      isFavorite = !isFavorite;
+    });
 
-    try {
-      // Update UI immediately for responsiveness
-      setState(() {
-        isFavorite = !isFavorite;
-      });
-      widget.onFavoriteChanged(isFavorite);
-
-      // Update the global favorite state
-      FavoriteManager.instance.updateSingleFavorite(widget.mtID, isFavorite);
-
-      // Then perform the API call
-      if (isFavorite) {
-        await apiService.favSingle(userData['email'], widget.mtID);
-      } else {
-        await apiService.unfavSingle(userData['email'], widget.mtID);
-      }
-
-      // Update cached favorites
-      if (isFavorite && !favmassages.contains(widget.mtID)) {
-        favmassages.add(widget.mtID);
-      } else if (!isFavorite) {
-        favmassages.remove(widget.mtID);
-      }
-
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setStringList(
-          'cachedFavorites', favmassages.map((id) => id.toString()).toList());
-    } catch (e) {
-      // Revert UI change if API call fails
-      setState(() {
-        isFavorite = !isFavorite;
-      });
-      // Also revert global state
-      FavoriteManager.instance.updateSingleFavorite(widget.mtID, !isFavorite);
-      widget.onFavoriteChanged(isFavorite);
-      print("Error toggling favorite: ${e.toString()}");
-    }
+    // Notify parent to handle the actual API call
+    widget.onFavoriteChanged(isFavorite);
   }
 
   @override

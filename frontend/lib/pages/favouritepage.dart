@@ -6,6 +6,7 @@ import 'package:frontend/components/massagecardSet.dart';
 import '../../api/massage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/favorite_manager.dart';
+import 'dart:async';
 
 class Favouritepage extends StatefulWidget {
   const Favouritepage({Key? key}) : super(key: key);
@@ -41,13 +42,28 @@ class _FavouritePageState extends State<Favouritepage> {
   Future<void> loadData() async {
     try {
       // First get user email (needed for subsequent queries)
-      await getUserEmail();
+      bool userEmailSuccess = await getUserEmail();
 
-      // Then fetch both single and set massages in parallel instead of sequentially
-      await Future.wait([
-        fetchSingleMassages(),
-        fetchSetMassages(),
-      ]);
+      // Only proceed with fetching massages if we successfully got the user email
+      if (userEmailSuccess && userData['email'].isNotEmpty) {
+        // Then fetch both single and set massages in parallel
+        await Future.wait([
+          fetchSingleMassages(),
+          fetchSetMassages(),
+        ]);
+      } else {
+        // Handle the case where we couldn't get the user email
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('ไม่สามารถโหลดข้อมูลผู้ใช้ได้ กรุณาลองใหม่อีกครั้ง')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล: ${e.toString()}')),
+      );
     } finally {
       setState(() {
         isLoading = false;
@@ -55,23 +71,42 @@ class _FavouritePageState extends State<Favouritepage> {
     }
   }
 
-  Future<void> getUserEmail() async {
+  Future<bool> getUserEmail() async {
     final apiService = AuthApiService();
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
-    try {
-      if (token == null) throw Exception('Token not found');
-      final response = await apiService.getUserData(token);
-      setState(() {
-        userData = response.data;
-      });
-    } catch (e) {
-      setState(() {
-        "Error fetching user data: ${e.toString()}";
-      });
+    if (token == null) {
+      print('Token not found');
+      return false;
     }
+
+    // Try up to 3 times to get user data
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      try {
+        final response = await apiService.getUserData(token).timeout(
+          Duration(seconds: 10),
+          onTimeout: () {
+            throw TimeoutException('Request timed out');
+          },
+        );
+
+        setState(() {
+          userData = response.data;
+        });
+        return true;
+      } catch (e) {
+        print('Attempt $attempt: Error fetching user data: ${e.toString()}');
+        if (attempt == 3) {
+          // If this was the last attempt, we failed
+          return false;
+        }
+        // Wait a bit before retrying
+        await Future.delayed(Duration(seconds: 1));
+      }
+    }
+
+    return false; // Should never reach here due to the for loop, but needed for compilation
   }
 
   Future<void> fetchSingleMassages() async {

@@ -7,7 +7,6 @@ import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -23,6 +22,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
   bool _isObscured = true;
+  bool _isLoading = false;
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -31,6 +31,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _signup() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
     final apiService = AuthApiService();
 
     try {
@@ -47,55 +52,46 @@ class _SignUpPageState extends State<SignUpPage> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-        // Validate registration by making an explicit call to fetch user data
+        // Use a timeout to limit validation time
         try {
-          // Increase delay to give backend more time to complete registration
-          await Future.delayed(Duration(milliseconds: 1500));
-          
-          // Try to fetch user data multiple times with increasing delays
-          bool userDataFetched = false;
-          Exception? lastError;
-          
-          for (int attempt = 1; attempt <= 3 && !userDataFetched; attempt++) {
-            try {
-              final userDataResponse = await apiService.getUserData(token);
-              if (userDataResponse.statusCode == 200) {
-                userDataFetched = true;
-              } else {
-                await Future.delayed(Duration(milliseconds: 500 * attempt));
+          // Set a 1.5-second timeout for the validation
+          bool completed = false;
+
+          await Future.any([
+            apiService.getUserData(token).then((userDataResponse) {
+              if (userDataResponse.statusCode == 200 && !completed) {
+                completed = true;
+                setState(() => _isLoading = false);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomepageWidget()),
+                );
               }
-            } catch (e) {
-              lastError = e is Exception ? e : Exception(e.toString());
-              await Future.delayed(Duration(milliseconds: 500 * attempt));
-            }
-          }
-          
-          if (userDataFetched) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomepageWidget()),
-            );
-          } else {
-            throw lastError ?? Exception('Could not validate user data after multiple attempts');
-          }
+            }),
+            Future.delayed(Duration(milliseconds: 1500)).then((_) {
+              if (!completed) {
+                throw Exception('Validation timed out');
+              }
+            })
+          ]);
         } catch (e) {
-          setState(() {
-            _errorMessage = 'Account created but login required: ${e.toString()}';
-          });
-          // Force user to login manually if automatic login fails
+          // If timeout or error occurs during validation, go to sign in
+          setState(() => _isLoading = false);
           Navigator.pushReplacement(
-            context, 
+            context,
             MaterialPageRoute(builder: (context) => SignInPage()),
           );
         }
       } else {
         setState(() {
           _errorMessage = 'Registration failed';
+          _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
+        _isLoading = false;
       });
     }
   }
@@ -208,12 +204,17 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
 
-                        // Sign In Button
-                        SubmitBox(
-                          buttonText: 'ลงทะเบียน',
-                          onPress: _signup,
-                          showArrow: true,
-                        ),
+                        // Sign In Button with loading indicator
+                        _isLoading
+                            ? CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFFBFAB93)),
+                              )
+                            : SubmitBox(
+                                buttonText: 'ลงทะเบียน',
+                                onPress: _signup,
+                                showArrow: true,
+                              ),
                         SizedBox(height: 30),
 
                         // Create Account Link

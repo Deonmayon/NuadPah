@@ -5,6 +5,7 @@ import 'package:frontend/pages/setMassageDetail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/massage.dart';
 import '../utils/favorite_manager.dart'; // Add this import
+import 'dart:async';
 
 class MassageCardSet extends StatefulWidget {
   final int msID;
@@ -113,90 +114,191 @@ class _MassageCardSetState extends State<MassageCardSet> {
       return;
     }
 
-    try {
-      final response = await apiService.getUserData(token);
-      if (mounted) {
-        setState(() {
-          userData = response.data;
-        });
-        // Cache email for faster future loads
-        prefs.setString('userEmail', userData['email']);
+    // Try up to 3 times with exponential backoff
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      try {
+        final response = await apiService.getUserData(token).timeout(
+          Duration(seconds: 10),
+          onTimeout: () {
+            throw TimeoutException('Request timed out');
+          },
+        );
+
+        if (mounted) {
+          setState(() {
+            userData = response.data;
+          });
+          // Cache email for faster future loads
+          prefs.setString('userEmail', userData['email']);
+          return; // Success - exit the function
+        }
+      } catch (e) {
+        print("Error fetching user data (attempt $attempt): ${e.toString()}");
+        if (attempt == 3) {
+          // Final attempt failed
+          return;
+        }
+        // Wait with exponential backoff before retrying
+        await Future.delayed(Duration(milliseconds: 500 * attempt));
       }
-    } catch (e) {
-      print("Error fetching user data: ${e.toString()}");
     }
   }
 
   Future<void> fetchMassages() async {
-    if (userData['email'].isEmpty) return;
+    if (userData['email'].isEmpty || !mounted) return;
 
     final apiService = MassageApiService();
 
-    try {
-      final response = await apiService.getFavSet(userData['email']);
+    // Try up to 3 times with exponential backoff
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      try {
+        final response = await apiService.getFavSet(userData['email']).timeout(
+          Duration(seconds: 10),
+          onTimeout: () {
+            throw TimeoutException('Request timed out');
+          },
+        );
 
-      if (mounted) {
-        final List<int> newFavMassages = (response.data as List)
-            .map((item) => item['ms_id'] as int)
-            .toList();
+        if (mounted) {
+          final List<int> newFavMassages = (response.data as List)
+              .map((item) => item['ms_id'] as int)
+              .toList();
 
-        // Update global favorite manager
-        FavoriteManager.instance.setSetFavorites(newFavMassages);
+          // Update global favorite manager
+          FavoriteManager.instance.setSetFavorites(newFavMassages);
 
-        // Cache favorites for faster future loads
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setStringList('cachedSetFavorites',
-            newFavMassages.map((id) => id.toString()).toList());
+          // Cache favorites for faster future loads
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setStringList('cachedSetFavorites',
+              newFavMassages.map((id) => id.toString()).toList());
 
-        setState(() {
-          favmassages = newFavMassages;
-          isFavorite = favmassages.contains(widget.msID);
-        });
+          setState(() {
+            favmassages = newFavMassages;
+            isFavorite = favmassages.contains(widget.msID);
+          });
+          return; // Success - exit the function
+        }
+      } catch (e) {
+        print(
+            "Error fetching set massages (attempt $attempt): ${e.toString()}");
+        if (attempt == 3) {
+          // Final attempt failed
+          return;
+        }
+        // Wait with exponential backoff before retrying
+        await Future.delayed(Duration(milliseconds: 500 * attempt));
       }
-    } catch (e) {
-      print("Error fetching massages: ${e.toString()}");
     }
   }
 
   Future<void> toggleFavorite() async {
     final apiService = MassageApiService();
+    bool originalFavoriteState = isFavorite;
+    bool apiCallSuccessful = false;
+    int retryCount = 0;
 
-    try {
-      // Update UI immediately for responsiveness
-      setState(() {
-        isFavorite = !isFavorite;
-      });
-      widget.onFavoriteChanged(isFavorite);
+    // Update UI immediately for responsiveness
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+    widget.onFavoriteChanged(isFavorite);
 
-      // Update the global favorite state
-      FavoriteManager.instance.updateSetFavorite(widget.msID, isFavorite);
+    // Update the global favorite state
+    FavoriteManager.instance.updateSetFavorite(widget.msID, isFavorite);
 
-      // Then perform the API call
-      if (isFavorite) {
-        await apiService.favSet(userData['email'], widget.msID);
-      } else {
-        await apiService.unfavSet(userData['email'], widget.msID);
+    // Save what we're about to do to handle retries properly
+    final isAddingFavorite = isFavorite;
+
+    while (!apiCallSuccessful && retryCount < 3) {
+      try {
+        // Then perform the API call with timeout
+        if (isAddingFavorite) {
+          final response =
+              await apiService.favSet(userData['email'], widget.msID).timeout(
+            Duration(seconds: 15), // Increase timeout slightly
+            onTimeout: () {
+              throw TimeoutException('Request timed out');
+            },
+          );
+          apiCallSuccessful = true;
+        } else {
+          final response =
+              await apiService.unfavSet(userData['email'], widget.msID).timeout(
+            Duration(seconds: 15), // Increase timeout slightly
+            onTimeout: () {
+              throw TimeoutException('Request timed out');
+            },
+          );
+          apiCallSuccessful = true;
+        }
+
+        // Update cached favorites on success
+        if (apiCallSuccessful) {
+          if (isAddingFavorite && !favmassages.contains(widget.msID)) {
+            favmassages.add(widget.msID);
+          } else if (!isAddingFavorite) {
+            favmassages.remove(widget.msID);
+          }
+
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setStringList('cachedSetFavorites',
+              favmassages.map((id) => id.toString()).toList());
+        }
+      } catch (e) {
+        retryCount++;
+        String errorMsg = e.toString();
+
+        // For 499 errors (client closed request), we'll try again
+        if (errorMsg.contains('499') ||
+            errorMsg.contains('ClientClosedRequest')) {
+          print("Client closed request error (attempt $retryCount): $errorMsg");
+
+          // Wait slightly longer between retries
+          await Future.delayed(Duration(milliseconds: 800 * retryCount));
+
+          // If this was our last retry and still failed
+          if (retryCount >= 3 && !apiCallSuccessful) {
+            print("Failed to toggle favorite after 3 attempts: $errorMsg");
+            // Queue the operation to be retried later when app reopens
+            _queueFailedFavoriteOperation(isAddingFavorite);
+            _revertUiChange(originalFavoriteState);
+          }
+        } else {
+          // For other errors, we'll revert immediately after first attempt
+          print("Error toggling favorite: $errorMsg");
+          _revertUiChange(originalFavoriteState);
+          break; // Exit the retry loop for non-499 errors
+        }
       }
+    }
+  }
 
-      // Update cached favorites
-      if (isFavorite && !favmassages.contains(widget.msID)) {
-        favmassages.add(widget.msID);
-      } else if (!isFavorite) {
-        favmassages.remove(widget.msID);
-      }
-
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setStringList('cachedSetFavorites',
-          favmassages.map((id) => id.toString()).toList());
-    } catch (e) {
-      // Revert UI change if API call fails
+  // Helper method to revert UI changes on failure
+  void _revertUiChange(bool originalState) {
+    if (mounted) {
       setState(() {
-        isFavorite = !isFavorite;
+        isFavorite = originalState;
       });
       // Also revert global state
-      FavoriteManager.instance.updateSetFavorite(widget.msID, !isFavorite);
-      widget.onFavoriteChanged(isFavorite);
-      print("Error toggling favorite: ${e.toString()}");
+      FavoriteManager.instance.updateSetFavorite(widget.msID, originalState);
+      widget.onFavoriteChanged(originalState);
+    }
+  }
+
+  // Queue failed operation to be retried when app reopens
+  Future<void> _queueFailedFavoriteOperation(bool isAddingFavorite) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> pendingSetFavoriteOps =
+        prefs.getStringList('pendingSetFavoriteOps') ?? [];
+
+    String operation = isAddingFavorite
+        ? "add:${widget.msID}:${userData['email']}"
+        : "remove:${widget.msID}:${userData['email']}";
+
+    // Add to pending operations if not already there
+    if (!pendingSetFavoriteOps.contains(operation)) {
+      pendingSetFavoriteOps.add(operation);
+      await prefs.setStringList('pendingSetFavoriteOps', pendingSetFavoriteOps);
     }
   }
 

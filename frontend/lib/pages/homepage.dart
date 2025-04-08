@@ -7,6 +7,8 @@ import '../../api/auth.dart';
 import '../../api/massage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:convert';
+import 'dart:async'; // Add this import for TimeoutException
+import '../utils/favorite_manager.dart'; // Add this import
 
 class HomepageWidget extends StatefulWidget {
   const HomepageWidget({Key? key}) : super(key: key);
@@ -21,6 +23,14 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   List<dynamic> recmassages = [];
   List<dynamic> massages = [];
   bool isLoading = true;
+  bool _isRetrying = false;
+  int _retryCount = 0;
+  static const int _maxRetries = 3;
+  static const Duration _requestTimeout = Duration(seconds: 15);
+
+  // Add this to store favorite massage IDs
+  List<int> _favoriteMassages = [];
+  bool _loadingFavorites = true;
 
   String selectedType = 'ท่านวดทั้งหมด';
 
@@ -48,6 +58,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   List<dynamic>? _cachedAllMassages;
   Map<String, dynamic>? _cachedUserData;
   DateTime? _lastCacheTime;
+  static const Duration _cacheValidityDuration = Duration(minutes: 5);
 
   // Filtered massages for the current selection
   List<dynamic> _filteredMassages = [];
@@ -55,6 +66,8 @@ class _HomepageWidgetState extends State<HomepageWidget> {
   @override
   void initState() {
     super.initState();
+    // Initialize favorite manager
+    FavoriteManager.instance.init();
     // Force immediate data loading when homepage is opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadData();
@@ -68,11 +81,24 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       });
     }
 
-    // Clear any existing cache to ensure fresh data after sign-in
-    _lastCacheTime = null;
-    _cachedRecMassages = null;
-    _cachedAllMassages = null;
-    _cachedUserData = null;
+    // Check if cache is valid and recent (within the last 5 minutes)
+    final bool isCacheValid = _lastCacheTime != null &&
+        DateTime.now().difference(_lastCacheTime!) < _cacheValidityDuration &&
+        _cachedRecMassages != null &&
+        _cachedAllMassages != null &&
+        _cachedUserData != null;
+
+    if (isCacheValid) {
+      print("Using cached data (cached at: $_lastCacheTime)");
+      setState(() {
+        if (_cachedRecMassages != null) recmassages = _cachedRecMassages!;
+        if (_cachedAllMassages != null) massages = _cachedAllMassages!;
+        if (_cachedUserData != null) userData = _cachedUserData!;
+        _updateFilteredMassages();
+        isLoading = false;
+      });
+      return;
+    }
 
     // Load data from SharedPreferences to start with
     final prefs = await SharedPreferences.getInstance();
@@ -109,13 +135,27 @@ class _HomepageWidgetState extends State<HomepageWidget> {
     // Fetch all data in parallel
     try {
       final results = await Future.wait([
-        _fetchUserData(token),
-        _fetchRecMassages(userData['email'].toString()),
-        _fetchAllMassages(),
+        _fetchUserData(token).timeout(_requestTimeout, onTimeout: () {
+          throw TimeoutException('User data request timed out');
+        }),
+        _fetchRecMassages(userData['email'].toString()).timeout(_requestTimeout,
+            onTimeout: () {
+          throw TimeoutException('Recommended massages request timed out');
+        }),
+        _fetchAllMassages().timeout(_requestTimeout, onTimeout: () {
+          throw TimeoutException('All massages request timed out');
+        }),
       ]);
+
+      // Add this - after user data is loaded, fetch favorites too
+      if (userData['email'] != null &&
+          userData['email'].toString().isNotEmpty) {
+        await fetchFavorites();
+      }
 
       // Cache time for future reference
       _lastCacheTime = DateTime.now();
+      _retryCount = 0; // Reset retry count on successful fetch
 
       // Update state with fetched data
       setState(() {
@@ -124,9 +164,136 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       });
     } catch (e) {
       print("Error during parallel data loading: $e");
+
+      // Handle specific timeout or canceled connection errors (like 499)
+      if (e is TimeoutException || e.toString().contains('499')) {
+        _handleRequestFailure();
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  // Add this new method to fetch favorites once for all cards
+  Future<void> fetchFavorites() async {
+    if (userData['email'] == null || userData['email'].toString().isEmpty) {
+      return;
+    }
+
+    setState(() {
+      _loadingFavorites = true;
+    });
+
+    final apiService = MassageApiService();
+
+    try {
+      final response = await apiService
+          .getFavSingle(userData['email'].toString())
+          .timeout(const Duration(seconds: 15));
+
+      if (mounted) {
+        final List<int> favMassages = (response.data as List)
+            .map((item) => Map<String, dynamic>.from(item)['mt_id'] as int)
+            .toList();
+
+        // Update global favorite manager
+        FavoriteManager.instance.setSingleFavorites(favMassages);
+
+        // Cache favorites for faster future loads
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setStringList(
+            'cachedFavorites', favMassages.map((id) => id.toString()).toList());
+
+        setState(() {
+          _favoriteMassages = favMassages;
+          _loadingFavorites = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching favorites: $e");
       setState(() {
-        isLoading = false;
+        _loadingFavorites = false;
       });
+
+      // Try to load from cache as fallback
+      final prefs = await SharedPreferences.getInstance();
+      final cachedFavorites = prefs.getStringList('cachedFavorites') ?? [];
+
+      if (cachedFavorites.isNotEmpty) {
+        setState(() {
+          _favoriteMassages =
+              cachedFavorites.map((id) => int.parse(id)).toList();
+        });
+      }
+    }
+  }
+
+  // Add this method to handle favorite toggle from children
+  void _handleFavoriteToggle(int massageId, bool isFavorite) async {
+    final apiService = MassageApiService();
+
+    try {
+      if (isFavorite) {
+        await apiService.favSingle(userData['email'].toString(), massageId);
+        if (!_favoriteMassages.contains(massageId)) {
+          setState(() {
+            _favoriteMassages.add(massageId);
+          });
+        }
+      } else {
+        await apiService.unfavSingle(userData['email'].toString(), massageId);
+        setState(() {
+          _favoriteMassages.remove(massageId);
+        });
+      }
+
+      // Update global state
+      FavoriteManager.instance.updateSingleFavorite(massageId, isFavorite);
+
+      // Update cache
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setStringList('cachedFavorites',
+          _favoriteMassages.map((id) => id.toString()).toList());
+    } catch (e) {
+      print("Error toggling favorite: $e");
+      // Could implement retry logic here
+    }
+  }
+
+  void _handleRequestFailure() {
+    if (_retryCount < _maxRetries && !_isRetrying) {
+      _retryCount++;
+      _isRetrying = true;
+      print("Request failed. Retrying (${_retryCount}/${_maxRetries})...");
+
+      // Use backed-off retry (wait longer between consecutive retries)
+      Future.delayed(Duration(seconds: _retryCount * 2), () {
+        if (mounted) {
+          _isRetrying = false;
+          loadData(); // Retry the data loading
+        }
+      });
+    } else {
+      print(
+          "Max retries reached or already retrying. Using cached data if available.");
+      // If we have older cached data, use it as fallback
+      if (_cachedRecMassages != null || _cachedAllMassages != null) {
+        setState(() {
+          if (_cachedRecMassages != null) recmassages = _cachedRecMassages!;
+          if (_cachedAllMassages != null) massages = _cachedAllMassages!;
+          _updateFilteredMassages();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      // Reset for future retries
+      _retryCount = 0;
+      _isRetrying = false;
     }
   }
 
@@ -148,6 +315,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       }
     } catch (e) {
       print("Error fetching user: ${e.toString()}");
+      // Don't rethrow to allow other parallel requests to continue
     }
   }
 
@@ -177,6 +345,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       });
     } catch (e) {
       print("Error fetching recommend massages: ${e.toString()}");
+      // Don't rethrow to allow other parallel requests to continue
     }
   }
 
@@ -190,6 +359,7 @@ class _HomepageWidgetState extends State<HomepageWidget> {
       });
     } catch (e) {
       print("Error fetching all massages: ${e.toString()}");
+      // Don't rethrow to allow other parallel requests to continue
     }
   }
 
@@ -486,8 +656,12 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                           ]
                         : (massages.isNotEmpty
                             ? massages.take(4).map((massage) {
+                                final int mtId = massage['mt_id'];
+                                final bool isFavorite =
+                                    _favoriteMassages.contains(mtId);
+
                                 return MassageCard(
-                                  mtID: massage['mt_id'],
+                                  mtID: mtId,
                                   image: massage['mt_image_name'],
                                   name: massage['mt_name'] ?? 'Unknown Massage',
                                   detail: massage['mt_detail'] ??
@@ -496,8 +670,10 @@ class _HomepageWidgetState extends State<HomepageWidget> {
                                   time: massage['mt_time'] ?? 0,
                                   rating: massage['avg_rating']?.toString() ??
                                       'N/A',
+                                  isFavorite:
+                                      isFavorite, // Pass the favorite status
                                   onFavoriteChanged: (isFavorite) {
-                                    print('Massage favorited: $isFavorite');
+                                    _handleFavoriteToggle(mtId, isFavorite);
                                   },
                                 );
                               }).toList()

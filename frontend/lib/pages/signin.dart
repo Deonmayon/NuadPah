@@ -8,7 +8,6 @@ import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -43,7 +42,7 @@ class _SignInPageState extends State<SignInPage> {
         final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
-        
+
         // Store user email in shared preferences for immediate access
         await prefs.setString('userEmail', _emailController.text);
 
@@ -149,15 +148,14 @@ class _SignInPageState extends State<SignInPage> {
                           onToggle: _togglePasswordVisibility,
                         ),
 
-                        if (_errorMessage.isNotEmpty)
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: Text(
-                              _errorMessage,
-                              style: TextStyle(color: Colors.red),
-                            ),
+                        if (_errorMessage.isNotEmpty) SizedBox(height: 10),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Text(
+                            _errorMessage,
+                            style: TextStyle(color: Colors.red),
                           ),
+                        ),
 
                         // Forget Password Link
                         Align(

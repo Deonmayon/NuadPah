@@ -201,7 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 if (!context.mounted) return;
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  '/login',
+                  '/signin',
                   (route) => false,
                 );
               },

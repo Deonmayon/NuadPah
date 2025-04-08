@@ -104,6 +104,193 @@ class _LearnState extends State<LearnPage> {
     }
   }
 
+  Future<void> fetchSingleMassages() async {
+    final apiService = MassageApiService();
+
+    // Try up to 3 times with exponential backoff
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      try {
+        // Use timeout to prevent hanging requests
+        Response response;
+        try {
+          response = await apiService
+              .getMassagesByPage(_currentSinglePage, _pageSize)
+              .timeout(Duration(seconds: 10), onTimeout: () {
+            throw TimeoutException('Request timed out');
+          });
+        } on Exception catch (e) {
+          // If pagination fails, try the fallback
+          print(
+              "Pagination API failed on attempt $attempt: ${e.toString()}. Trying fallback...");
+          response = await apiService
+              .getAllMassages()
+              .timeout(Duration(seconds: 10), onTimeout: () {
+            throw TimeoutException('Request timed out');
+          });
+        }
+
+        final List<dynamic> allData = response.data as List;
+
+        // Simulate pagination on client-side if server doesn't support it
+        final bool isPaginationSupported =
+            response.headers.map['x-pagination-supported'] != null;
+
+        List<dynamic> newData;
+        if (!isPaginationSupported) {
+          // Manual pagination
+          final int startIndex = (_currentSinglePage - 1) * _pageSize;
+          final int endIndex = startIndex + _pageSize > allData.length
+              ? allData.length
+              : startIndex + _pageSize;
+
+          if (startIndex >= allData.length) {
+            newData = [];
+          } else {
+            newData = allData.sublist(startIndex, endIndex);
+          }
+        } else {
+          newData = allData;
+        }
+
+        setState(() {
+          if (_currentSinglePage == 1) {
+            singleMassages = newData;
+          } else {
+            singleMassages.addAll(newData);
+          }
+
+          // Update cache
+          if (_currentSinglePage == 1) {
+            _cachedSingleMassages = List.from(newData);
+          } else {
+            _cachedSingleMassages.addAll(newData);
+          }
+
+          _hasMoreSingleData = newData.length == _pageSize;
+          _currentSinglePage++;
+
+          _applyFiltersToData();
+        });
+
+        // Success - break out of retry loop
+        break;
+      } catch (e) {
+        print(
+            "Error fetching single massages (attempt $attempt): ${e.toString()}");
+
+        if (attempt == 3) {
+          // If this was the last attempt, update state to show error
+          setState(() {
+            isLoading = false;
+            // Don't clear existing data on error, just stop loading more
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง')),
+          );
+        } else {
+          // Wait with exponential backoff before retrying
+          await Future.delayed(Duration(milliseconds: 500 * attempt));
+        }
+      }
+    }
+  }
+
+  Future<void> fetchSetMassages() async {
+    final apiService = MassageApiService();
+
+    // Try up to 3 times with exponential backoff
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      try {
+        // Use timeout to prevent hanging requests
+        Response response;
+        try {
+          response = await apiService
+              .getSetMassagesByPage(_currentSetPage, _pageSize)
+              .timeout(Duration(seconds: 10), onTimeout: () {
+            throw TimeoutException('Request timed out');
+          });
+        } on Exception catch (e) {
+          // If pagination fails, try the fallback
+          print(
+              "Pagination API failed on attempt $attempt: ${e.toString()}. Trying fallback...");
+          response = await apiService
+              .getAllSetMassages()
+              .timeout(Duration(seconds: 10), onTimeout: () {
+            throw TimeoutException('Request timed out');
+          });
+        }
+
+        final List<dynamic> allData = response.data as List;
+
+        // Simulate pagination on client-side if server doesn't support it
+        final bool isPaginationSupported =
+            response.headers.map['x-pagination-supported'] != null;
+
+        List<dynamic> newData;
+        if (!isPaginationSupported) {
+          // Manual pagination
+          final int startIndex = (_currentSetPage - 1) * _pageSize;
+          final int endIndex = startIndex + _pageSize > allData.length
+              ? allData.length
+              : startIndex + _pageSize;
+
+          if (startIndex >= allData.length) {
+            newData = [];
+          } else {
+            newData = allData.sublist(startIndex, endIndex);
+          }
+        } else {
+          newData = allData;
+        }
+
+        setState(() {
+          if (_currentSetPage == 1) {
+            setMassages = newData;
+          } else {
+            setMassages.addAll(newData);
+          }
+
+          // Update cache
+          if (_currentSetPage == 1) {
+            _cachedSetMassages = List.from(newData);
+          } else {
+            _cachedSetMassages.addAll(newData);
+          }
+
+          _hasMoreSetData = newData.length == _pageSize;
+          _currentSetPage++;
+
+          _applyFiltersToData();
+        });
+
+        // Success - break out of retry loop
+        break;
+      } catch (e) {
+        print(
+            "Error fetching set massages (attempt $attempt): ${e.toString()}");
+
+        if (attempt == 3) {
+          // If this was the last attempt, update state to show error
+          setState(() {
+            isLoading = false;
+            // Don't clear existing data on error, just stop loading more
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'ไม่สามารถโหลดข้อมูลท่านวดเซ็ตได้ กรุณาลองใหม่อีกครั้ง')),
+          );
+        } else {
+          // Wait with exponential backoff before retrying
+          await Future.delayed(Duration(milliseconds: 500 * attempt));
+        }
+      }
+    }
+  }
+
   Future<void> loadData() async {
     if (isInitialLoad) {
       setState(() {
@@ -123,6 +310,7 @@ class _LearnState extends State<LearnPage> {
           });
         }
       } else {
+        // Tab 1 - Set Massages
         if (_cachedSetMassages.isEmpty) {
           await fetchSetMassages();
         } else {
@@ -133,165 +321,20 @@ class _LearnState extends State<LearnPage> {
           });
         }
       }
+    } catch (e) {
+      print("Error in loadData: ${e.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล กรุณาลองใหม่')),
+      );
     } finally {
-      setState(() {
-        isLoading = false;
-        isInitialLoad = false;
-      });
+      // Always set loading to false at the end
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          isInitialLoad = false;
+        });
+      }
     }
-  }
-
-  Future<void> fetchSingleMassages() async {
-    final apiService = MassageApiService();
-
-    try {
-      // Try to use pagination API if available
-      Response response;
-      try {
-        response =
-            await apiService.getMassagesByPage(_currentSinglePage, _pageSize);
-      } on Exception catch (_) {
-        // Fallback to getting all massages if pagination not supported
-        print("Pagination API not available, falling back to getAllMassages");
-        response = await apiService.getAllMassages();
-      }
-
-      final List<dynamic> allData = response.data as List;
-
-      // Simulate pagination on client-side if server doesn't support it
-      final bool isPaginationSupported =
-          response.headers.map['x-pagination-supported'] != null;
-
-      List<dynamic> newData;
-      if (!isPaginationSupported) {
-        // Manual pagination
-        final int startIndex = (_currentSinglePage - 1) * _pageSize;
-        final int endIndex = startIndex + _pageSize > allData.length
-            ? allData.length
-            : startIndex + _pageSize;
-
-        if (startIndex >= allData.length) {
-          newData = [];
-        } else {
-          newData = allData.sublist(startIndex, endIndex);
-        }
-      } else {
-        newData = allData;
-      }
-
-      setState(() {
-        if (_currentSinglePage == 1) {
-          singleMassages = newData;
-        } else {
-          singleMassages.addAll(newData);
-        }
-
-        // Update cache
-        if (_currentSinglePage == 1) {
-          _cachedSingleMassages = List.from(newData);
-        } else {
-          _cachedSingleMassages.addAll(newData);
-        }
-
-        _hasMoreSingleData = newData.length == _pageSize;
-        _currentSinglePage++;
-
-        _applyFiltersToData();
-      });
-    } catch (e) {
-      print("Error fetching massages: ${e.toString()}");
-    }
-  }
-
-  Future<void> _loadMoreSingleMassages() async {
-    if (!_hasMoreSingleData || _isLoadingMore) return;
-
-    setState(() {
-      _isLoadingMore = true;
-    });
-
-    await fetchSingleMassages();
-
-    setState(() {
-      _isLoadingMore = false;
-    });
-  }
-
-  Future<void> fetchSetMassages() async {
-    final apiService = MassageApiService();
-
-    try {
-      // Try to use pagination API if available
-      Response response;
-      try {
-        response =
-            await apiService.getSetMassagesByPage(_currentSetPage, _pageSize);
-      } on Exception catch (_) {
-        // Fallback to getting all massages if pagination not supported
-        print(
-            "Pagination API not available, falling back to getAllSetMassages");
-        response = await apiService.getAllSetMassages();
-      }
-
-      final List<dynamic> allData = response.data as List;
-
-      // Simulate pagination on client-side if server doesn't support it
-      final bool isPaginationSupported =
-          response.headers.map['x-pagination-supported'] != null;
-
-      List<dynamic> newData;
-      if (!isPaginationSupported) {
-        // Manual pagination
-        final int startIndex = (_currentSetPage - 1) * _pageSize;
-        final int endIndex = startIndex + _pageSize > allData.length
-            ? allData.length
-            : startIndex + _pageSize;
-
-        if (startIndex >= allData.length) {
-          newData = [];
-        } else {
-          newData = allData.sublist(startIndex, endIndex);
-        }
-      } else {
-        newData = allData;
-      }
-
-      setState(() {
-        if (_currentSetPage == 1) {
-          setMassages = newData;
-        } else {
-          setMassages.addAll(newData);
-        }
-
-        // Update cache
-        if (_currentSetPage == 1) {
-          _cachedSetMassages = List.from(newData);
-        } else {
-          _cachedSetMassages.addAll(newData);
-        }
-
-        _hasMoreSetData = newData.length == _pageSize;
-        _currentSetPage++;
-
-        _applyFiltersToData();
-      });
-    } catch (e) {
-      print("Error fetching set massages: ${e.toString()}");
-    }
-  }
-
-  Future<void> _loadMoreSetMassages() async {
-    if (!_hasMoreSetData || _isLoadingMore) return;
-
-    setState(() {
-      _isLoadingMore = true;
-    });
-
-    await fetchSetMassages();
-
-    setState(() {
-      _isLoadingMore = false;
-    });
   }
 
   void _onSearchChanged() {
@@ -875,7 +918,13 @@ class _LearnState extends State<LearnPage> {
                 isInitialLoad = true;
               }
             });
-            loadData();
+
+            // Delay the loadData call slightly to avoid UI freezing during tab switch
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                loadData();
+              }
+            });
           }
         },
         child: Container(
@@ -902,6 +951,42 @@ class _LearnState extends State<LearnPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _loadMoreSingleMassages() async {
+    if (!_hasMoreSingleData || _isLoadingMore) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      await fetchSingleMassages();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadMoreSetMassages() async {
+    if (!_hasMoreSetData || _isLoadingMore) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      await fetchSetMassages();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
+    }
   }
 
   @override

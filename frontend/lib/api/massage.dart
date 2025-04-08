@@ -265,12 +265,14 @@ class MassageApiService {
   }
 
   // Review a Single Massage
-  Future<Response> reviewSingle(String email, int id, String detail, int rating, DateTime date) async {
+  Future<Response> reviewSingle(
+      String email, int id, String detail, int rating, DateTime date) async {
     try {
       // Format the date in the expected format: "YYYY-MM-DD HH:MM:SS+00"
-      final formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} "
+      final formattedDate =
+          "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} "
           "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}:${date.second.toString().padLeft(2, '0')}+00";
-      
+
       final response = await _dio.post('/massage/review-single',
           data: {
             'email': email,
@@ -289,11 +291,13 @@ class MassageApiService {
   }
 
   // Review a Set Massage
-  Future<Response> reviewSet(String email, int id, String detail, int rating, DateTime date) async {
+  Future<Response> reviewSet(
+      String email, int id, String detail, int rating, DateTime date) async {
     try {
       // Format the date in the expected format: "YYYY-MM-DD HH:MM:SS+00"
       // Format the date in the expected format: "YYYY-MM-DD HH:MM:SS+00"
-      final formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} "
+      final formattedDate =
+          "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} "
           "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}:${date.second.toString().padLeft(2, '0')}+00";
 
       final response = await _dio.post('/massage/review-set',

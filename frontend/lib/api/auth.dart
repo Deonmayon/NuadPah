@@ -68,7 +68,7 @@ class AuthApiService {
         throw "รหัสผ่านไม่ถูกต้อง";
       }
       // For other errors (network, server, etc.)
-      throw 'Failed to sign in: ${e.message}';
+      throw 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
     }
   }
 
