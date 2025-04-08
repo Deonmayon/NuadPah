@@ -58,6 +58,7 @@ class _CamtakepicPage extends State<CamtakepicPage> {
       }
     });
   }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -86,26 +87,26 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                         ),
                       )),
                   Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 40),
-                          child: Container(
-                            width: 150,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              color: Color(0xB3C0A172),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Text("ถ่ายจุดนวด",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500)),
-                            ),
-                          ),
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: Container(
+                        width: 150,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: Color(0xB3C0A172),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text("ถ่ายจุดนวด",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500)),
                         ),
                       ),
+                    ),
+                  ),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Padding(
@@ -133,7 +134,9 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: const [
                                       CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Color(0xFFC0A172)),
                                       ),
                                       SizedBox(height: 20),
                                       Text("กำลังประมวลผล...",
@@ -156,24 +159,57 @@ class _CamtakepicPage extends State<CamtakepicPage> {
 
                             var response = await request.send();
 
-                            // ✅ ปิด popup loading ก่อนเปลี่ยนหน้า
-                            Navigator.pop(context);
-
                             if (response.statusCode == 200) {
                               var responseBody =
                                   await response.stream.bytesToString();
                               var jsonData = json.decode(responseBody);
-                              String imageUrl = jsonData['public_url'];
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ResultsPage(imageUrl: imageUrl),
-                                ),
-                              );
+                              Navigator.pop(
+                                  context); // ✅ ปิด popup loading ก่อนทำอย่างอื่น
+
+                              if (jsonData['success'] == true) {
+                                String imageUrl = jsonData['public_url'];
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ResultsPage(imageUrl: imageUrl),
+                                  ),
+                                );
+                              } else {
+                                // ❌ กรณีไม่พบจุดนวด
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: true,
+                                  builder: (_) => Center(
+                                    child: Container(
+                                      padding: EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: const [
+                                          Icon(Icons.close,
+                                              color: Colors.red, size: 40),
+                                          SizedBox(height: 20),
+                                          Text(
+                                            "ไม่พบจุดนวด",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.red,
+                                              decoration: TextDecoration.none,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
                             } else {
-                              print('API error: ${response.statusCode}');
+                              Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                     content: Text("เกิดข้อผิดพลาดจาก API")),
