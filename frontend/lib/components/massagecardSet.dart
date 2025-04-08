@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/massage.dart';
 import '../utils/favorite_manager.dart'; // Add this import
 import 'dart:async';
+import 'dart:convert'; // Add this import
 
 class MassageCardSet extends StatefulWidget {
   final int msID;
@@ -45,6 +46,8 @@ class _MassageCardSetState extends State<MassageCardSet> {
     'role': '',
   };
 
+  String userEmail = '';
+
   @override
   void initState() {
     super.initState();
@@ -79,13 +82,11 @@ class _MassageCardSetState extends State<MassageCardSet> {
 
   Future<void> loadData() async {
     // Start both operations in parallel
-    final emailFuture = getUserEmail();
-
+    final userDataFuture = getUserData();
     // Check cached favorites while waiting for email
     await _checkCachedFavorites();
 
-    // Wait for email to be retrieved
-    await emailFuture;
+    await userDataFuture;
 
     // Only proceed if we have a valid email
     if (userData['email'].isNotEmpty) {
@@ -94,55 +95,74 @@ class _MassageCardSetState extends State<MassageCardSet> {
     }
   }
 
-  Future<void> getUserEmail() async {
-    if (!mounted) return;
-    final apiService = AuthApiService();
-
-    // Try to load from local storage first for immediate response
+  // Fetch user data from local storage
+  Future<void> getUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final cachedEmail = prefs.getString('userEmail');
-    final token = prefs.getString('token');
-
-    if (cachedEmail != null && cachedEmail.isNotEmpty) {
-      setState(() {
-        userData['email'] = cachedEmail;
-      });
-    }
-
-    if (token == null) {
-      print("Token is null, user not logged in.");
-      return;
-    }
-
-    // Try up to 3 times with exponential backoff
-    for (int attempt = 1; attempt <= 3; attempt++) {
-      try {
-        final response = await apiService.getUserData(token).timeout(
-          Duration(seconds: 10),
-          onTimeout: () {
-            throw TimeoutException('Request timed out');
-          },
-        );
-
-        if (mounted) {
-          setState(() {
-            userData = response.data;
-          });
-          // Cache email for faster future loads
-          prefs.setString('userEmail', userData['email']);
-          return; // Success - exit the function
-        }
-      } catch (e) {
-        print("Error fetching user data (attempt $attempt): ${e.toString()}");
-        if (attempt == 3) {
-          // Final attempt failed
-          return;
-        }
-        // Wait with exponential backoff before retrying
-        await Future.delayed(Duration(milliseconds: 500 * attempt));
-      }
-    }
+    final cachedUserData = prefs.getString('userData');
+    final decodedUserData = cachedUserData != null
+        ? jsonDecode(cachedUserData)
+        : {
+            'email': '',
+            'first_name': '',
+            'last_name': '',
+            'image_name': '',
+            'role': '',
+          };
+    setState(() {
+      userData = decodedUserData;
+      userEmail = decodedUserData['email'];
+    });
   }
+
+  // Future<void> getUserEmail() async {
+  //   if (!mounted) return;
+  //   final apiService = AuthApiService();
+
+  //   // Try to load from local storage first for immediate response
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final cachedEmail = prefs.getString('userEmail');
+  //   final token = prefs.getString('token');
+
+  //   if (cachedEmail != null && cachedEmail.isNotEmpty) {
+  //     setState(() {
+  //       userData['email'] = cachedEmail;
+  //     });
+  //   }
+
+  //   if (token == null) {
+  //     print("Token is null, user not logged in.");
+  //     return;
+  //   }
+
+  //   // Try up to 3 times with exponential backoff
+  //   for (int attempt = 1; attempt <= 3; attempt++) {
+  //     try {
+  //       final response = await apiService.getUserData(token).timeout(
+  //         Duration(seconds: 10),
+  //         onTimeout: () {
+  //           throw TimeoutException('Request timed out');
+  //         },
+  //       );
+
+  //       if (mounted) {
+  //         setState(() {
+  //           userData = response.data;
+  //         });
+  //         // Cache email for faster future loads
+  //         prefs.setString('userEmail', userData['email']);
+  //         return; // Success - exit the function
+  //       }
+  //     } catch (e) {
+  //       print("Error fetching user data (attempt $attempt): ${e.toString()}");
+  //       if (attempt == 3) {
+  //         // Final attempt failed
+  //         return;
+  //       }
+  //       // Wait with exponential backoff before retrying
+  //       await Future.delayed(Duration(milliseconds: 500 * attempt));
+  //     }
+  //   }
+  // }
 
   Future<void> fetchMassages() async {
     if (userData['email'].isEmpty || !mounted) return;
@@ -213,8 +233,7 @@ class _MassageCardSetState extends State<MassageCardSet> {
       try {
         // Then perform the API call with timeout
         if (isAddingFavorite) {
-          final response =
-              await apiService.favSet(userData['email'], widget.msID).timeout(
+          await apiService.favSet(userData['email'], widget.msID).timeout(
             Duration(seconds: 15), // Increase timeout slightly
             onTimeout: () {
               throw TimeoutException('Request timed out');
@@ -222,8 +241,7 @@ class _MassageCardSetState extends State<MassageCardSet> {
           );
           apiCallSuccessful = true;
         } else {
-          final response =
-              await apiService.unfavSet(userData['email'], widget.msID).timeout(
+          await apiService.unfavSet(userData['email'], widget.msID).timeout(
             Duration(seconds: 15), // Increase timeout slightly
             onTimeout: () {
               throw TimeoutException('Request timed out');

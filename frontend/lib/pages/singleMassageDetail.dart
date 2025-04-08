@@ -276,7 +276,8 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => CamtakepicPage(
-                                    cameras: cam, // Access global cameras variable correctly
+                                    cameras:
+                                        cam, // Access global cameras variable correctly
                                     massageId: detail['mt_id'],
                                   ),
                                 ),

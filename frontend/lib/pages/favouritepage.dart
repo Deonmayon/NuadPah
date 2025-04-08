@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/api/auth.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
@@ -30,6 +32,8 @@ class _FavouritePageState extends State<Favouritepage> {
     'role': '',
   };
 
+  String userEmail = '';
+
   @override
   void initState() {
     super.initState();
@@ -42,10 +46,10 @@ class _FavouritePageState extends State<Favouritepage> {
   Future<void> loadData() async {
     try {
       // First get user email (needed for subsequent queries)
-      bool userEmailSuccess = await getUserEmail();
+      bool userEmailSuccess = await getUserDataBool();
 
       // Only proceed with fetching massages if we successfully got the user email
-      if (userEmailSuccess && userData['email'].isNotEmpty) {
+      if (userEmailSuccess && userEmail.isNotEmpty) {
         // Then fetch both single and set massages in parallel
         await Future.wait([
           fetchSingleMassages(),
@@ -71,49 +75,30 @@ class _FavouritePageState extends State<Favouritepage> {
     }
   }
 
-  Future<bool> getUserEmail() async {
-    final apiService = AuthApiService();
+  // Fetch user data from local storage
+  Future<bool> getUserDataBool() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+    final cachedUserData = prefs.getString('userData');
 
-    if (token == null) {
-      print('Token not found');
-      return false;
+    if (cachedUserData == null) {
+      return false; // User data not found
+    } else {
+      final decodedUserData = jsonDecode(cachedUserData);
+
+      setState(() {
+        userData = decodedUserData;
+        userEmail = decodedUserData['email'];
+      });
+
+      return true;
     }
-
-    // Try up to 3 times to get user data
-    for (int attempt = 1; attempt <= 3; attempt++) {
-      try {
-        final response = await apiService.getUserData(token).timeout(
-          Duration(seconds: 10),
-          onTimeout: () {
-            throw TimeoutException('Request timed out');
-          },
-        );
-
-        setState(() {
-          userData = response.data;
-        });
-        return true;
-      } catch (e) {
-        print('Attempt $attempt: Error fetching user data: ${e.toString()}');
-        if (attempt == 3) {
-          // If this was the last attempt, we failed
-          return false;
-        }
-        // Wait a bit before retrying
-        await Future.delayed(Duration(seconds: 1));
-      }
-    }
-
-    return false; // Should never reach here due to the for loop, but needed for compilation
   }
 
   Future<void> fetchSingleMassages() async {
     final apiService = MassageApiService();
 
     try {
-      final response = await apiService.getFavSingle(userData['email']);
+      final response = await apiService.getFavSingle(userEmail);
 
       setState(() {
         favSingleMassages = (response.data as List)
@@ -131,7 +116,7 @@ class _FavouritePageState extends State<Favouritepage> {
     final apiService = MassageApiService();
 
     try {
-      final response = await apiService.getFavSet(userData['email']);
+      final response = await apiService.getFavSet(userEmail);
 
       setState(() {
         favSetMassages = response.data as List;
@@ -299,7 +284,7 @@ class _FavouritePageState extends State<Favouritepage> {
         });
 
         // Then perform API call
-        await apiService.unfavSingle(userData['email'], massageId);
+        await apiService.unfavSingle(userEmail, massageId);
       }
     } catch (e) {
       // Revert changes if API call fails
@@ -325,7 +310,7 @@ class _FavouritePageState extends State<Favouritepage> {
         });
 
         // Then perform API call
-        await apiService.unfavSet(userData['email'], massageId);
+        await apiService.unfavSet(userEmail, massageId);
       }
     } catch (e) {
       // Revert changes if API call fails

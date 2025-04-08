@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/api/auth.dart';
@@ -20,7 +22,15 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
   String lastName = '';
   XFile? _temporaryImage;
 
-  Map<String, dynamic> userData = {};
+  Map<String, dynamic> userData = {
+    'email': '',
+    'first_name': '',
+    'last_name': '',
+    'image_name': '',
+    'role': '',
+  };
+
+  String userEmail = '';
 
   @override
   void initState() {
@@ -33,42 +43,30 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
       isLoading = true; // Set loading state to true before fetching
     });
 
-    await getUserEmail();
+    await getUserData();
 
     setState(() {
       isLoading = false; // Set loading state to false after all data is fetched
     });
   }
 
-  Future<void> getUserEmail() async {
-    final apiService = AuthApiService();
-
+  // Fetch user data from local storage
+  Future<void> getUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
-    if (token == null) {
-      debugPrint("Token is null, user not logged in.");
-      return;
-    }
-
-    try {
-      final response = await apiService.getUserData(token);
-      debugPrint('Full user data response: ${response.data}'); // Add debug log
-
-      if (response.data == null || response.data['email'] == null) {
-        throw Exception('Invalid user data received');
-      }
-
-      setState(() {
-        userData = response.data;
-      });
-      debugPrint('User data after setState: $userData'); // Add debug log
-    } catch (e) {
-      setState(() {
-        debugPrint(
-            "Error fetching user: ${e.toString()}"); // Only prints error message
-      });
-    }
+    final cachedUserData = prefs.getString('userData');
+    final decodedUserData = cachedUserData != null
+        ? jsonDecode(cachedUserData)
+        : {
+            'email': '',
+            'first_name': '',
+            'last_name': '',
+            'image_name': '',
+            'role': '',
+          };
+    setState(() {
+      userData = decodedUserData;
+      userEmail = decodedUserData['email'];
+    });
   }
 
   Future<void> updateUserData() async {
@@ -102,7 +100,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
       );
-      
+
       // Navigate to profile page after successful update
       Navigator.pushReplacementNamed(context, '/profile');
     } catch (e) {
@@ -130,7 +128,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
     try {
       final apiService = AuthApiService();
       debugPrint('Attempting to upload image from path: ${image.path}');
-      
+
       final response = await apiService.sendImageToSupabase(image.path);
       debugPrint('Raw Supabase response: ${response.toString()}');
       debugPrint('Response data: ${response.data}');
@@ -138,7 +136,8 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
 
       if (response.data != null) {
         String imageUrl = response.data;
-        debugPrint('Image uploaded successfully. URL: $imageUrl'); // Add debug log
+        debugPrint(
+            'Image uploaded successfully. URL: $imageUrl'); // Add debug log
         // Update the userData map first
         setState(() {
           userData['image_name'] = imageUrl;
@@ -160,7 +159,8 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update profile picture: ${e.toString()}')),
+        SnackBar(
+            content: Text('Failed to update profile picture: ${e.toString()}')),
       );
     } finally {
       setState(() {
@@ -211,8 +211,9 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
                           radius: 50,
                           backgroundImage: _temporaryImage != null
                               ? FileImage(File(_temporaryImage!.path))
-                              : NetworkImage('${userData['image_name']}') as ImageProvider,
-                              // : NetworkImage('https://picsum.photos/seed/picsum/200/300') as ImageProvider,
+                              : NetworkImage('${userData['image_name']}')
+                                  as ImageProvider,
+                          // : NetworkImage('https://picsum.photos/seed/picsum/200/300') as ImageProvider,
                         ),
                       ),
                       SizedBox(height: 40),
@@ -262,6 +263,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
     );
   }
 }
+
 class EditableField extends StatefulWidget {
   final String label;
   final String initialValue;
