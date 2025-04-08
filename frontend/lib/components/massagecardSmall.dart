@@ -12,7 +12,7 @@ class MassageCard extends StatefulWidget {
   final int mtID;
   final String? rating;
   final bool isSet;
-  final bool isFavorite; // Add this property
+  final bool isFavorite; 
   final VoidCallback? onTap;
   final Function(bool) onFavoriteChanged;
 

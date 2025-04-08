@@ -37,10 +37,13 @@ class _FavouritePageState extends State<Favouritepage> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      isLoading = true;
+    FavoriteManager.instance.init();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        isLoading = true;
+      });
+      loadData();
     });
-    loadData();
   }
 
   Future<void> loadData() async {
@@ -107,6 +110,18 @@ class _FavouritePageState extends State<Favouritepage> {
         return;
       }
 
+      final List<int> favMassages = (response.data as List)
+          .map((item) => Map<String, dynamic>.from(item)['mt_id'] as int)
+          .toList();
+
+      // Update global favorite manager
+      FavoriteManager.instance.setSingleFavorites(favMassages);
+
+      // Cache favorites for faster future loads
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setStringList(
+          'cachedFavorites', favMassages.map((id) => id.toString()).toList());
+
       setState(() {
         favSingleMassages = (response.data as List)
             .map((item) => item.map((key, value) => MapEntry(key, value)))
@@ -131,6 +146,18 @@ class _FavouritePageState extends State<Favouritepage> {
         });
         return;
       }
+
+      final List<int> favMassages = (response.data as List)
+          .map((item) => Map<String, dynamic>.from(item)['mt_id'] as int)
+          .toList();
+
+      // Update global favorite manager
+      FavoriteManager.instance.setSetFavorites(favMassages);
+
+      // Cache favorites for faster future loads
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setStringList('cachedSetFavorites',
+          favMassages.map((id) => id.toString()).toList());
 
       setState(() {
         favSetMassages = response.data as List;
@@ -287,25 +314,30 @@ class _FavouritePageState extends State<Favouritepage> {
     final apiService = MassageApiService();
 
     try {
-      if (!isFavorite) {
-        // Update FavoriteManager first for immediate UI change across the app
-        FavoriteManager.instance.updateSingleFavorite(massageId, false);
-
-        // Remove from local state
-        setState(() {
-          favSingleMassages
-              .removeWhere((massage) => massage['mt_id'] == massageId);
-        });
-
-        // Then perform API call
+      if (isFavorite) {
+        await apiService.favSingle(userEmail, massageId);
+        if (!favSingleMassages.contains(massageId)) {
+          setState(() {
+            favSingleMassages.add(massageId);
+          });
+        }
+      } else {
         await apiService.unfavSingle(userEmail, massageId);
+        setState(() {
+          favSingleMassages.remove(massageId);
+        });
       }
+
+      // Update global state
+      FavoriteManager.instance.updateSingleFavorite(massageId, isFavorite);
+
+      // Update cache
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setStringList('cachedFavorites',
+          favSingleMassages.map((id) => id.toString()).toList());
     } catch (e) {
-      // Revert changes if API call fails
-      FavoriteManager.instance.updateSingleFavorite(massageId, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('การอัปเดตรายการโปรดล้มเหลว กรุณาลองใหม่')),
-      );
+      print("Error toggling favorite: $e");
+      // Could implement retry logic here
     }
   }
 
@@ -313,25 +345,30 @@ class _FavouritePageState extends State<Favouritepage> {
     final apiService = MassageApiService();
 
     try {
-      if (!isFavorite) {
-        // Update FavoriteManager first for immediate UI change across the app
-        FavoriteManager.instance.updateSetFavorite(massageId, false);
-
-        // Remove from local state
+      if (isFavorite) {
+        await apiService.favSingle(userEmail, massageId);
+        if (!favSetMassages.contains(massageId)) {
+          setState(() {
+            favSetMassages.add(massageId);
+          });
+        }
+      } else {
+        await apiService.unfavSingle(userEmail, massageId);
         setState(() {
-          favSetMassages
-              .removeWhere((massage) => massage['ms_id'] == massageId);
+          favSetMassages.remove(massageId);
         });
-
-        // Then perform API call
-        await apiService.unfavSet(userEmail, massageId);
       }
+
+      // Update global state
+      FavoriteManager.instance.updateSingleFavorite(massageId, isFavorite);
+
+      // Update cache
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setStringList('cachedSetFavorites',
+          favSetMassages.map((id) => id.toString()).toList());
     } catch (e) {
-      // Revert changes if API call fails
-      FavoriteManager.instance.updateSetFavorite(massageId, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('การอัปเดตรายการโปรดล้มเหลว กรุณาลองใหม่')),
-      );
+      print("Error toggling favorite: $e");
+      // Could implement retry logic here
     }
   }
 }
@@ -364,6 +401,10 @@ class SingleMassageTab extends StatelessWidget {
       itemCount: massages.length,
       itemBuilder: (context, index) {
         final massage = massages[index];
+        final List<int> favMassages = (massages as List<dynamic>? ?? [])
+            .map((item) => item['mt_id'] as int)
+            .toList();
+        final bool isFavorite = favMassages.contains(massage['mt_id'].toInt());
         return MassageCard(
           mtID: massage['mt_id'].toInt() ?? 0,
           image: massage['mt_image_name'] ??
@@ -373,6 +414,7 @@ class SingleMassageTab extends StatelessWidget {
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
           rating: massage['avg_rating']?.toString(),
+          isFavorite: isFavorite,
           isSet: false,
           onFavoriteChanged: (isFavorite) {
             onFavoriteChanged(isFavorite, massage['mt_id']);
@@ -411,6 +453,10 @@ class SetOfMassageTab extends StatelessWidget {
       itemCount: massages.length,
       itemBuilder: (context, index) {
         final massage = massages[index];
+        final List<int> favMassages = (massages as List<dynamic>? ?? [])
+            .map((item) => item['ms_id'] as int)
+            .toList();
+        final bool isFavorite = favMassages.contains(massage['ms_id'].toInt());
 
         return MassageCardSet(
           msID: (massage['ms_id'] ?? 0) as int,
@@ -425,6 +471,7 @@ class SetOfMassageTab extends StatelessWidget {
                   ? massage['ms_image_names']
                   : 'https://picsum.photos/seed/picsum/200/300'),
           rating: massage['avg_rating']?.toString(),
+          isFavorite: isFavorite,
           onFavoriteChanged: (isFavorite) {
             onFavoriteChanged(isFavorite, massage['ms_id']);
           },

@@ -16,6 +16,7 @@ class MassageCardSet extends StatefulWidget {
   final int duration;
   final List<dynamic> images;
   final String? rating;
+  final bool isFavorite;
   final Function(bool) onFavoriteChanged;
 
   const MassageCardSet({
@@ -27,6 +28,7 @@ class MassageCardSet extends StatefulWidget {
     required this.duration,
     required this.images,
     required this.rating,
+    this.isFavorite = false,
     required this.onFavoriteChanged,
   }) : super(key: key);
 
@@ -35,7 +37,7 @@ class MassageCardSet extends StatefulWidget {
 }
 
 class _MassageCardSetState extends State<MassageCardSet> {
-  bool isFavorite = false;
+  late bool isFavorite;
   List<dynamic> favmassages = [];
 
   Map<String, dynamic> userData = {
@@ -51,6 +53,7 @@ class _MassageCardSetState extends State<MassageCardSet> {
   @override
   void initState() {
     super.initState();
+    isFavorite = widget.isFavorite;
     // Check favorite status from global cache immediately
     _checkFavoriteStatus();
     // Then load complete data
