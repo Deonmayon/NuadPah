@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/api/massage.dart';
 import 'package:frontend/components/reviewCard.dart';
+import 'package:frontend/pages/camtakepic.dart';
+import 'package:camera/camera.dart'; // Add this import
+import 'package:frontend/main.dart'; // Import to access global cameras variable
 
 class SingleMassageDetailPage extends StatefulWidget {
   final int? massageID; // Make nullable
@@ -105,6 +108,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("Detail: $detail "); // Debugging line
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -213,7 +217,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                             ),
                             SizedBox(width: 4),
                             Text(
-                              '${detail['avg_rating']?.toString()} / 5',
+                              '${detail['avg_rating']?.toString().isNotEmpty == true ? detail['avg_rating'] : '4'} / 5',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w400,
@@ -267,7 +271,16 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.pushNamed(context, '/camtest');
+                              // Navigate to camera page with properly referenced cameras
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CamtakepicPage(
+                                    cameras: cam, // Access global cameras variable correctly
+                                    massageId: detail['mt_id'],
+                                  ),
+                                ),
+                              );
                             },
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,

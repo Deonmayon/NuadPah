@@ -263,4 +263,53 @@ class MassageApiService {
           'Failed to fetch Set Massage Reviews: ${e.response?.data ?? e.message}');
     }
   }
+
+  // Review a Single Massage
+  Future<Response> reviewSingle(String email, int id, String detail, int rating, DateTime date) async {
+    try {
+      // Format the date in the expected format: "YYYY-MM-DD HH:MM:SS+00"
+      final formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} "
+          "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}:${date.second.toString().padLeft(2, '0')}+00";
+      
+      final response = await _dio.post('/massage/review-single',
+          data: {
+            'email': email,
+            'mt_id': id,
+            'detail': detail,
+            'rating': rating,
+            'datetime': formattedDate,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to review single massage: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  // Review a Set Massage
+  Future<Response> reviewSet(String email, int id, String detail, int rating, DateTime date) async {
+    try {
+      // Format the date in the expected format: "YYYY-MM-DD HH:MM:SS+00"
+      // Format the date in the expected format: "YYYY-MM-DD HH:MM:SS+00"
+      final formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} "
+          "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}:${date.second.toString().padLeft(2, '0')}+00";
+
+      final response = await _dio.post('/massage/review-set',
+          data: {
+            'email': email,
+            'mt_id': id,
+            'detail': detail,
+            'rating': rating,
+            'datetime': formattedDate,
+          },
+          options: Options(headers: {'Content-Type': 'application/json'}));
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception(
+          'Failed to review set massage: ${e.response?.data ?? e.message}');
+    }
+  }
 }

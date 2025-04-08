@@ -5,6 +5,7 @@ import 'dart:async';
 import 'results.dart'; // import หน้า results
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend/main.dart';// Import main to access global cameras variable
 
 late List<CameraDescription> cameras;
 Future<void> main() async {
@@ -27,8 +28,14 @@ class MyApp extends StatelessWidget {
 
 class CamtakepicPage extends StatefulWidget {
   final List<CameraDescription> cameras;
+  final int? massageId; // Keep only the massageId parameter
 
-  const CamtakepicPage({Key? key, required this.cameras}) : super(key: key);
+  const CamtakepicPage({
+    Key? key,
+    required this.cameras,
+    this.massageId, // Keep this parameter
+  }) : super(key: key);
+
   @override
   _CamtakepicPage createState() => _CamtakepicPage();
 }
@@ -39,7 +46,22 @@ class _CamtakepicPage extends State<CamtakepicPage> {
   @override
   void initState() {
     super.initState();
-    _controller = CameraController(widget.cameras[0], ResolutionPreset.max);
+    // First check if cameras are available in the widget, otherwise use the global variable
+    final camerasToUse = widget.cameras.isNotEmpty ? widget.cameras : cam;
+    
+    if (camerasToUse.isEmpty) {
+      print('No cameras available');
+      // Show an error message and possibly navigate back
+      Future.delayed(Duration.zero, () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('กล้องไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้ง')),
+        );
+        Navigator.pop(context);
+      });
+      return;
+    }
+    
+    _controller = CameraController(camerasToUse[0], ResolutionPreset.max);
     _controller.initialize().then((_) {
       if (!mounted) {
         return;
@@ -58,6 +80,7 @@ class _CamtakepicPage extends State<CamtakepicPage> {
       }
     });
   }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -88,26 +111,26 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                         ),
                       )),
                   Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 40),
-                          child: Container(
-                            width: 150,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              color: Color(0xB3C0A172),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Text("ถ่ายจุดนวด",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500)),
-                            ),
-                          ),
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: Container(
+                        width: 150,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: Color(0xB3C0A172),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text("ถ่ายจุดนวด",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500)),
                         ),
                       ),
+                    ),
+                  ),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Padding(
@@ -135,7 +158,8 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: const [
                                       CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC0A172)),
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                            Color(0xFFC0A172)),
                                       ),
                                       SizedBox(height: 20),
                                       Text("กำลังประมวลผล...",
@@ -164,17 +188,37 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                             if (response.statusCode == 200) {
                               var responseBody =
                                   await response.stream.bytesToString();
+
+                              // Log the response details
+                              print('---- API Response Log ----');
+                              print('Status Code: ${response.statusCode}');
+                              print('Response Body: $responseBody');
+                              print('-------------------------');
+
                               var jsonData = json.decode(responseBody);
                               String imageUrl = jsonData['public_url'];
+
+                              // Log the parsed data
+                              print('Parsed URL: $imageUrl');
 
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      ResultsPage(imageUrl: imageUrl),
+                                  builder: (context) => ResultsPage(
+                                    imageUrl: imageUrl,
+                                    massageId: widget.massageId, // Pass the massageId to ResultsPage
+                                  ),
                                 ),
                               );
                             } else {
+                              // Log error response details
+                              print('---- API Error Response Log ----');
+                              print('Status Code: ${response.statusCode}');
+                              var errorBody =
+                                  await response.stream.bytesToString();
+                              print('Error Response Body: $errorBody');
+                              print('-----------------------------');
+
                               print('API error: ${response.statusCode}');
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

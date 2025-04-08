@@ -12,7 +12,6 @@ import 'package:frontend/pages/homepage.dart';
 import 'package:frontend/pages/favouritepage.dart';
 import 'package:frontend/pages/learnpage.dart';
 import 'package:frontend/pages/mappage.dart';
-import 'package:frontend/pages/cammassage.dart';
 import 'package:frontend/pages/accountdetails.dart';
 import 'package:frontend/pages/report.dart';
 import 'package:frontend/pages/help.dart';
@@ -21,15 +20,15 @@ import 'utils/favorite_manager.dart';
 import 'package:frontend/pages/camtakepic.dart';
 import 'package:frontend/pages/results.dart';
 
-late List<CameraDescription> cameras;
+late List<CameraDescription> cam;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize cameras before runApp
-  cameras = await availableCameras();
+  cam = await availableCameras();
 
-  cameras = await availableCameras();
+  cam = await availableCameras();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -105,9 +104,8 @@ class MyApp extends StatelessWidget {
         '/favourite': (context) => const Favouritepage(),
         '/learn': (context) => const LearnPage(),
         '/map': (context) => MapPage(),
-        '/cam': (context) => LandscapePage(cameras: cameras),
-        '/camtest': (context) => CamtakepicPage(cameras: cameras),
-        '/result': (context) => const ResultsPage(imageUrl: '',),
+        '/camtest': (context) => CamtakepicPage(cameras: cam),
+        '/result': (context) => const ResultsPage(imageUrl: ''),
       },
     );
   }

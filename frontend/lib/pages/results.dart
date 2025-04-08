@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../api/auth.dart';
+import '../../api/massage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ResultsPage extends StatefulWidget {
   final String imageUrl;
+  final int? massageId; // Keep this parameter
 
-  const ResultsPage({super.key, required this.imageUrl});
+  const ResultsPage({
+    super.key, 
+    required this.imageUrl,
+    this.massageId, // Keep this parameter
+  });
 
   @override
   State<ResultsPage> createState() => _ResultsPageState();
@@ -12,7 +20,76 @@ class ResultsPage extends StatefulWidget {
 class _ResultsPageState extends State<ResultsPage> {
   int _selectedStars = 0;
 
+  Map<String, dynamic> userData = {
+    'email': '',
+    'first_name': '',
+    'last_name': '',
+    'image_name': '',
+    'role': '',
+  };
+
+  // Update the getter to provide a default value if massageId is null
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    // First get user email (needed for subsequent queries)
+    await getUserEmail();
+  }
+
+  Future<void> getUserEmail() async {
+    final apiService = AuthApiService();
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    try {
+      if (token == null) throw Exception('Token not found');
+      final response = await apiService.getUserData(token);
+      setState(() {
+        userData = response.data;
+      });
+    } catch (e) {
+      setState(() {
+        "Error fetching user data: ${e.toString()}";
+      });
+    }
+  }
+
+  Future<void> sendReview(String reviewText, int rating) async {
+    final apiService = MassageApiService();
+
+    try {
+      // Use the massageId passed from previous screen
+      DateTime now = DateTime.now();
+
+      int massageId = 1; // Use the getter that provides the actual massageId
+
+      final response = await apiService.reviewSingle(
+        userData['email'],
+        massageId, // Use the getter that provides the actual massageId
+        reviewText,
+        rating,
+        now,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ส่งรีวิวสำเร็จแล้ว ขอบคุณสำหรับความคิดเห็น')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาดในการส่งรีวิว: ${e.toString()}')),
+      );
+    }
+  }
+
   void _showReviewDialog() {
+    final TextEditingController reviewController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -42,6 +119,7 @@ class _ResultsPageState extends State<ResultsPage> {
                     }),
                   ),
                   TextField(
+                    controller: reviewController,
                     decoration: InputDecoration(
                       hintText: "แบ่งปันความคิดเห็นของคุณ",
                     ),
@@ -59,7 +137,8 @@ class _ResultsPageState extends State<ResultsPage> {
                 TextButton(
                   child: Text('ยืนยัน'),
                   onPressed: () {
-                    print("User rated: $_selectedStars stars");
+                    // Call the sendReview method with the review text and rating
+                    sendReview(reviewController.text, _selectedStars);
                     Navigator.of(dialogContext).pop();
                     _showRetryDialog();
                   },
