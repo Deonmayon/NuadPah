@@ -16,7 +16,7 @@ class _ForgetPageState extends State<ForgetPage> {
   String _errorMessage = '';
 
   Future<void> _sendotp() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.sendOTP(
@@ -26,11 +26,16 @@ class _ForgetPageState extends State<ForgetPage> {
       if (response.statusCode == 201) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => OTPPage(email: _emailController.text)),
+          MaterialPageRoute(
+              builder: (context) => OTPPage(email: _emailController.text)),
         );
+      } else if (response.statusCode == 404) {
+        setState(() {
+          _errorMessage = 'ไม่พบอีเมลนี้ในระบบ';
+        });
       } else {
         setState(() {
-          _errorMessage = 'Registration failed';
+          _errorMessage = 'การส่งรหัส OTP ล้มเหลว';
         });
       }
     } catch (e) {
@@ -56,7 +61,7 @@ class _ForgetPageState extends State<ForgetPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Forget Password ?',
+                    'ลืมรหัสผ่าน?',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -89,7 +94,7 @@ class _ForgetPageState extends State<ForgetPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Enter Your Email',
+                          'กรุณากรอกอีเมลที่ลงทะเบียนไว้',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -98,7 +103,7 @@ class _ForgetPageState extends State<ForgetPage> {
                         ),
                         SizedBox(height: 20),
                         Text(
-                          'We’ll send you a reset link to your email',
+                          'เราจะส่งรหัส OTP ไปยังอีเมลของคุณ',
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xFF676767),
@@ -110,20 +115,30 @@ class _ForgetPageState extends State<ForgetPage> {
                         // Email TextField
                         EmailTextField(
                           controller: _emailController,
-                          hintText: 'Email',
+                          hintText: 'อีเมล',
                         ),
+                        if (_errorMessage.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              _errorMessage,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
                         SizedBox(height: 40),
 
                         // Sign In Button
                         SizedBox(height: 20),
                         SubmitBox(
-                          buttonText: 'Submit',
+                          buttonText: 'ส่งรหัส OTP',
                           onPress: _sendotp,
                           showArrow: true,
                         ),
 
                         SizedBox(height: 30),
-
                       ],
                     ),
                   ),

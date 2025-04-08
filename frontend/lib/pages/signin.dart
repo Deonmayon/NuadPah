@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/pages/homepage.dart';
 import 'signup.dart';
 import '/pages/forgetpassword/forget.dart';
 import '/components/emailtextfield.dart';
@@ -8,6 +8,7 @@ import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -20,9 +21,16 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
+  bool _isObscured = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
 
   Future<void> _signin() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.signIn(
@@ -32,17 +40,21 @@ class _SignInPageState extends State<SignInPage> {
 
       if (response.statusCode == 201) {
         // pull token from response and set token (like localStorage)
-        final token = response.data['token'];
+        final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+        
+        // Store user email in shared preferences for immediate access
+        await prefs.setString('userEmail', _emailController.text);
 
-        Navigator.push(
+        // Replace current screen with homepage
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => WelcomePage()),
+          MaterialPageRoute(builder: (context) => HomepageWidget()),
         );
       } else {
         setState(() {
-          _errorMessage = 'Sign Up failed';
+          _errorMessage = 'Sign In failed';
         });
       }
     } catch (e) {
@@ -82,7 +94,7 @@ class _SignInPageState extends State<SignInPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Welcome Back!',
+                    'ยินดีต้อนรับกลับ!',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -113,7 +125,7 @@ class _SignInPageState extends State<SignInPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Sign In',
+                          'ลงชื่อเข้าใช้',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -125,17 +137,20 @@ class _SignInPageState extends State<SignInPage> {
                         // Email TextField
                         EmailTextField(
                           controller: _emailController,
-                          hintText: 'Email',
+                          hintText: 'อีเมล',
                         ),
                         SizedBox(height: 20),
 
                         // Password TextField
                         PasswordField(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: 'รหัสผ่าน',
+                          isObscured: _isObscured,
+                          onToggle: _togglePasswordVisibility,
                         ),
 
                         if (_errorMessage.isNotEmpty)
+                          SizedBox(height: 10),
                           Padding(
                             padding: EdgeInsets.only(top: 8),
                             child: Text(
@@ -150,7 +165,7 @@ class _SignInPageState extends State<SignInPage> {
                           child: TextButton(
                             onPressed: _forget,
                             child: Text(
-                              'forget your password ?',
+                              'ลืมรหัสผ่าน?',
                               style: TextStyle(
                                 color: Color(0xFFBFAB93),
                                 fontSize: 14,
@@ -163,64 +178,20 @@ class _SignInPageState extends State<SignInPage> {
                         // Sign In Button
                         SubmitBox(
                           onPress: _signin,
-                          buttonText: 'Sign In',
+                          buttonText: 'ลงชื่อเข้าใช้',
                           showArrow: true,
                         ),
-                        SizedBox(height: 30),
-
-                        // Or Sign In With Text
-                        Center(
-                          child: Text(
-                            'Or Sign In With',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // Google Sign In Button
-                        Center(
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'G',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: Color(0xFFBFAB93),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
                         SizedBox(height: 30),
 
                         // Create Account Link
                         Center(
                           child: RichText(
                             text: TextSpan(
-                              text: "Don't have an account? ",
+                              text: "ยังไม่มีบัญชี? ",
                               style: TextStyle(color: Colors.grey),
                               children: [
                                 TextSpan(
-                                  text: 'Create One',
+                                  text: 'ลงทะเบียน',
                                   style: TextStyle(
                                     color: Color(0xFFBFAB93),
                                     fontWeight: FontWeight.w500,

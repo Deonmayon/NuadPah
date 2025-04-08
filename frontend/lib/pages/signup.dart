@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/pages/homepage.dart';
 import 'signin.dart';
 import '/components/emailtextfield.dart';
 import '/components/passwordfield.dart';
 import '/components/submitbox.dart';
 import '../api/auth.dart'; // Import the ApiService class
 import 'package:shared_preferences/shared_preferences.dart'; // like localStorage but in flutter
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -21,9 +22,16 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
+  bool _isObscured = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
 
   Future<void> _signup() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.signUp(
@@ -35,14 +43,51 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (response.statusCode == 201) {
         // pull token from response and set token (like localStorage)
-        final token = response.data['token'];
+        final token = response.data;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => WelcomePage()),
-        );
+        // Validate registration by making an explicit call to fetch user data
+        try {
+          // Increase delay to give backend more time to complete registration
+          await Future.delayed(Duration(milliseconds: 1500));
+          
+          // Try to fetch user data multiple times with increasing delays
+          bool userDataFetched = false;
+          Exception? lastError;
+          
+          for (int attempt = 1; attempt <= 3 && !userDataFetched; attempt++) {
+            try {
+              final userDataResponse = await apiService.getUserData(token);
+              if (userDataResponse.statusCode == 200) {
+                userDataFetched = true;
+              } else {
+                await Future.delayed(Duration(milliseconds: 500 * attempt));
+              }
+            } catch (e) {
+              lastError = e is Exception ? e : Exception(e.toString());
+              await Future.delayed(Duration(milliseconds: 500 * attempt));
+            }
+          }
+          
+          if (userDataFetched) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomepageWidget()),
+            );
+          } else {
+            throw lastError ?? Exception('Could not validate user data after multiple attempts');
+          }
+        } catch (e) {
+          setState(() {
+            _errorMessage = 'Account created but login required: ${e.toString()}';
+          });
+          // Force user to login manually if automatic login fails
+          Navigator.pushReplacement(
+            context, 
+            MaterialPageRoute(builder: (context) => SignInPage()),
+          );
+        }
       } else {
         setState(() {
           _errorMessage = 'Registration failed';
@@ -78,7 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Get Started!',
+                    'เริ่มกันเลย!',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -109,7 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Sign Up',
+                          'ลงทะเบียน',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -124,14 +169,14 @@ class _SignUpPageState extends State<SignUpPage> {
                             Expanded(
                               child: EmailTextField(
                                 controller: _firstnameController,
-                                hintText: 'First Name',
+                                hintText: 'ชื่อ',
                               ),
                             ),
                             SizedBox(width: 20),
                             Expanded(
                               child: EmailTextField(
                                 controller: _lastnameController,
-                                hintText: 'Last Name',
+                                hintText: 'นามสกุล',
                               ),
                             ),
                           ],
@@ -141,14 +186,16 @@ class _SignUpPageState extends State<SignUpPage> {
                         // Email TextField
                         EmailTextField(
                           controller: _emailController,
-                          hintText: 'Email',
+                          hintText: 'อีเมล',
                         ),
                         SizedBox(height: 20),
 
                         // Password TextField
                         PasswordField(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: 'รหัสผ่าน',
+                          isObscured: _isObscured,
+                          onToggle: _togglePasswordVisibility,
                         ),
                         SizedBox(height: 20),
 
@@ -163,66 +210,21 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         // Sign In Button
                         SubmitBox(
-                          buttonText: 'Sign Up',
+                          buttonText: 'ลงทะเบียน',
                           onPress: _signup,
                           showArrow: true,
                         ),
-
-                        SizedBox(height: 30),
-
-                        // Or Sign In With Text
-                        Center(
-                          child: Text(
-                            'Or Sign Up With',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // Google Sign In Button
-                        Center(
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'G',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: Color(0xFFBFAB93),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
                         SizedBox(height: 30),
 
                         // Create Account Link
                         Center(
                           child: RichText(
                             text: TextSpan(
-                              text: "Already have an account? ",
+                              text: "มีบัญชีแล้ว? ",
                               style: TextStyle(color: Colors.grey),
                               children: [
                                 TextSpan(
-                                  text: 'Sign In',
+                                  text: 'ลงชื่อเข้าใช้',
                                   style: TextStyle(
                                     color: Color(0xFFBFAB93),
                                     fontWeight: FontWeight.w500,

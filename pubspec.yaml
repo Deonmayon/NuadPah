@@ -1,0 +1,7 @@
+dependencies:
+  flutter:
+    sdk: flutter
+  font_awesome_flutter: ^10.1.0
+  shared_preferences: ^2.0.15
+  dio: ^5.0.0
+  image_picker: ^1.0.4

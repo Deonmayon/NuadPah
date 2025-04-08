@@ -1,18 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/api/massage.dart';
+import 'package:frontend/components/reviewCard.dart';
+import 'package:frontend/pages/camtakepic.dart';
+import 'package:camera/camera.dart'; // Add this import
+import 'package:frontend/main.dart'; // Import to access global cameras variable
 
 class SingleMassageDetailPage extends StatefulWidget {
-  const SingleMassageDetailPage({super.key});
+  final int? massageID; // Make nullable
+
+  const SingleMassageDetailPage({
+    Key? key,
+    this.massageID,
+    required String rating, // Remove required
+  }) : super(key: key);
 
   @override
-  State<SingleMassageDetailPage> createState() => _SingleMassageDetailPageState();
+  State<SingleMassageDetailPage> createState() =>
+      _SingleMassageDetailPageState();
 }
 
 class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool isLoading = true;
+
+  int get massageId => widget.massageID ?? 0;
+
+  late Map<String, dynamic> detail = {
+    'mt_id': 0,
+    'mt_name': '',
+    'mt_type': '',
+    'mt_round': 0,
+    'mt_time': 0,
+    'mt_detail': '',
+    'mt_image_name': '',
+    'avg_rating': '0.0',
+  };
+
+  late List<Map<String, dynamic>> reviews = [
+    {
+      'rsm_id': 0,
+      'image_name': '',
+      'firstname': '',
+      'lastname': '',
+      'rating': 0,
+      'detail': '',
+      'datetime': '',
+    }
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await fetchSingleMassageDetail();
+    await fetchSingleMassageReviews();
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> fetchSingleMassageDetail() async {
+    final apiService = MassageApiService();
+
+    try {
+      final response = await apiService.getSingleMassageDetail(massageId);
+
+      setState(() {
+        detail = Map<String, dynamic>.from(response.data);
+      });
+    } catch (e) {
+      setState(() {
+        print(
+            "Error fetching recommend massages: ${e.toString()}"); // Only prints error message
+      });
+    }
+  }
+
+  Future<void> fetchSingleMassageReviews() async {
+    final apiService = MassageApiService();
+
+    try {
+      final response = await apiService.getSingleMassageReviews(massageId);
+
+      setState(() {
+        // Convert the response data and ensure rating is an integer
+        reviews = (response.data as List).map<Map<String, dynamic>>((item) {
+          var review = Map<String, dynamic>.from(item);
+          // Ensure rating is an integer
+          review['rating'] = int.parse(review['rating'].toString());
+          return review;
+        }).toList();
+      });
+    } catch (e) {
+      print("Error fetching reviews: ${e.toString()}");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("Detail: $detail "); // Debugging line
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -23,8 +119,6 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
         body: SafeArea(
           child: Column(
             children: [
-
-              
               // Header with image and buttons
               SizedBox(
                 width: double.infinity,
@@ -32,10 +126,17 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                 child: Stack(
                   children: [
                     Image.network(
-                      'https://picsum.photos/seed/459/600',
+                      detail['mt_image_name']?.isNotEmpty == true
+                          ? detail['mt_image_name']
+                          : 'https://dxaytybkoraatubbincp.supabase.co/storage/v1/object/public/nuadpahstorage//user_icon.png',
                       width: double.infinity,
                       height: 210,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey.shade300,
+                        child: Icon(Icons.image_not_supported,
+                            size: 50, color: Colors.grey),
+                      ),
                     ),
                     Positioned(
                       top: 10,
@@ -67,24 +168,26 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                       bottom: 0,
                       right: 20,
                       child: Container(
-
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: const Color.fromRGBO(192, 161, 114, 1),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircleAvatar(
                               radius: 12.5,
-                              backgroundImage: NetworkImage(
-                                'https://picsum.photos/seed/32/600',
-                              ),
+                              backgroundImage: NetworkImage(detail[
+                                              'mt_image_name']
+                                          ?.isNotEmpty ==
+                                      true
+                                  ? detail['mt_image_name']
+                                  : 'https://dxaytybkoraatubbincp.supabase.co/storage/v1/object/public/nuadpahstorage//user_icon.png'),
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Type: Shoulder',
+                              'บริเวณ: ${detail['mt_type']}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w400,
@@ -99,7 +202,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                             ),
                             SizedBox(width: 4),
                             Text(
-                              '\u2248 5 mins',
+                              '\u2248 ${detail['mt_time']} นาที',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w400,
@@ -114,7 +217,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                             ),
                             SizedBox(width: 4),
                             Text(
-                              '4.5/5.0',
+                              '${detail['avg_rating']?.toString().isNotEmpty == true ? detail['avg_rating'] : '4'} / 5',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w400,
@@ -135,16 +238,16 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Name Massage',
-                      style: TextStyle(
+                    Text(
+                      detail['mt_name'],
+                      style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 20,
                           color: Colors.black),
                     ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+                    SizedBox(height: 10),
+                    Text(
+                      detail['mt_detail'],
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
@@ -161,19 +264,29 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                           height: 40,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(192, 161, 114, 1),
+                              backgroundColor:
+                                  const Color.fromRGBO(192, 161, 114, 1),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                             onPressed: () {
-                              debugPrint('Learn with AI pressed');
+                              // Navigate to camera page with properly referenced cameras
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CamtakepicPage(
+                                    cameras: cam, // Access global cameras variable correctly
+                                    massageId: detail['mt_id'],
+                                  ),
+                                ),
+                              );
                             },
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Learn with AI',
+                                  'เรียนรู้ด้วย AI',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 20,
@@ -197,14 +310,13 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
               ),
 
               // Review Section
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Rate and Reviews',
+                    Text('คะแนนและรีวิว',
                         style: TextStyle(
-                          fontFamily: 'Roboto',
                           fontWeight: FontWeight.w700,
                           fontSize: 20,
                           color: Colors.black,
@@ -212,87 +324,35 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                         )),
                     SizedBox(height: 10),
                     // Review Card
-                    ReviewCard(),
-                    SizedBox(height: 10),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.3,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: reviews.map((review) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: ReviewCard(
+                                reviewID: review['rsm_id'],
+                                imageName: review['image_name'],
+                                firstname: review['firstname'],
+                                lastname: review['lastname'],
+                                rating: review['rating'],
+                                detail: review['detail'],
+                                datetime: review['datetime'],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              CircleAvatar(
-                radius: 15,
-                backgroundImage:
-                    NetworkImage('https://picsum.photos/seed/624/600'),
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Cameron Williamson',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: Color.fromRGBO(103, 103, 103, 1),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: List.generate(
-              5,
-              (index) => Padding(
-                padding:
-                    const EdgeInsets.only(right: 5.0), // ระยะห่างระหว่างไอคอน
-                child: Icon(
-                  index < 4
-                      ? FontAwesomeIcons.solidStar
-                      : FontAwesomeIcons.star,
-                  color: index < 4
-                      ? const Color.fromRGBO(192, 161, 114, 1)
-                      : Colors.grey,
-                  size: 15,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Lorem ipsum dolor sit amet,  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              color: Color.fromRGBO(103, 103, 103, 1),
-            ),
-          ),
-        ],
       ),
     );
   }

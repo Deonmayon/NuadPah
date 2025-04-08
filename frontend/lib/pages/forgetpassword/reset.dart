@@ -3,7 +3,6 @@ import '/pages/signin.dart';
 import '/components/submitbox.dart';
 import '/components/passwordfield.dart';
 import '../../api/auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ResetPage extends StatefulWidget {
   final String email;
@@ -19,18 +18,21 @@ class _ResetPageState extends State<ResetPage> {
       TextEditingController();
   String _errorMessage = '';
 
+  bool _isNewPasswordObscured = true;
+  bool _isConfirmPasswordObscured = true;
+
   void initState() {
     super.initState();
   }
 
   Future<void> _newPassword() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       // Check password and confirm password match
       if (_newPasswordController.text != _confirmPasswordController.text) {
         setState(() {
-          _errorMessage = 'Passwords do not match';
+          _errorMessage = 'รหัสผ่านไม่ตรงกัน';
         });
       } else {
         final response = await apiService.resetPassword(
@@ -58,6 +60,18 @@ class _ResetPageState extends State<ResetPage> {
     }
   }
 
+  void _toggleNewPasswordVisibility() {
+    setState(() {
+      _isNewPasswordObscured = !_isNewPasswordObscured;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordObscured = !_isConfirmPasswordObscured;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +88,7 @@ class _ResetPageState extends State<ResetPage> {
                 right: 0,
                 child: Center(
                   child: Text(
-                    'Reset Your Password',
+                    'รีเซ็ตรหัสผ่าน',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -105,7 +119,7 @@ class _ResetPageState extends State<ResetPage> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Enter New Password',
+                          'ใส่รหัสผ่านใหม่',
                           style: TextStyle(
                             fontSize: 28,
                             color: Color(0xFFBFAB93),
@@ -118,6 +132,8 @@ class _ResetPageState extends State<ResetPage> {
                         PasswordField(
                           controller: _newPasswordController,
                           hintText: 'New Password',
+                          isObscured: _isNewPasswordObscured,
+                          onToggle: _toggleNewPasswordVisibility,
                         ),
                         SizedBox(height: 20),
 
@@ -125,6 +141,8 @@ class _ResetPageState extends State<ResetPage> {
                         PasswordField(
                           controller: _confirmPasswordController,
                           hintText: 'Confirm Password',
+                          isObscured: _isConfirmPasswordObscured,
+                          onToggle: _toggleConfirmPasswordVisibility,
                         ),
                         SizedBox(height: 40),
 
@@ -141,7 +159,7 @@ class _ResetPageState extends State<ResetPage> {
                         // Reset Password Button
                         SubmitBox(
                           onPress: _newPassword,
-                          buttonText: 'Reset Password',
+                          buttonText: 'รีเซ็ตรหัสผ่าน',
                           showArrow: false,
                         ),
                         SizedBox(height: 30),

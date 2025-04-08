@@ -1,18 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:camera/camera.dart';
 import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:frontend/pages/profile.dart';
-import 'package:frontend/pages/singleMassageManage.dart';
-import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/pages/forgetpassword/reset.dart';
 import 'package:frontend/pages/forgetpassword/forget.dart';
 import 'package:frontend/pages/forgetpassword/otp.dart';
 import 'package:frontend/pages/signup.dart';
 import 'package:frontend/pages/signin.dart';
-import 'package:frontend/pages/setofMassageManage.dart';
-import 'package:frontend/pages/homepage2.dart';
-import 'package:frontend/pages/UserManage.dart';
+import 'package:frontend/pages/homepage.dart';
+import 'package:frontend/pages/favouritepage.dart';
+import 'package:frontend/pages/learnpage.dart';
+import 'package:frontend/pages/mappage.dart';
+import 'package:frontend/pages/accountdetails.dart';
+import 'package:frontend/pages/report.dart';
+import 'package:frontend/pages/help.dart';
+import 'package:frontend/pages/setMassageDetail.dart';
+import 'utils/favorite_manager.dart';
+import 'package:frontend/pages/camtakepic.dart';
+import 'package:frontend/pages/results.dart';
 
-void main() {
+late List<CameraDescription> cam;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize cameras before runApp
+  cam = await availableCameras();
+
+  cam = await availableCameras();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    print(
+        "Flutter Error: ${details.exceptionAsString()}"); // Only print error message
+  };
+
+  // Initialize the favorite manager at app startup
+  await FavoriteManager.instance.init();
+
   runApp(const MyApp());
 }
 
@@ -26,21 +57,55 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
+        fontFamily: 'Prompt',
+        textTheme: TextTheme(
+          bodyLarge:
+              TextStyle(fontWeight: FontWeight.w400), // Regular (ข้อความใหญ่)
+          bodyMedium:
+              TextStyle(fontWeight: FontWeight.w300), // Light (ข้อความปกติ)
+          bodySmall: TextStyle(
+              fontWeight: FontWeight.w200), // ExtraLight (ข้อความเล็ก)
+
+          titleLarge: TextStyle(fontWeight: FontWeight.w700), // Bold
+          titleMedium: TextStyle(fontWeight: FontWeight.w600), // SemiBold
+          titleSmall: TextStyle(fontWeight: FontWeight.w500), // Medium
+
+          displayLarge: TextStyle(fontWeight: FontWeight.w100), // Thin
+          displayMedium: TextStyle(fontWeight: FontWeight.w200), // ExtraLight
+          displaySmall: TextStyle(fontWeight: FontWeight.w800), // ExtraBold
+
+          headlineLarge: TextStyle(fontWeight: FontWeight.w900), // Black
+        ),
       ),
-      initialRoute: '/home',
+      initialRoute: '/signin',
       routes: {
-        '/': (context) => const WelcomePage(),
-        '/signin' : (context) => const SignInPage(),
-        '/signup' : (context) => const SignUpPage(),
-        '/forget' : (context) => const ForgetPage(),
-        '/otp' : (context) => const OTPPage( email: '',),
-        '/reset' : (context) => const ResetPage( email: '',),
-        '/home' : (context) => const HomepageWidget(),
-        '/profile' : (context) => const ProfilePage(),
-        '/singledetail': (context) => const SingleMassageDetailPage(),
-        '/singlemanage' : (context) => const SingleMassageManagePage(),
-        '/setofmanage' : (context) => const SetOfMassageManagePage(),
-        '/usermanage' : (context) => const UserManagePage(),
+        '/signin': (context) => const SignInPage(),
+        '/signup': (context) => const SignUpPage(),
+        '/forget': (context) => const ForgetPage(),
+        '/otp': (context) => const OTPPage(
+              email: '',
+            ),
+        '/reset': (context) => const ResetPage(
+              email: '',
+            ),
+        '/home': (context) => const HomepageWidget(),
+        '/profile': (context) => const ProfilePage(),
+        '/accountdetails': (context) => const AccountdetailsPage(),
+        '/singledetail': (context) => const SingleMassageDetailPage(
+              massageID: 0,
+              rating: '0',
+            ),
+        '/setdetail': (context) => const SetMassageDetailPage(
+              massageID: 0,
+              rating: '0',
+            ),
+        '/report': (context) => const ReportPage(),
+        '/help': (context) => const HelpPage(),
+        '/favourite': (context) => const Favouritepage(),
+        '/learn': (context) => const LearnPage(),
+        '/map': (context) => MapPage(),
+        '/camtest': (context) => CamtakepicPage(cameras: cam),
+        '/result': (context) => const ResultsPage(imageUrl: ''),
       },
     );
   }

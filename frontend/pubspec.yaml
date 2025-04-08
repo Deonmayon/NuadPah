@@ -9,25 +9,70 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cached_network_image: ^3.3.0
+  shared_preferences: ^2.2.2 
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.7
   font_awesome_flutter: ^10.3.0
   provider: ^6.1.2
-  google_fonts: ^3.0.1
+  google_fonts: ^6.2.1
   curved_navigation_bar: ^1.0.6
+  google_maps_flutter: ^2.5.0
+  google_maps_flutter_web: ^0.5.0
+  http: ^1.3.0
+  dotted_border: ^2.1.0
+  camera: ^0.11.1
+  location: ^5.0.0
+  socket_io_client: ^3.0.2
+  url_launcher: ^6.1.10
+  image_picker: ^1.0.4
+  flutter_dotenv: ^5.1.0
+  image: ^4.0.17
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   dio: ^5.0.0
-  image_picker: ^0.8.4+4
-  shared_preferences: ^2.0.13
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Prompt
+      fonts:
+        - asset: assets/fonts/Prompt-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Prompt-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Prompt-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Prompt-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Prompt-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Prompt-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Prompt-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Prompt-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Prompt-Black.ttf
+          weight: 900
 
   assets:
-    - assets/images/
+    - assets/images/Massage_Image01.png
+    - assets/images/Massage_Image03.png
+    - assets/images/Massage_Image11.png
+    - assets/images/profilePicture.jpg
+    - assets/images/reviewer.png
+    - assets/images/mail.png

@@ -83,7 +83,7 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   Future<void> _verifyotp() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.verifyOTP(
@@ -120,7 +120,7 @@ class _OTPPageState extends State<OTPPage> {
 
 
   Future<void> _resendotp() async {
-    final apiService = ApiService(baseUrl: 'http://10.0.2.2:3000');
+    final apiService = AuthApiService();
 
     try {
       final response = await apiService.sendOTP(
@@ -187,7 +187,7 @@ class _OTPPageState extends State<OTPPage> {
                     children: [
                       const SizedBox(height: 20),
                       const Text(
-                        'Enter Verification Code',
+                        'ใส่รหัส OTP',
                         style: TextStyle(
                           fontSize: 28,
                           color: Color(0xFFBFAB93),
@@ -195,13 +195,13 @@ class _OTPPageState extends State<OTPPage> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Text(
-                        'We have sent a verification code to',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF676767),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        Text(
+                          'เราจะส่งรหัส OTP ไปยัง',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF676767),
+                            fontWeight: FontWeight.bold,
+                          ),
                       ),
                       SizedBox(height: 10),
                       Text(
@@ -285,7 +285,7 @@ class _OTPPageState extends State<OTPPage> {
                         TextButton(
                           onPressed: _resendotp,
                           child: const Text(
-                            'Resend Code',
+                            'ส่ง OTP ใหม่อีกครั้ง',
                             style: TextStyle(
                               color: Color(0xFFC0A172),
                               fontSize: 16,
@@ -294,7 +294,7 @@ class _OTPPageState extends State<OTPPage> {
                         )
                       else
                         Text(
-                          'Your otp will expire in $_countdownSeconds seconds',
+                          'OTP จะหมดอายุใน $_countdownSeconds วินาที',
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 16,
@@ -304,7 +304,7 @@ class _OTPPageState extends State<OTPPage> {
 
                       // Next Button
                       SubmitBox(
-                        buttonText: 'Next',
+                        buttonText: 'ต่อไป',
                         onPress: _verifyotp,
                         showArrow: true,
                       ),
