@@ -100,6 +100,13 @@ class _FavouritePageState extends State<Favouritepage> {
     try {
       final response = await apiService.getFavSingle(userEmail);
 
+      if (response.data.isEmpty) {
+        setState(() {
+          favSingleMassages = [];
+        });
+        return;
+      }
+
       setState(() {
         favSingleMassages = (response.data as List)
             .map((item) => item.map((key, value) => MapEntry(key, value)))
@@ -117,6 +124,13 @@ class _FavouritePageState extends State<Favouritepage> {
 
     try {
       final response = await apiService.getFavSet(userEmail);
+
+      if (response.data.isEmpty) {
+        setState(() {
+          favSetMassages = [];
+        });
+        return;
+      }
 
       setState(() {
         favSetMassages = response.data as List;
