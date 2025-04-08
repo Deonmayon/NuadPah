@@ -267,7 +267,7 @@ class _SingleMassageDetailPageState extends State<SingleMassageDetailPage> {
                               ),
                             ),
                             onPressed: () {
-                              debugPrint('Learn with AI pressed');
+                              Navigator.pushNamed(context, '/camtest');
                             },
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,

@@ -81,7 +81,9 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                           backgroundColor: Color(0xB3C0A172),
                           child: IconButton(
                             icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       )),

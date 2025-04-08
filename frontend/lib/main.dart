@@ -19,7 +19,7 @@ import 'package:frontend/pages/help.dart';
 import 'package:frontend/pages/setMassageDetail.dart';
 import 'utils/favorite_manager.dart';
 import 'package:frontend/pages/camtakepic.dart';
-// import 'package:frontend/pages/results.dart';
+import 'package:frontend/pages/results.dart';
 
 late List<CameraDescription> cameras;
 
@@ -107,6 +107,7 @@ class MyApp extends StatelessWidget {
         '/map': (context) => MapPage(),
         '/cam': (context) => LandscapePage(cameras: cameras),
         '/camtest': (context) => CamtakepicPage(cameras: cameras),
+        '/result': (context) => const ResultsPage(imageUrl: '',),
       },
     );
   }
