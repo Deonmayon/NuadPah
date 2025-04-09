@@ -185,9 +185,6 @@ class _CamtakepicPage extends State<CamtakepicPage> {
 
                             var response = await request.send();
 
-                            // ✅ ปิด popup loading ก่อนเปลี่ยนหน้า
-                            Navigator.pop(context);
-
                             if (response.statusCode == 200) {
                               var responseBody =
                                   await response.stream.bytesToString();
@@ -199,30 +196,53 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                               print('-------------------------');
 
                               var jsonData = json.decode(responseBody);
-                              String imageUrl = jsonData['public_url'];
 
-                              // Log the parsed data
-                              print('Parsed URL: $imageUrl');
+                              Navigator.pop(
+                                  context); // ✅ ปิด popup loading ก่อนทำอย่างอื่น
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ResultsPage(
-                                    imageUrl: imageUrl,
-                                    massageId: 4, // Pass the massageId to ResultsPage
+                              if (jsonData['success'] == true) {
+                                String imageUrl = jsonData['public_url'];
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ResultsPage(imageUrl: imageUrl),
                                   ),
-                                ),
-                              );
+                                );
+                              } else {
+                                // ❌ กรณีไม่พบจุดนวด
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: true,
+                                  builder: (_) => Center(
+                                    child: Container(
+                                      padding: EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: const [
+                                          Icon(Icons.close,
+                                              color: Colors.red, size: 40),
+                                          SizedBox(height: 20),
+                                          Text(
+                                            "ไม่พบจุดนวด",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.red,
+                                              decoration: TextDecoration.none,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
                             } else {
-                              // Log error response details
-                              print('---- API Error Response Log ----');
-                              print('Status Code: ${response.statusCode}');
-                              var errorBody =
-                                  await response.stream.bytesToString();
-                              print('Error Response Body: $errorBody');
-                              print('-----------------------------');
-
-                              print('API error: ${response.statusCode}');
+                              Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                     content: Text("เกิดข้อผิดพลาดจาก API")),
