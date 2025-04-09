@@ -148,7 +148,7 @@ class _FavouritePageState extends State<Favouritepage> {
       }
 
       final List<int> favMassages = (response.data as List)
-          .map((item) => Map<String, dynamic>.from(item)['mt_id'] as int)
+          .map((item) => Map<String, dynamic>.from(item)['ms_id'] as int)
           .toList();
 
       // Update global favorite manager
@@ -227,27 +227,27 @@ class _FavouritePageState extends State<Favouritepage> {
     );
   }
 
-  Widget _buildErrorWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.error_outline,
-            color: Colors.red,
-            size: 60,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'เกิดข้อผิดพลาด กรุณาลองใหม่',
-            style: TextStyle(fontSize: 18),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
+  // Widget _buildErrorWidget() {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Icon(
+  //           Icons.error_outline,
+  //           color: Colors.red,
+  //           size: 60,
+  //         ),
+  //         SizedBox(height: 16),
+  //         Text(
+  //           'เกิดข้อผิดพลาด กรุณาลองใหม่',
+  //           style: TextStyle(fontSize: 18),
+  //           textAlign: TextAlign.center,
+  //         ),
+  //         SizedBox(height: 24),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildLoadingWidget() {
     return Center(
@@ -360,7 +360,7 @@ class _FavouritePageState extends State<Favouritepage> {
       }
 
       // Update global state
-      FavoriteManager.instance.updateSingleFavorite(massageId, isFavorite);
+      FavoriteManager.instance.updateSetFavorite(massageId, isFavorite);
 
       // Update cache
       final prefs = await SharedPreferences.getInstance();

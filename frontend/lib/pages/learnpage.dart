@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/components/HomeButtomNavigationBar.dart';
 import 'package:frontend/components/massagecardSmall.dart';
 import 'package:frontend/components/massagecardSet.dart';
+import 'package:frontend/utils/favorite_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../api/massage.dart';
 import 'dart:async';
 import 'package:dio/dio.dart';
@@ -76,6 +80,8 @@ class _LearnState extends State<LearnPage> {
       Navigator.pop(context);
     });
   }
+
+  List<int> favSingleIDs = [];
 
   @override
   void initState() {
@@ -197,6 +203,75 @@ class _LearnState extends State<LearnPage> {
     }
   }
 
+  Future<void> fetchSingleFavIDs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedUserData = prefs.getString('userData');
+
+    if (cachedUserData == null) {
+      return; // User data not found
+    }
+    final decodedUserData = jsonDecode(cachedUserData);
+    final userEmail = decodedUserData['email'];
+
+    final apiService = MassageApiService();
+    try {
+      Response response = await apiService.getFavSingle(userEmail);
+      if (response.statusCode == 200) {
+        final List<int> favMassages = (response.data as List<dynamic>? ?? [])
+            .map((item) => item['mt_id'] as int)
+            .toList();
+        setState(() {
+          favSingleIDs = favMassages;
+        });
+      } else {
+        print("Error fetching favorite IDs: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching favorite IDs: $e");
+    }
+  }
+
+  Future<void> _handleSingleFavoriteChanged(
+      bool isFavorite, int massageId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedUserData = prefs.getString('userData');
+
+    if (cachedUserData == null) {
+      return; // User data not found
+    }
+    final decodedUserData = jsonDecode(cachedUserData);
+    final userEmail = decodedUserData['email'];
+
+    final apiService = MassageApiService();
+
+    try {
+      if (isFavorite) {
+        await apiService.favSingle(userEmail, massageId);
+        if (!favSingleIDs.contains(massageId)) {
+          setState(() {
+            favSingleIDs.add(massageId);
+          });
+        }
+      } else {
+        await apiService.unfavSingle(userEmail, massageId);
+        setState(() {
+          favSingleIDs.remove(massageId);
+        });
+      }
+
+      // Update global state
+      FavoriteManager.instance.updateSingleFavorite(massageId, isFavorite);
+
+      // Update cache
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setStringList(
+          'cachedFavorites', favSingleIDs.map((id) => id.toString()).toList());
+    } catch (e) {
+      print("Error toggling favorite: $e");
+      // Could implement retry logic here
+    }
+  }
+
   Future<void> fetchSetMassages() async {
     final apiService = MassageApiService();
 
@@ -302,6 +377,7 @@ class _LearnState extends State<LearnPage> {
       if (_selectedTab == 0) {
         if (_cachedSingleMassages.isEmpty) {
           await fetchSingleMassages();
+          await fetchSingleFavIDs();
         } else {
           // Use cached data
           setState(() {
@@ -860,9 +936,12 @@ class _LearnState extends State<LearnPage> {
                   : _selectedTab == 0
                       ? SingleMassageTab(
                           massages: filteredSingleMassages,
+                          favSingleIDs: favSingleIDs,
                           scrollController: _scrollController,
                           isLoadingMore: _isLoadingMore,
-                          hasMore: _hasMoreSingleData)
+                          hasMore: _hasMoreSingleData,
+                          onFavoriteChanged: _handleSingleFavoriteChanged,
+                        )
                       : SetOfMassageTab(
                           massages: filteredSetMassages,
                           scrollController: _scrollController,
@@ -1003,15 +1082,19 @@ class _LearnState extends State<LearnPage> {
 
 class SingleMassageTab extends StatelessWidget {
   final List<dynamic> massages;
+  final List<int> favSingleIDs;
   final ScrollController scrollController;
   final bool isLoadingMore;
   final bool hasMore;
+  final Function(bool, int) onFavoriteChanged;
 
   const SingleMassageTab(
       {required this.massages,
+      required this.favSingleIDs,
       required this.scrollController,
       required this.isLoadingMore,
-      required this.hasMore});
+      required this.hasMore,
+      required this.onFavoriteChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -1048,6 +1131,17 @@ class SingleMassageTab extends StatelessWidget {
         }
 
         final massage = massages[index];
+
+        final bool isFavorite = favSingleIDs.contains(massage['mt_id'].toInt());
+        print('massage: ${massage['mt_id'].toInt()}');
+        print('isFavorite: $isFavorite');
+        print('-' * 20);
+        print('-' * 20);
+        print('-' * 20);
+        print('-' * 20);
+        print('-' * 20);
+        print('-' * 20);
+        print('-' * 20);
         return MassageCard(
           mtID: massage['mt_id'].toInt() ?? 0,
           image: massage['mt_image_name'] ??
@@ -1057,8 +1151,10 @@ class SingleMassageTab extends StatelessWidget {
           type: massage['mt_type'] ?? 'Unknown Type',
           time: massage['mt_time'] ?? 'Unknown Duration',
           rating: massage['avg_rating']?.toString(),
+          isFavorite: isFavorite,
+          isSet: false,
           onFavoriteChanged: (isFavorite) {
-            print('Massage favorited: $isFavorite');
+            onFavoriteChanged(isFavorite, massage['mt_id']);
           },
         );
       },
