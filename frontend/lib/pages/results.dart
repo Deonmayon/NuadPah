@@ -166,7 +166,15 @@ class _ResultsPageState extends State<ResultsPage> {
             TextButton(
               child: Text('ไม่'),
               onPressed: () {
-                // Replace current screen with homepage
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LearnPage()),
+                );
+              },
+            ),
+            TextButton(
+              child: Text('เริ่มใหม่'),
+              onPressed: () {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -174,17 +182,6 @@ class _ResultsPageState extends State<ResultsPage> {
                             massageID: 4,
                             rating: '2.4',
                           )),
-                );
-              },
-            ),
-            TextButton(
-              child: Text('เริ่มใหม่'),
-              onPressed: () {
-                // ใส่ logic สำหรับเริ่มใหม่ที่นี่
-                // Replace current screen with homepage
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LearnPage()),
                 );
               },
             ),
