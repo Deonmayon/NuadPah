@@ -160,14 +160,13 @@ class AuthApiService {
   }
 
   // Update user data
-  Future<Response> updateUserData(int id, String email, String newpw,
-      String firstname, String lastname, String imageName) async {
+  Future<Response> updateUserData(int id, String email, String firstname,
+      String lastname, String imageName) async {
     try {
       final response = await _dio.put(
         '/admin/edit-user/$id',
         data: {
           'email': email,
-          'password': newpw,
           'firstname': firstname,
           'lastname': lastname,
           'image_name': imageName,

@@ -31,6 +31,31 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _signup() async {
+    final RegExp gmailRegex = RegExp(r'^[a-zA-Z0-9._]+@gmail\.com$');
+    final RegExp passwordRegex = RegExp(r'^[a-zA-Z0-9]$');
+
+    if (!gmailRegex.hasMatch(_emailController.text)) {
+      setState(() {
+        _errorMessage = 'กรุณาใช้อีเมล Gmail ที่ถูกต้อง';
+      });
+      return;
+    }
+
+    if (!passwordRegex.hasMatch(_passwordController.text)) {
+      setState(() {
+        _errorMessage = 'กรุณากรอกอักษรภาษาอังกฤษ ตัวเลข';
+      });
+      return;
+    }
+
+    if (_passwordController.text.length < 8 ||
+        _passwordController.text.length > 20) {
+      setState(() {
+        _errorMessage = 'กรุณากรอกรหัสผ่าน 8-20 ตัวอักษร';
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = '';

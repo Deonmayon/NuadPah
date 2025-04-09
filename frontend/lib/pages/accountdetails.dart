@@ -57,6 +57,7 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
     final decodedUserData = cachedUserData != null
         ? jsonDecode(cachedUserData)
         : {
+            'id': 0,
             'email': '',
             'first_name': '',
             'last_name': '',
@@ -75,19 +76,11 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
     });
 
     final apiService = AuthApiService();
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
-    if (token == null) {
-      debugPrint("Token is null, user not logged in.");
-      return;
-    }
 
     try {
       await apiService.updateUserData(
-        userData['id'] ?? 0,
+        userData['id'],
         userData['email'],
-        '', // empty password means no password change
         firstName.isEmpty ? userData['firstname'] : firstName,
         lastName.isEmpty ? userData['lastname'] : lastName,
         userData['image_name'],
@@ -147,7 +140,6 @@ class _AccountdetailsPageState extends State<AccountdetailsPage> {
         await apiService.updateUserData(
           userData['userid'] ?? 0, // Change from 'id' to 'userid'
           userData['email'],
-          '', // empty password means no password change
           userData['firstname'],
           userData['lastname'],
           imageUrl,
