@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/learnpage.dart';
+import 'package:frontend/pages/singleMassageDetail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../api/massage.dart';
@@ -69,7 +71,7 @@ class _ResultsPageState extends State<ResultsPage> {
       // Use the massageId passed from previous screen
       DateTime now = DateTime.now();
 
-      int massageId = 1; // Use the getter that provides the actual massageId
+      int massageId = 4; // Use the getter that provides the actual massageId
 
       await apiService.reviewSingle(
         userData['email'],
@@ -159,19 +161,31 @@ class _ResultsPageState extends State<ResultsPage> {
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text("พร้อมที่จะเริ่มใหม่หรือยัง?"),
-          content: Text("แตะที่ปุ่ม 'เริ่มใหม่' เพื่อเริ่มเกมใหม่"),
+          content: Text("แตะที่ปุ่ม 'เริ่มใหม่' เพื่อเริ่มใหม่"),
           actions: <Widget>[
             TextButton(
               child: Text('ไม่'),
               onPressed: () {
-                Navigator.of(dialogContext).pop();
+                // Replace current screen with homepage
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SingleMassageDetailPage(
+                            massageID: 4,
+                            rating: '2.4',
+                          )),
+                );
               },
             ),
             TextButton(
               child: Text('เริ่มใหม่'),
               onPressed: () {
                 // ใส่ logic สำหรับเริ่มใหม่ที่นี่
-                Navigator.of(dialogContext).popUntil((route) => route.isFirst);
+                // Replace current screen with homepage
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LearnPage()),
+                );
               },
             ),
           ],

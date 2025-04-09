@@ -18,6 +18,7 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   final List<CameraDescription> cameras;
+  
   const MyApp({Key? key, required this.cameras}) : super(key: key);
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -29,11 +30,13 @@ class MyApp extends StatelessWidget {
 class CamtakepicPage extends StatefulWidget {
   final List<CameraDescription> cameras;
   final int? massageId; // Keep only the massageId parameter
+  final int? rating; // Keep this parameter
 
   const CamtakepicPage({
     Key? key,
     required this.cameras,
     this.massageId, // Keep this parameter
+    this.rating,
   }) : super(key: key);
 
   @override
@@ -206,7 +209,7 @@ class _CamtakepicPage extends State<CamtakepicPage> {
                                 MaterialPageRoute(
                                   builder: (context) => ResultsPage(
                                     imageUrl: imageUrl,
-                                    massageId: widget.massageId, // Pass the massageId to ResultsPage
+                                    massageId: 4, // Pass the massageId to ResultsPage
                                   ),
                                 ),
                               );
